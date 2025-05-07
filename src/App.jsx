@@ -1,10 +1,11 @@
-import "./App.css";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
-    <>
-      <h1 className="text-4xl bg-green-400">Campus Ride</h1>
-    </>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
 
