@@ -1,15 +1,10 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import fs from "fs";
+
 import jwt from "jsonwebtoken";
-import multer from "multer";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+
 import db from "../config/db.js";
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const generateAccessToken = (user) => {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
@@ -24,25 +19,10 @@ const generateRefreshToken = async (user, userId) => {
   return token;
 };
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, "../uploads");
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
-const upload = multer({ storage });
-
 const register = async (req, res) => {
   const { firstName, lastName, phone, email, password, confirmPassword, role } =
     req.body;
-  const file = req.file;
+  const document = req.file;
 
   if (
     !firstName ||
@@ -52,11 +32,11 @@ const register = async (req, res) => {
     !password ||
     !confirmPassword ||
     !role ||
-    !file
+    !document
   ) {
     return res.status(400).json({ error: "All fields are required" });
   }
-  if (!file) {
+  if (!document) {
     return res.status(400).json({ error: "File is required" });
   }
 
@@ -88,9 +68,18 @@ const register = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const [rows] = await db.query(
-      "INSERT INTO users (username, password) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [firstName, lastName, phone, email, hashedPassword, role, file.filename]
+      "INSERT INTO users (firstName, lastName, phone, email, password, role, document) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [
+        firstName,
+        lastName,
+        phone,
+        email,
+        hashedPassword,
+        role,
+        document.filename,
+      ]
     );
+
     res.status(201).json({
       id: rows.insertId,
       email,
@@ -171,8 +160,8 @@ const logout = async (req, res) => {
     });
     res.sendStatus(204);
   } catch (error) {
-    res.status(500).json({ error: "Error logging out" });
+    res.status(500).json({ error: error.message });
   }
 };
 
-export { login, logout, refreshToken, register, upload };
+export { login, logout, refreshToken, register };
