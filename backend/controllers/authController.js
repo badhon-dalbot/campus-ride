@@ -7,18 +7,34 @@ import db from "../config/db.js";
 dotenv.config();
 
 const generateAccessToken = (user) => {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  return jwt.sign(user, (process.env.ACCESS_TOKEN_SECRET || "accesstoken"), { expiresIn: "15m" });
 };
 
+// const generateRefreshToken = async (user, userId) => {
+//   const token = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+//   const expiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+//   const expiresAt = new Date(Date.now() + expiresIn * 1000);
+//   await db.query("INSERT INTO refresh_tokens (id, token, expires_at) VALUES (?, ?, ?)", [
+//     userId,
+//     token,
+//     expiresAt,
+//   ]);
+//   return token;
+// };
 const generateRefreshToken = async (user, userId) => {
-  const token = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-  await db.query("INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)", [
-    userId,
-    token,
-  ]);
+  const token = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken", {
+    expiresIn: "7d",
+  });
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+  await db.query(
+    "INSERT INTO refresh_tokens (user_i d, token, expires_at) VALUES (?, ?, ?)",
+    [userId, token, expiresAt]
+  );
+
   return token;
 };
-
 const register = async (req, res) => {
   const { firstName, lastName, phone, email, password, confirmPassword, role } =
     req.body;
@@ -92,10 +108,15 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  
   try {
-    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [
-      username,
+    const { email, password } = req.body;
+    console.log("Login request body:", email, password);
+     if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required." });
+    }
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
+      email,
     ]);
     if (rows.length === 0)
       return res.status(400).json({ error: "User not found" });
@@ -121,6 +142,7 @@ const login = async (req, res) => {
     });
     res.json({ accessToken });
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ error: "Error logging in" });
   }
 };
@@ -136,11 +158,13 @@ const refreshToken = async (req, res) => {
     );
     if (rows.length === 0) return res.sendStatus(403);
 
-    const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    // const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = jwt.verify(refreshToken, "myrefreshtoken");
     const accessToken = generateAccessToken({ id: user.id, name: user.name });
 
     res.json({ accessToken });
   } catch (error) {
+    console.error("Error refreshing token:", error);
     res.status(500).json({ error: "Error refreshing token" });
   }
 };
