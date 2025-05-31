@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import CampusRideFooter from "../assets/CampusRideFooter.jsx";
 import LoginHeader from "../assets/LoginHeader.jsx";
 
@@ -17,6 +18,7 @@ export default function CampusRideSignup() {
     role: "ride",
     file: null,
   });
+  const navigate = useNavigate();
   useEffect(() => {
     setFormData((prev) => ({ ...prev, role: activeTab }));
   }, [activeTab]);
@@ -76,8 +78,8 @@ export default function CampusRideSignup() {
     }
 
     const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{6,}$/;
-    
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{6,}$/;
+
     if (!passwordRegex.test(password)) {
       console.error(
         "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special Character."
@@ -114,6 +116,7 @@ export default function CampusRideSignup() {
       );
 
       setMessage(res.data.message);
+      navigate("/login");
     } catch (error) {
       console.error("Error during signup:", error.message);
       setMessage(error.response?.data?.message || "Registration failed.");
@@ -231,6 +234,12 @@ export default function CampusRideSignup() {
           >
             Sign Up Now
           </button>
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="hover:underline">
+              Login
+            </Link>
+          </p>
         </form>
       </div>
 
