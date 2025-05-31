@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CampusRideFooter from "../assets/CampusRideFooter.jsx";
 import LoginHeader from "../assets/LoginHeader.jsx";
 
@@ -135,6 +135,9 @@ export default function CampusRideLogin() {
           >
             Login Now
           </button>
+          <Link to="/signup" className="hover:underline text-sm">
+            Create an account
+          </Link>
         </form>
       </div>
 
