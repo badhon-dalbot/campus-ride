@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import CampusRideFooter from "../assets/CampusRideFooter.jsx";
 import LoginHeader from "../assets/LoginHeader.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function CampusRideSignup() {
   const [activeTab, setActiveTab] = useState("ride");
@@ -17,6 +18,7 @@ export default function CampusRideSignup() {
     role: "ride",
     file: null,
   });
+  const navigate = useNavigate();
   useEffect(() => {
     setFormData((prev) => ({ ...prev, role: activeTab }));
   }, [activeTab]);
@@ -114,6 +116,7 @@ export default function CampusRideSignup() {
       );
 
       setMessage(res.data.message);
+      navigate("/login");
     } catch (error) {
       console.error("Error during signup:", error.message);
       setMessage(error.response?.data?.message || "Registration failed.");
