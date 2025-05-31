@@ -29,13 +29,16 @@ const generateRefreshToken = async (user, userId) => {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
   await db.query(
-    "INSERT INTO refresh_tokens (user_i d, token, expires_at) VALUES (?, ?, ?)",
+    "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)",
     [userId, token, expiresAt]
   );
 
   return token;
 };
+
+// Register a new User
 const register = async (req, res) => {
+
   const { firstName, lastName, phone, email, password, confirmPassword, role } =
     req.body;
   const document = req.file;
@@ -52,6 +55,7 @@ const register = async (req, res) => {
   ) {
     return res.status(400).json({ error: "All fields are required" });
   }
+
   if (!document) {
     return res.status(400).json({ error: "File is required" });
   }
@@ -65,11 +69,13 @@ const register = async (req, res) => {
       .status(400)
       .json({ error: "Password must be at least 6 characters" });
   }
+
   if (!["ride", "driver"].includes(role)) {
     return res
       .status(400)
       .json({ error: "Role must be either 'ride' or 'driver'" });
   }
+  
   try {
     const [existingUser] = await db.query(
       "SELECT * FROM users WHERE email = ?",
@@ -107,17 +113,19 @@ const register = async (req, res) => {
   }
 };
 
+// Login User
 const login = async (req, res) => {
-  
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
+
     console.log("Login request body:", email, password);
-     if (!email || !password) {
+    if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required." });
     }
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
+
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+
     if (rows.length === 0)
       return res.status(400).json({ error: "User not found" });
 
@@ -126,20 +134,24 @@ const login = async (req, res) => {
     if (!isPasswordValid)
       return res.status(400).json({ error: "Invalid password" });
 
+    // Generate tokens
     const accessToken = generateAccessToken({
       id: user.id,
-      name: user.username,
+      name: user.firstName
     });
-    const refreshToken = await generateRefreshToken(
-      { id: user.id, name: user.username },
+    const refreshToken = await generateRefreshToken({
+      id: user.id,
+      name: user.firstName
+    },
       user.id
     );
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "strict",
     });
+
     res.json({ accessToken });
   } catch (error) {
     console.error("Error during login:", error);
@@ -147,6 +159,7 @@ const login = async (req, res) => {
   }
 };
 
+// Refresh access token
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(401);
@@ -160,23 +173,25 @@ const refreshToken = async (req, res) => {
 
     // const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const user = jwt.verify(refreshToken, "myrefreshtoken");
-    const accessToken = generateAccessToken({ id: user.id, name: user.name });
+    const newAccessToken = generateAccessToken({
+      id: user.id,
+      name: user.firstName
+    });
 
-    res.json({ accessToken });
+    res.json({ newAccessToken });
   } catch (error) {
     console.error("Error refreshing token:", error);
     res.status(500).json({ error: "Error refreshing token" });
   }
 };
 
+// Logout (delete refresh token)
 const logout = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(204);
 
   try {
-    await db.query("DELETE FROM refresh_tokens WHERE token = ?", [
-      refreshToken,
-    ]);
+    await db.query("DELETE FROM refresh_tokens WHERE token = ?", [refreshToken]);
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
@@ -184,8 +199,9 @@ const logout = async (req, res) => {
     });
     res.sendStatus(204);
   } catch (error) {
+    console.error("Logout error:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-export { login, logout, refreshToken, register };
+export { register, login, logout, refreshToken };

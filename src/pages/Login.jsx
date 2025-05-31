@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import LoginHeader from '../assets/LoginHeader.jsx';
 import CampusRideFooter from '../assets/CampusRideFooter.jsx';
@@ -26,7 +27,7 @@ export default function CampusRideLogin() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password } = formData;
 
@@ -49,6 +50,29 @@ export default function CampusRideLogin() {
     setErrorMessage("");
     console.log("Login submitted:", formData);
     // You can now send data to backend here
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        formData,
+        {withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      // Handle successful login
+      console.log("Login successful:", response.data);
+
+      const {accessToken, refreshToken} = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+
+      window.location.href = activeTab === "ride" ? "/rider-dashboard" : "/driver-dashboard";
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      setErrorMessage(error.response?.data?.message || "An unexpected error occurred. Please try again later.");
+    }
   };
 
   return (

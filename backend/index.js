@@ -10,6 +10,7 @@ const app = express();
 
 const port = 3000;
 
+// CORS configuration for frontend to access backend
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -18,14 +19,31 @@ app.use(
   })
 );
 
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
-app.use("/auth", authRoutes);
+// Routes for authentication and user management
+app.use("/api/auth", authRoutes);
 
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ message: "Server is running" });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal Server Error" });
+});
+
+// Start the server
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log("===============================================");
+  console.log(`\n  Server is running at http://localhost:${port}\n`);
+  console.log("===============================================");
+
 });
