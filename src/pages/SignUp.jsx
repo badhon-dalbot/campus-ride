@@ -10,7 +10,6 @@ export default function CampusRideSignup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // Form fields
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,7 +20,6 @@ export default function CampusRideSignup() {
     file: null,
   });
 
-  // Add CSS for placeholder styling
   const inputStyle = {
     backgroundColor: '#364045', 
     borderColor: '#DEF2F1', 
@@ -29,7 +27,6 @@ export default function CampusRideSignup() {
     border: '1px solid #DEF2F1'
   };
 
-  // Create a style element for placeholder colors
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
@@ -67,7 +64,6 @@ export default function CampusRideSignup() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validation logic
     const { firstName, lastName, phone, email, password, confirmPassword, file } = formData;
 
     if (!firstName || !lastName || !phone || !email || !password || !confirmPassword || !selectedFile) {
@@ -94,8 +90,7 @@ export default function CampusRideSignup() {
   };
 
   const handleLoginClick = () => {
-    // Navigate to login page - you can modify this path as needed
-    window.location.href = '/login'; // Replace with your actual login page path
+    window.location.href = '/login'; 
   };
 
   return (
@@ -243,8 +238,7 @@ export default function CampusRideSignup() {
             Sign Up Now
           </button>
         </div>
-
-        {/* Already have an account link */}
+        
         <p className="mt-4 text-sm" style={{color: '#DEF2F1'}}>
           Already have an account? <span className="cursor-pointer underline" onClick={handleLoginClick}>Login</span>
         </p>
