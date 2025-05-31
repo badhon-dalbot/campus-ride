@@ -1,5 +1,4 @@
 import axios from "axios";
-import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CampusRideFooter from "../assets/CampusRideFooter.jsx";
@@ -31,7 +30,6 @@ export default function CampusRideLogin() {
   };
 
   const handleSubmit = async (e) => {
-  const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password } = formData;
 
@@ -52,13 +50,13 @@ export default function CampusRideLogin() {
     }
 
     setErrorMessage("");
-    console.log("Login submitted:", formData);
-    // You can now send data to backend here
+    
     try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/login",
         formData,
-        {withCredentials: true,
+        {
+          withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           }
@@ -68,36 +66,25 @@ export default function CampusRideLogin() {
       // Handle successful login
       console.log("Login successful:", response.data);
 
-      const {accessToken, refreshToken} = response.data;
+      const { accessToken, refreshToken, user } = response.data;
 
+      // Store tokens
       localStorage.setItem("accessToken", accessToken);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
 
-      window.location.href = activeTab === "ride" ? "/rider-dashboard" : "/driver-dashboard";
+      // Navigate based on user type
+      if (activeTab === "ride") {
+        navigate("/rider-dashboard");
+      } else {
+        navigate("/driver-dashboard");
+      }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
-      setErrorMessage(error.response?.data?.message || "An unexpected error occurred. Please try again later.");
-    }
-    try {
-      const res = await axios.post(
-        "http://localhost:3000/auth/login",
-        { email, password },
-        { withCredentials: true }
+      setErrorMessage(
+        error.response?.data?.message || "An unexpected error occurred. Please try again later."
       );
-      console.log("data:", res.data);
-      const user = res.data.user;
-      console.log("User logged in:", user);
-
-      navigate("/home");
-    } catch (error) {
-      if (error.response && error.response.data) {
-        console.error("Login error:", error.response.data);
-        setErrorMessage(
-          error.response.data.error || "An error occurred. Please try again."
-        );
-      } else {
-        console.error("Login error:", error);
-        setErrorMessage("An unexpected error occurred. Please try again.");
-      }
     }
   };
 
