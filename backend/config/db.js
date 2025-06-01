@@ -18,9 +18,23 @@ const db = mysql.createPool({
   user: "root",
   password: "",
   database: "campusride",
+  port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
 });
+
+// Test connection on startup
+db.getConnection()
+  .then((conn) => {
+    console.log("===============================================");
+    console.log("        Connected to MySQL database!");
+    console.log("===============================================");
+    conn.release();
+  })
+  .catch((err) => {
+    console.error("MySQL connection failed:", err.message);
+    process.exit(1); // Exit if DB connection fails
+  });
 
 export default db;

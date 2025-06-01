@@ -50,27 +50,41 @@ export default function CampusRideLogin() {
     }
 
     setErrorMessage("");
+    
     try {
-      const res = await axios.post(
-        "http://localhost:3000/auth/login",
-        { email, password },
-        { withCredentials: true }
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
       );
-      console.log("data:", res.data);
-      const user = res.data.user;
-      console.log("User logged in:", user);
 
-      navigate("/home");
-    } catch (error) {
-      if (error.response && error.response.data) {
-        console.error("Login error:", error.response.data);
-        setErrorMessage(
-          error.response.data.error || "An error occurred. Please try again."
-        );
-      } else {
-        console.error("Login error:", error);
-        setErrorMessage("An unexpected error occurred. Please try again.");
+      // Handle successful login
+      console.log("Login successful:", response.data);
+
+      const { accessToken, refreshToken, user } = response.data;
+
+      // Store tokens
+      localStorage.setItem("accessToken", accessToken);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
       }
+
+      // Navigate based on user type
+      if (activeTab === "ride") {
+        navigate("/rider-dashboard");
+      } else {
+        navigate("/driver-dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      setErrorMessage(
+        error.response?.data?.message || "An unexpected error occurred. Please try again later."
+      );
     }
   };
 
