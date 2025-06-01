@@ -6,7 +6,9 @@ import db from "../config/db.js";
 dotenv.config();
 
 const generateAccessToken = (user) => {
-  return jwt.sign(user, (process.env.ACCESS_TOKEN_SECRET || "myaccesstoken"), { expiresIn: "15m" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET || "myaccesstoken", {
+    expiresIn: "15m",
+  });
 };
 
 // const generateRefreshToken = async (user, userId) => {
@@ -21,9 +23,13 @@ const generateAccessToken = (user) => {
 //   return token;
 // };
 const generateRefreshToken = async (user, userId) => {
-  const token = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken", {
-    expiresIn: "7d",
-  });
+  const token = jwt.sign(
+    user,
+    process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken",
+    {
+      expiresIn: "7d",
+    }
+  );
 
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -37,7 +43,6 @@ const generateRefreshToken = async (user, userId) => {
 
 // Register a new User
 const register = async (req, res) => {
-
   const { firstName, lastName, phone, email, password, confirmPassword, role } =
     req.body;
   const document = req.file;
@@ -74,7 +79,7 @@ const register = async (req, res) => {
       .status(400)
       .json({ error: "Role must be either 'ride' or 'driver'" });
   }
-  
+
   try {
     const [existingUser] = await db.query(
       "SELECT * FROM users WHERE email = ?",
@@ -115,17 +120,16 @@ const register = async (req, res) => {
 // Login User
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login request body:", email, password);
 
   try {
     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email
+      email,
     ]);
     if (rows.length === 0) {
       return res.status(400).json({ error: "User not found" });
     }
     const user = rows[0];
-    console.log("User from DB:", user);
+
     if (!user.password) {
       return res.status(400).json({ error: "Missing user password" });
     }
@@ -146,16 +150,18 @@ const login = async (req, res) => {
     // Generate tokens
     const accessToken = generateAccessToken({
       id: user.id,
-      name: user.firstName
+      name: user.firstName,
     });
-    const refreshToken = await generateRefreshToken({
-      id: user.id,
-      name: user.firstName
-    },
+    const refreshToken = await generateRefreshToken(
+      {
+        id: user.id,
+        name: user.firstName,
+      },
       user.id
     );
 
-    res.cookie("token", token, {
+    res
+      .cookie("token", token, {
         httpOnly: true,
         secure: true,
         sameSite: "Strict",
@@ -185,7 +191,7 @@ const refreshToken = async (req, res) => {
     const user = jwt.verify(refreshToken, "myrefreshtoken");
     const newAccessToken = generateAccessToken({
       id: user.id,
-      name: user.firstName
+      name: user.firstName,
     });
 
     res.json({ newAccessToken });
@@ -201,7 +207,9 @@ const logout = async (req, res) => {
   if (!refreshToken) return res.sendStatus(204);
 
   try {
-    await db.query("DELETE FROM refresh_tokens WHERE token = ?", [refreshToken]);
+    await db.query("DELETE FROM refresh_tokens WHERE token = ?", [
+      refreshToken,
+    ]);
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
@@ -214,4 +222,4 @@ const logout = async (req, res) => {
   }
 };
 
-export { register, login, logout, refreshToken };
+export { login, logout, refreshToken, register };
