@@ -120,7 +120,7 @@ export default function CampusRideLogin() {
             className="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white"
           />
 
-          <input
+          <input 
             type="password"
             name="password"
             value={formData.password}
