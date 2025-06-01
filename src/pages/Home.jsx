@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 const LandingPage = () => {
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
@@ -7,28 +8,28 @@ const LandingPage = () => {
           <span className="text-white">Campus</span>Ride
         </div>
         <nav className="hidden md:flex space-x-8 text-sm font-medium">
-          <a href="#" className="hover:text-blue-300 transition">
+          <Link to="/" className="hover:text-blue-300 transition">
             Home
-          </a>
-          <a href="#" className="hover:text-blue-300 transition">
+          </Link>
+          <Link to="/services" className="hover:text-blue-300 transition">
             Services
-          </a>
-          <a href="#" className="hover:text-blue-300 transition">
+          </Link>
+          <Link to="/ride" className="hover:text-blue-300 transition">
             Ride
-          </a>
-          <a href="#" className="hover:text-blue-300 transition">
+          </Link>
+          <Link to="/aboutus" className="hover:text-blue-300 transition">
             About Us
-          </a>
-          <a href="#" className="hover:text-blue-300 transition">
+          </Link>
+          <Link to="/help" className="hover:text-blue-300 transition">
             Help
-          </a>
+          </Link>
         </nav>
         <div className="space-x-4">
           <button className="bg-[#FEFFFF] text-[#17252A] px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
-            Login
+            <Link to="/login">Login</Link>
           </button>
           <button className="bg-[#FEFFFF] text-[#17252A] px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
-            Sign Up
+            <Link to="/signup">Sign Up</Link>
           </button>
         </div>
       </header>
