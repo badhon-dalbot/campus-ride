@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 
-const bookings = async (req, res) => {
+const booking = async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -42,6 +42,6 @@ const createBooking = async (req, res) => {
 };
 
 export default {
-  bookings, 
+  booking, 
   createBooking
 };

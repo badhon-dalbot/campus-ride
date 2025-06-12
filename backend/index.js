@@ -4,7 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
-
+import ridesRoutes from "./routes/ridesRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 dotenv.config();
 const app = express();
 
@@ -28,6 +31,19 @@ app.use(cookieParser());
 
 // Routes for authentication and user management
 app.use("/api/auth", authRoutes);
+
+// Routes for rides management 
+app.use("api/rides", ridesRoutes);
+
+// Routes for payment processing
+app.use("/api/payment", paymentRoutes);
+
+// Routes for booking management
+app.use("/api/booking", bookingRoutes);
+
+// Routes for chat functionality
+app.use("/api/chat", chatRoutes);
+
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
