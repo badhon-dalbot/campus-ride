@@ -107,7 +107,7 @@ export default function CampusRideSignup() {
       console.log("Form data to submit:", formDataToSubmit);
 
       const res = await axios.post(
-        "http://localhost:3000/auth/register",
+        "http://localhost:3000/api/auth/register",
         formDataToSubmit,
         {
           headers: { "Content-Type": "multipart/form-data" },
