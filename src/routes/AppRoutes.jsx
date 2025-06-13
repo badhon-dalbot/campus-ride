@@ -1,11 +1,10 @@
 // routes/AppRoutes.jsx
 import { Routes, Route } from 'react-router-dom';
-import Login from '../pages/LogIn.jsx';
+import Login from '../pages/Login.jsx';
 import SignUp from '../pages/SignUp.jsx';
 import Home from '../pages/Home.jsx';
 
 // Comment out Login and Root unless you have them created
-// import Login from '../pages/Login';
 // import Root from '../pages/Root';
 
 const AppRoutes = () => (

@@ -1,5 +1,208 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+
 const LandingPage = () => {
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [locationAccuracy, setLocationAccuracy] = useState(null);
+  const [showInfoWindow, setShowInfoWindow] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
+  const locationInitialized = useRef(false);
+  const fallbackTimeoutRef = useRef(null);
+
+  const getCurrentLocation = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported'));
+        return;
+      }
+
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 0,
+      };
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+          console.log('Location obtained:', { latitude, longitude, accuracy });
+          
+          resolve({ 
+            lat: latitude, 
+            lng: longitude, 
+            accuracy: accuracy 
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          reject(error);
+        },
+        options
+      );
+    });
+  }, []);
+
+  useEffect(() => {
+    if (locationInitialized.current) return;
+    locationInitialized.current = true;
+
+    const initializeLocation = async () => {
+      try {
+        console.log('Starting location detection...');
+        const location = await getCurrentLocation();
+        
+        setUserLocation(location);
+        setLocationAccuracy(location.accuracy);
+        setIsLoading(false);
+
+        // Set a timeout to show fallback if Google Maps doesn't load
+        fallbackTimeoutRef.current = setTimeout(() => {
+          if (!mapLoaded) {
+            console.log('Google Maps failed to load, showing fallback');
+            setShowFallback(true);
+          }
+        }, 5000);
+
+      } catch (error) {
+        console.error("Error:", error);
+        
+        if (error.message.includes('Geolocation')) {
+          setLocationError('Geolocation not supported');
+        } else if (error.message.includes('denied') || error.code === 1) {
+          setLocationError('Location access denied. Please allow location access in your browser settings.');
+        } else if (error.code === 2) {
+          setLocationError('Location unavailable. Please check your internet connection.');
+        } else if (error.code === 3) {
+          setLocationError('Location request timeout. Please try again.');
+        } else {
+          setLocationError('Failed to get location. Please try again.');
+        }
+
+        // Fallback to default location (Dhaka, Bangladesh)
+        const defaultLocation = { lat: 23.7937, lng: 90.4066, accuracy: null };
+        setUserLocation(defaultLocation);
+        setIsLoading(false);
+        setShowFallback(true);
+      }
+    };
+
+    initializeLocation();
+
+    return () => {
+      if (fallbackTimeoutRef.current) {
+        clearTimeout(fallbackTimeoutRef.current);
+      }
+    };
+  }, [getCurrentLocation, mapLoaded]);
+
+  const handleRetryLocation = useCallback(async () => {
+    setLocationError(null);
+    setIsLoading(true);
+    setUserLocation(null);
+    setLocationAccuracy(null);
+    setShowInfoWindow(false);
+    setMapError(false);
+    setShowFallback(false);
+    setMapLoaded(false);
+    locationInitialized.current = false;
+    
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+    }
+    
+    try {
+      console.log('Retrying location detection...');
+      const location = await getCurrentLocation();
+      setUserLocation(location);
+      setLocationAccuracy(location.accuracy);
+      setIsLoading(false);
+      
+      // Set timeout for fallback
+      fallbackTimeoutRef.current = setTimeout(() => {
+        if (!mapLoaded) {
+          setShowFallback(true);
+        }
+      }, 5000);
+      
+    } catch (error) {
+      console.error("Error getting location:", error);
+      setLocationError('Location access denied or unavailable');
+      setIsLoading(false);
+      setShowFallback(true);
+    }
+  }, [getCurrentLocation, mapLoaded]);
+
+  const handleMapClick = useCallback(() => {
+    if (userLocation) {
+      const googleMapsUrl = `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`;
+      console.log('Opening Google Maps:', googleMapsUrl);
+      window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
+    }
+  }, [userLocation]);
+
+  const mapContainerStyle = {
+    width: '100%',
+    height: '100%',
+    borderRadius: '12px'
+  };
+
+  const mapOptions = {
+    disableDefaultUI: false,
+    zoomControl: true,
+    mapTypeControl: false,
+    scaleControl: true,
+    streetViewControl: false,
+    rotateControl: false,
+    fullscreenControl: true,
+    styles: [
+      {
+        featureType: "poi",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+      {
+        featureType: "transit",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+    ],
+  };
+
+  const onLoad = useCallback((map) => {
+    console.log('Google Maps loaded successfully');
+    setMapLoaded(true);
+    setMapError(false);
+    setShowFallback(false);
+    
+    // Clear the fallback timeout since map loaded successfully
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+    }
+  }, []);
+
+  const onError = useCallback((error) => {
+    console.error('Google Maps error:', error);
+    setMapError(true);
+    setShowFallback(true);
+    
+    // Clear the fallback timeout since we're showing fallback now
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+    }
+    
+    // Check for specific billing error
+    if (error.message && error.message.includes('BillingNotEnabled')) {
+      setLocationError('Google Maps API requires billing to be enabled. Please enable billing for your API key.');
+    } else {
+      setLocationError('Google Maps API error. Please check your API key and billing settings.');
+    }
+  }, []);
+
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       {/* Header */}
@@ -61,12 +264,115 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
+        {/* Map */}
         <div>
-          <img
-            src="/map.png"
-            alt="Map"
-            className="rounded-xl w-full shadow-md"
-          />
+          <div className="rounded-xl shadow-md w-full h-96 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+            {isLoading && (
+              <div className="text-center absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+                <div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 mx-auto mb-2"></div>
+                  <p className="text-gray-600">Loading your location...</p>
+                  <p className="text-xs text-gray-500 mt-1">Please allow location access if prompted</p>
+                </div>
+              </div>
+            )}
+            
+            {locationError && !isLoading && (
+              <div className="text-center p-4 absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+                <div>
+                  <div className="text-red-500 mb-2">
+                    <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <p className="text-sm">{locationError}</p>
+                  </div>
+                  <button 
+                    onClick={handleRetryLocation}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {userLocation && !isLoading && !showFallback && !mapError && (
+              <LoadScript 
+                googleMapsApiKey="AIzaSyBOG7IFo26OQPV4lPHQweWDhxp_xLSMpSw"
+                onError={onError}
+              >
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={userLocation}
+                  zoom={15}
+                  options={mapOptions}
+                  onClick={handleMapClick}
+                  onLoad={onLoad}
+                >
+                  {mapLoaded && (
+                    <Marker
+                      position={userLocation}
+                      title="Your Current Location"
+                      onClick={() => setShowInfoWindow(true)}
+                    />
+                  )}
+                  
+                  {showInfoWindow && (
+                    <InfoWindow
+                      position={userLocation}
+                      onCloseClick={() => setShowInfoWindow(false)}
+                    >
+                      <div className="p-2">
+                        <h3 className="font-semibold text-sm">Your Location</h3>
+                        <p className="text-xs text-gray-600">
+                          Lat: {userLocation.lat.toFixed(6)}<br/>
+                          Lng: {userLocation.lng.toFixed(6)}
+                        </p>
+                        {locationAccuracy && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {getAccuracyDescription(locationAccuracy)}
+                          </p>
+                        )}
+                      </div>
+                    </InfoWindow>
+                  )}
+                </GoogleMap>
+              </LoadScript>
+            )}
+            
+            {userLocation && !isLoading && (showFallback || mapError) && (
+              <div 
+                className="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl cursor-pointer hover:shadow-lg transition-shadow flex items-center justify-center relative"
+                onClick={handleMapClick}
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Your Location</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}
+                  </p>
+                  <button 
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMapClick();
+                    }}
+                  >
+                    Open in Google Maps
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2">Click to open in Google Maps</p>
+                </div>
+                <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-2 py-1 rounded text-xs text-gray-700">
+                  Click to open
+                </div>
+              </div>
+            )}
+          </div>
+          
         </div>
       </section>
 
