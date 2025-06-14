@@ -92,7 +92,7 @@ export default function CampusRideLogin() {
             onClick={() => handleTabChange("ride")}
           >
             Login to ride
-          </button>
+          </button> 
           <button
             className={`py-2 px-4 ${activeTab === "drive" ? "border-b-2" : ""}`}
             style={{

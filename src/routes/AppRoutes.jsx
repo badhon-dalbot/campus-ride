@@ -5,6 +5,9 @@ import LandingPage from '../pages/LandingPage.jsx'
 import FindRide from '../pages/FindRide.jsx'
 import ShareRide from '../pages/ShareRide.jsx'
 import BookRide from '../pages/BookRide.jsx'
+import RideDetails from '../pages/RideDetails.jsx';
+import ConfirmBooking from '../pages/ConfirmBooking.jsx';
+
 
 // Comment out Login and Root unless you have them created
 // import Login from '../pages/Login';
@@ -20,6 +23,9 @@ const AppRoutes = () => (
     <Route path="/findride" element={<FindRide/>}/>
     <Route path="/shareride" element={<ShareRide/>}/>
     <Route path="/bookride" element={<BookRide/>}/>
+    <Route path="/ride-details" element={<RideDetails/>}/>
+    <Route path="/conf-book" element={<ConfirmBooking/>}/>
+    
     
 
     {/* Comment out or remove these unless you define them */}
