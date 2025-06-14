@@ -1,43 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronLeft, Star, Mail, Phone, Calendar, Car, DollarSign, Leaf, Edit3, Bell, MessageSquare, CreditCard, Shield, Eye, Trash2 } from 'lucide-react';
 
-// Mock components for demonstration
-const CampusRideHeader = () => (
-  <div className="w-full bg-white border-b border-gray-200 px-6 py-4">
-    <div className="flex items-center justify-between max-w-6xl mx-auto">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-          <span className="text-white font-bold text-sm">C</span>
-        </div>
-        <h1 className="text-xl font-bold text-gray-900">CampusRide</h1>
-      </div>
-      <div className="flex items-center gap-6">
-        <button className="text-gray-600 hover:text-gray-900 font-medium">Find Rides</button>
-        <button className="text-gray-600 hover:text-gray-900 font-medium">Offer a Ride</button>
-        <button className="text-gray-600 hover:text-gray-900 font-medium">My Rides</button>
-      </div>
-      <div className="flex items-center gap-4">
-        <button className="relative">
-          <Bell className="w-5 h-5 text-gray-600" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">1</span>
-        </button>
-        <button>
-          <MessageSquare className="w-5 h-5 text-gray-600" />
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
-const CampusRideFooter = () => (
-  <div className="w-full bg-gray-900 text-white px-6 py-8 mt-12">
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center text-sm text-gray-400">
-        <p>&copy; 2025 CampusRide. All rights reserved.</p>
-      </div>
-    </div>
-  </div>
-);
+import CampusRideFooter from '../assets/CampusRideFooter.jsx';
+import CampusRideHeader from '../assets/CampusRideHeader.jsx';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('Overview');

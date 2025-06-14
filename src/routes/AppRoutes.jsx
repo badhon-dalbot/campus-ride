@@ -8,6 +8,9 @@ import BookRide from '../pages/BookRide.jsx'
 import RideDetails from '../pages/RideDetails.jsx';
 import ConfirmBooking from '../pages/ConfirmBooking.jsx';
 import DriverProfile from '../pages/DriverProfile.jsx';
+import Payment from '../pages/Payment.jsx';
+import Chatting from '../pages/Chatting.jsx';
+
 
 
 // Comment out Login and Root unless you have them created
@@ -27,6 +30,8 @@ const AppRoutes = () => (
     <Route path="/ride-details" element={<RideDetails/>}/>
     <Route path="/conf-book" element={<ConfirmBooking/>}/>
     <Route path="/driverProfile" element={<DriverProfile/>}/>
+    <Route path="/payment" element={<Payment/>}/>
+    <Route path="/chatting" element={<Chatting/>}/>
     
     
 
