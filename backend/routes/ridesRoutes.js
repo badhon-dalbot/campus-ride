@@ -1,9 +1,10 @@
 import express from "express";
-import { createRide, getRides } from "../controllers/rideController.js";
+import { createRide, getRides, getAvailableRides } from "../controllers/rideController.js";
 
-const router = express.ridesRoutes();
+const router = express.Router();
 
 router.get("/", getRides);
 router.post("/", createRide);
+router.get("/available", getAvailableRides);
 
 export default router;

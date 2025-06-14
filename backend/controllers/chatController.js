@@ -30,7 +30,7 @@ const sendMessage = async (req, res) => {
   }
 };
 
-export default {
+export {
   message,
   sendMessage
 };

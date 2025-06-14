@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 
 // Routes for rides management 
-app.use("api/rides", ridesRoutes);
+app.use("/api/rides", ridesRoutes);
 
 // Routes for payment processing
 app.use("/api/payment", paymentRoutes);

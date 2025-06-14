@@ -1,4 +1,4 @@
-import db from "../config/db.js"; 
+import db from "../config/db.js";
 
 // create ride from driver 
 const createRide = async (req, res) => {
@@ -26,11 +26,8 @@ const createRide = async (req, res) => {
 };
 
 const getRides = async (req, res) => {
- 
   try {
-    const [rides] = await db.query(
-      "SELECT * FROM ride"
-    );
+    const [rides] = await db.query("SELECT * FROM ride");
 
     if (rides.length === 0) {
       return res.status(404).json({ message: "No rides found" });
@@ -43,4 +40,36 @@ const getRides = async (req, res) => {
   }
 };
 
-export default {createRide, getRides};
+// get all available rides with driver info
+const getAvailableRides = async (req, res) => {
+  const query = `
+    SELECT 
+      r.id AS ride_id,
+      r.start_location,
+      r.destination,
+      r.ride_date,
+      r.ride_time,
+      r.seats_available,
+      r.pickup_description,
+      u.firstName AS driver_first_name,
+      u.lastName AS driver_last_name,
+      r.rating AS driver_rating
+    FROM 
+      rides r
+    JOIN 
+      users u ON r.driver_id = u.id
+    WHERE 
+      u.role = 'drive'
+    ORDER BY r.ride_date, r.ride_time
+  `;
+
+  try {
+    const [results] = await db.query(query);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error fetching available rides:", error);
+    res.status(500).json({ message: "Failed to fetch available rides" });
+  }
+};
+
+export { createRide, getRides, getAvailableRides };

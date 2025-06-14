@@ -40,7 +40,4 @@ const createPayment = async (req, res) => {
   }
 }
 
-export default {
-  payments,
-  createPayment
-};
+export { payments, createPayment };
