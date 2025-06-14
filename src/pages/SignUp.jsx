@@ -6,8 +6,10 @@ import LoginHeader from "../assets/LoginHeader.jsx";
 
 export default function CampusRideSignup() {
   const [activeTab, setActiveTab] = useState("ride");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  // Form fields
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -126,11 +128,11 @@ export default function CampusRideSignup() {
   };
 
   return (
-    <>
+    <div>
       <LoginHeader />
 
-      <div className="bg-gray-700 text-white flex flex-col items-center py-8 px-4 min-h-screen">
-        <h1 className="text-xl font-medium mb-6">Sign Up To CampusRide</h1>
+      <div className="flex flex-col items-center py-8 px-4 min-h-screen" style={{backgroundColor: '#364045'}}>
+        <h1 className="text-xl font-medium mb-6" style={{color: '#DEF2F1'}}>Sign Up To CampusRide</h1>
 
         {/* Tabs */}
         <div className="flex w-full max-w-md mb-4 border-b border-gray-600">
@@ -157,7 +159,7 @@ export default function CampusRideSignup() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
+        <div className="w-full max-w-md space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
@@ -196,7 +198,7 @@ export default function CampusRideSignup() {
           />
 
           <div className="flex items-center">
-            <label className="w-32 text-sm">
+            <label className="w-32 text-sm" style={{color: '#DEF2F1'}}>
               {activeTab === "ride" ? "University ID" : "Driving License"}
             </label>
             <label className="ml-auto bg-gray-700 border border-gray-600 rounded p-2 text-white text-sm cursor-pointer">
@@ -230,7 +232,9 @@ export default function CampusRideSignup() {
 
           <button
             type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded transition-colors"
+            onClick={handleSubmit}
+            className="w-full py-2 rounded transition-colors"
+            style={{backgroundColor: '#17252A', color: '#DEF2F1'}}
           >
             Sign Up Now
           </button>
@@ -243,7 +247,7 @@ export default function CampusRideSignup() {
         </form>
       </div>
 
-      <CampusRideFooter />
-    </>
+      <LoginFooter/>
+    </div>
   );
 }

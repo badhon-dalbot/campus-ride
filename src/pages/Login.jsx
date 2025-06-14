@@ -1,12 +1,14 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
+
 import { Link, useNavigate } from "react-router-dom";
-import CampusRideFooter from "../assets/CampusRideFooter.jsx";
+import LoginFooter from "../assets/LoginFooter.jsx";
 import LoginHeader from "../assets/LoginHeader.jsx";
 
 export default function CampusRideLogin() {
   const [activeTab, setActiveTab] = useState("ride");
-
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -33,7 +35,6 @@ export default function CampusRideLogin() {
     e.preventDefault();
     const { email, password } = formData;
 
-    // Basic validation
     if (!email || !password) {
       setErrorMessage("Both fields are required.");
       return;
@@ -89,7 +90,7 @@ export default function CampusRideLogin() {
   };
 
   return (
-    <>
+    <div>
       <LoginHeader />
 
       <div className="bg-gray-700 text-white flex flex-col items-center pt-40 px-8 min-h-screen">
@@ -127,6 +128,8 @@ export default function CampusRideLogin() {
 
           <input
             type="email"
+          <input
+            type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -144,8 +147,10 @@ export default function CampusRideLogin() {
           />
 
           <button
+          <button
             type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded transition-colors"
+            className="w-full py-2 rounded transition-colors"
+            style={{ backgroundColor: '#17252A', color: '#DEF2F1' }}
           >
             Login Now
           </button>
@@ -153,9 +158,17 @@ export default function CampusRideLogin() {
             Create an account
           </Link>
         </form>
+
+        <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
+          Forgot Password? <span className="cursor-pointer underline" onClick={handleSignupClick}>Click here</span>
+        </p>
+        
+        <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
+          Don't have an account? <span className="cursor-pointer underline" onClick={handleSignupClick}>Sign Up</span>
+        </p>
       </div>
 
-      <CampusRideFooter />
-    </>
+      <LoginFooter />
+    </div>
   );
 }

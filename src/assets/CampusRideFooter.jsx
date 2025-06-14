@@ -4,9 +4,10 @@ export default function CampusRideFooter() {
   return (
     <footer className="bg-gray-800 text-white">
       {/* Logo Section */}
-      <div className="p-4 flex items-center">
-        <div className="w-36">
-          <img src={Logo} alt="Campus Ride Logo" />
+      <div className="p-4 flex justify-between">
+        <div className="flex items-center text-teal-400">
+          <MapPin className="mr-2" />
+          <span className="font-bold text-xl">CAMPUS RIDE</span>
         </div>
         <div className="ml-2 text-sm text-gray-300">
           Bangladesh First Community Based Ridesharing Platform
