@@ -131,27 +131,25 @@ export default function CampusRideSignup() {
     <div>
       <LoginHeader />
 
-      <div className="flex flex-col items-center py-8 px-4 min-h-screen" style={{backgroundColor: '#364045'}}>
-        <h1 className="text-xl font-medium mb-6" style={{color: '#DEF2F1'}}>Sign Up To CampusRide</h1>
+      <div className="flex flex-col items-center py-8 px-4 min-h-screen" style={{ backgroundColor: '#364045' }}>
+        <h1 className="text-xl font-medium mb-6" style={{ color: '#DEF2F1' }}>Sign Up To CampusRide</h1>
 
         {/* Tabs */}
         <div className="flex w-full max-w-md mb-4 border-b border-gray-600">
           <button
-            className={`py-2 px-4 ${
-              activeTab === "ride"
+            className={`py-2 px-4 ${activeTab === "ride"
                 ? "border-b-2 border-teal-400 text-white"
                 : "text-gray-400"
-            }`}
+              }`}
             onClick={() => handleTabChange("ride")}
           >
             Sign up to ride
           </button>
           <button
-            className={`py-2 px-4 ${
-              activeTab === "drive"
+            className={`py-2 px-4 ${activeTab === "drive"
                 ? "border-b-2 border-teal-400 text-white"
                 : "text-gray-400"
-            }`}
+              }`}
             onClick={() => handleTabChange("drive")}
           >
             Sign up to drive
@@ -159,7 +157,7 @@ export default function CampusRideSignup() {
         </div>
 
         {/* Form */}
-        <div className="w-full max-w-md space-y-4">
+        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
@@ -198,7 +196,7 @@ export default function CampusRideSignup() {
           />
 
           <div className="flex items-center">
-            <label className="w-32 text-sm" style={{color: '#DEF2F1'}}>
+            <label className="w-32 text-sm" style={{ color: '#DEF2F1' }}>
               {activeTab === "ride" ? "University ID" : "Driving License"}
             </label>
             <label className="ml-auto bg-gray-700 border border-gray-600 rounded p-2 text-white text-sm cursor-pointer">
@@ -234,7 +232,7 @@ export default function CampusRideSignup() {
             type="submit"
             onClick={handleSubmit}
             className="w-full py-2 rounded transition-colors"
-            style={{backgroundColor: '#17252A', color: '#DEF2F1'}}
+            style={{ backgroundColor: '#17252A', color: '#DEF2F1' }}
           >
             Sign Up Now
           </button>
@@ -247,7 +245,8 @@ export default function CampusRideSignup() {
         </form>
       </div>
 
-      <LoginFooter/>
+      {/* <LoginFooter /> */}
+      <CampusRideFooter />
     </div>
   );
 }

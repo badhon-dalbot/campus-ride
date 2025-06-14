@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
 import LoginFooter from "../assets/LoginFooter.jsx";
@@ -128,8 +127,6 @@ export default function CampusRideLogin() {
 
           <input
             type="email"
-          <input
-            type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -147,7 +144,6 @@ export default function CampusRideLogin() {
           />
 
           <button
-          <button
             type="submit"
             className="w-full py-2 rounded transition-colors"
             style={{ backgroundColor: '#17252A', color: '#DEF2F1' }}
@@ -159,13 +155,13 @@ export default function CampusRideLogin() {
           </Link>
         </form>
 
-        <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
+        {/* <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
           Forgot Password? <span className="cursor-pointer underline" onClick={handleSignupClick}>Click here</span>
         </p>
         
         <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
           Don't have an account? <span className="cursor-pointer underline" onClick={handleSignupClick}>Sign Up</span>
-        </p>
+        </p> */}
       </div>
 
       <LoginFooter />

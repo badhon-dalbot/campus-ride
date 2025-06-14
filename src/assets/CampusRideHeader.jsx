@@ -15,7 +15,7 @@ export default function CampusRideHeader() {
 
         {/* Navigation Menu */}
         <nav className="flex items-center gap-8">
-          <a href="#" className="text-white hover:text-gray-200 transition-colors font-medium">
+          <a href="/" className="text-white hover:text-gray-200 transition-colors font-medium">
             Home
           </a>
           <a href="#" className="text-white hover:text-gray-200 transition-colors font-medium">
