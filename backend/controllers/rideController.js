@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 
-// create ride from driver 
+// create ride from driver
 const createRide = async (req, res) => {
   const { startLocation, endLocation, date, availableSeats } = req.body;
   const driverId = req.user.id;
@@ -27,7 +27,7 @@ const createRide = async (req, res) => {
 
 const getRides = async (req, res) => {
   try {
-    const [rides] = await db.query("SELECT * FROM ride");
+    const [rides] = await db.query("SELECT * FROM rides");
 
     if (rides.length === 0) {
       return res.status(404).json({ message: "No rides found" });
@@ -72,4 +72,4 @@ const getAvailableRides = async (req, res) => {
   }
 };
 
-export { createRide, getRides, getAvailableRides };
+export { createRide, getAvailableRides, getRides };
