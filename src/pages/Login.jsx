@@ -1,25 +1,41 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
-import { Link, useNavigate } from "react-router-dom";
-import LoginFooter from "../assets/LoginFooter.jsx";
-import LoginHeader from "../assets/LoginHeader.jsx";
+import LoginHeader from '../assets/LoginHeader.jsx';
+import LoginFooter from '../assets/LoginFooter.jsx';
 
 export default function CampusRideLogin() {
   const [activeTab, setActiveTab] = useState("ride");
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
+  const inputStyle = {
+    backgroundColor: '#364045',
+    borderColor: '#DEF2F1',
+    color: '#DEF2F1',
+    border: '1px solid #DEF2F1'
+  };
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      input::placeholder {
+        color: #DEF2F1 !important;
+        opacity: 0.7;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setErrorMessage("");
-    setFormData({ email: "", password: "" });
+    setErrorMessage('');
+    setFormData({ email: '', password: '' });
   };
 
   const handleChange = (e) => {
@@ -30,7 +46,7 @@ export default function CampusRideLogin() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const { email, password } = formData;
 
@@ -50,69 +66,39 @@ export default function CampusRideLogin() {
     }
 
     setErrorMessage("");
-    
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          }
-        }
-      );
+    console.log("Login submitted:", formData);
+    // Proceed with backend authentication
+  };
 
-      // Handle successful login
-      console.log("Login successful:", response.data);
-
-      const { accessToken, refreshToken, user } = response.data;
-
-      // Store tokens
-      localStorage.setItem("accessToken", accessToken);
-      if (refreshToken) {
-        localStorage.setItem("refreshToken", refreshToken);
-      }
-
-      // Navigate based on user type
-      if (activeTab === "ride") {
-        navigate("/rider-dashboard");
-      } else {
-        navigate("/driver-dashboard");
-      }
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      setErrorMessage(
-        error.response?.data?.message || "An unexpected error occurred. Please try again later."
-      );
-    }
+  const handleSignupClick = () => {
+    window.location.href = '/signup';
   };
 
   return (
     <div>
       <LoginHeader />
 
-      <div className="bg-gray-700 text-white flex flex-col items-center pt-40 px-8 min-h-screen">
-        <h1 className="text-xl font-medium mb-6">Login to CampusRide</h1>
+      <div className="flex flex-col items-center pt-40 px-4 min-h-screen" style={{ backgroundColor: '#364045' }}>
+        <h1 className="text-xl font-medium mb-6" style={{ color: '#DEF2F1' }}>Login to CampusRide</h1>
 
         {/* Tabs */}
-        <div className="flex w-full max-w-md mb-4 border-b border-gray-600">
+        <div className="flex w-full max-w-md mb-4 border-b" style={{ borderColor: '#DEF2F1' }}>
           <button
-            className={`py-2 px-4 ${
-              activeTab === "ride"
-                ? "border-b-2 border-teal-400 text-white"
-                : "text-gray-400"
-            }`}
+            className={`py-2 px-4 ${activeTab === "ride" ? "border-b-2" : ""}`}
+            style={{
+              color: activeTab === "ride" ? '#DEF2F1' : 'rgba(222, 242, 241, 0.6)',
+              borderColor: activeTab === "ride" ? '#DEF2F1' : 'transparent'
+            }}
             onClick={() => handleTabChange("ride")}
           >
             Login to ride
-          </button>
+          </button> 
           <button
-            className={`py-2 px-4 ${
-              activeTab === "drive"
-                ? "border-b-2 border-teal-400 text-white"
-                : "text-gray-400"
-            }`}
+            className={`py-2 px-4 ${activeTab === "drive" ? "border-b-2" : ""}`}
+            style={{
+              color: activeTab === "drive" ? '#DEF2F1' : 'rgba(222, 242, 241, 0.6)',
+              borderColor: activeTab === "drive" ? '#DEF2F1' : 'transparent'
+            }}
             onClick={() => handleTabChange("drive")}
           >
             Login to drive
@@ -131,17 +117,29 @@ export default function CampusRideLogin() {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white"
+            className="w-full rounded p-2"
+            style={inputStyle}
           />
 
-          <input 
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            className="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Password"
+              className="w-full rounded p-2 pr-12"
+              style={inputStyle}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              style={{ color: '#DEF2F1' }}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
           <button
             type="submit"
@@ -150,18 +148,15 @@ export default function CampusRideLogin() {
           >
             Login Now
           </button>
-          <Link to="/signup" className="hover:underline text-sm">
-            Create an account
-          </Link>
         </form>
 
-        {/* <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
+        <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
           Forgot Password? <span className="cursor-pointer underline" onClick={handleSignupClick}>Click here</span>
         </p>
         
         <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
           Don't have an account? <span className="cursor-pointer underline" onClick={handleSignupClick}>Sign Up</span>
-        </p> */}
+        </p>
       </div>
 
       <LoginFooter />
