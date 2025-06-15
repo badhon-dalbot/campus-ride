@@ -27,10 +27,10 @@ export default function CampusRideHeader() {
           <a href="#" className="text-white hover:text-gray-200 transition-colors font-medium">
             Drive
           </a>
-          <a href="#" className="text-white hover:text-gray-200 transition-colors font-medium">
+          <a href="/aboutus" className="text-white hover:text-gray-200 transition-colors font-medium">
             About Us
           </a>
-          <a href="#" className="text-white hover:text-gray-200 transition-colors font-medium">
+          <a href="/login" className="text-white hover:text-gray-200 transition-colors font-medium">
             Log in
           </a>
           

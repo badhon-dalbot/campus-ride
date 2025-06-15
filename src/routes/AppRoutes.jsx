@@ -8,6 +8,7 @@ import BookRide from '../pages/BookRide.jsx'
 import RideDetails from '../pages/RideDetails.jsx';
 import ConfirmBooking from '../pages/ConfirmBooking.jsx';
 import DriverProfile from '../pages/DriverProfile.jsx';
+import AboutUs from '../pages/AboutUs.jsx';
 
 
 const AppRoutes = () => (
@@ -22,6 +23,7 @@ const AppRoutes = () => (
     <Route path="/ride-details" element={<RideDetails/>}/>
     <Route path="/conf-book" element={<ConfirmBooking/>}/>
     <Route path="/driverProfile" element={<DriverProfile/>}/>
+    <Route path="/aboutus" element={<AboutUs/>}/>
     
 
     {/* Comment out or remove these unless you define them */}
