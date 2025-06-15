@@ -36,7 +36,7 @@ export default function FindRide() {
       driverRating: 4.5,
       reviewCount: 304,
       seats: 3,
-      driverImage: "https://i.pravatar.cc/150?img=11"
+      driverImage: 'https://i.pravatar.cc/150?img=12'
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ export default function FindRide() {
       driverRating: 4.5,
       reviewCount: 89,
       seats: 4,
-      driverImage: "https://i.pravatar.cc/150?img=13"
+      driverImage: "https://i.pravatar.cc/150?img=12"
     },
     {
       id: 4,
@@ -72,7 +72,7 @@ export default function FindRide() {
       driverRating: 5.0,
       reviewCount: 421,
       seats: 3,
-      driverImage: "https://i.pravatar.cc/150?img=14"
+      driverImage: "https://i.pravatar.cc/150?img=12"
     }
   ];
 
@@ -286,7 +286,7 @@ export default function FindRide() {
               {/* Driver Info */}
               <div className="flex items-start gap-3 mb-4">
                 <img 
-                  src="https://i.pravatar.cc/150?img=11" 
+                  src="https://i.pravatar.cc/150?img=12" 
                   alt="Sayed Hasan Sami"
                   className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                 />
