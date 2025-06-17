@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Login from '../pages/LogIn.jsx';
 import SignUp from '../pages/SignUp.jsx';
 import Home from '../pages/Home.jsx'
-import FindRide from '../pages/FindRide.jsx'
+import FindRide from '../pages/findRides/FindRide.jsx'
 import ShareRide from '../pages/ShareRide.jsx'
 import BookRide from '../pages/bookRide/BookRide.jsx'
 import RideDetails from '../pages/RideDetails.jsx';
