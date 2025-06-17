@@ -4,12 +4,13 @@ import SignUp from '../pages/SignUp.jsx';
 import Home from '../pages/Home.jsx'
 import FindRide from '../pages/FindRide.jsx'
 import ShareRide from '../pages/ShareRide.jsx'
-import BookRide from '../pages/BookRide.jsx'
+import BookRide from '../pages/bookRide/BookRide.jsx'
 import RideDetails from '../pages/RideDetails.jsx';
 import ConfirmBooking from '../pages/ConfirmBooking.jsx';
 import DriverProfile from '../pages/DriverProfile.jsx';
 import Payment from '../pages/Payment.jsx';
 import Chatting from '../pages/Chatting.jsx';
+import AboutUs from '../pages/AboutUs.jsx';
 
 
 
@@ -32,6 +33,7 @@ const AppRoutes = () => (
     <Route path="/driverProfile" element={<DriverProfile/>}/>
     <Route path="/payment" element={<Payment/>}/>
     <Route path="/chatting" element={<Chatting/>}/>
+    <Route path="/about-us" element = {<AboutUs/>}/>
     
     
 
