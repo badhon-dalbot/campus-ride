@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Star, Mail, Phone, Calendar, Car, DollarSign, Leaf, Edit3, Bell, MessageSquare, CreditCard, Shield, Eye, Trash2, Award, FileText, Wrench, Users, Clock, MapPin, Camera } from 'lucide-react';
+import { ChevronLeft, Star, Mail, Phone, Calendar, Car, DollarSign, Leaf, Edit3, Bell, MessageSquare, CreditCard, Shield, Eye, Trash2, GraduationCap, BookOpen, MapPin, Clock, Users, Home, Building } from 'lucide-react';
 
 // Mock components for demonstration
 const CampusRideHeader = () => (
@@ -39,45 +39,33 @@ const CampusRideFooter = () => (
   </div>
 );
 
-export default function DriverProfilePage() {
+export default function StudentProfilePage() {
   const [activeTab, setActiveTab] = useState('Overview');
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [bio, setBio] = useState('Experienced driver with 5+ years of safe driving. Engineering student who loves meeting new people and sharing rides to reduce costs and environmental impact!');
+  const [bio, setBio] = useState('Computer Science major who loves exploring the city! Always up for sharing rides and meeting new people. Environmentally conscious and budget-friendly student.');
   const [preferences, setPreferences] = useState({
     musicAllowed: true,
-    petsAllowed: false,
-    smokingAllowed: false,
     quietRides: false,
-    maxPassengers: 3
+    friendlyChat: true,
+    earlyPickup: false,
+    flexibleTiming: true
   });
   const [profileData, setProfileData] = useState({
-    name: 'Alex Rodriguez',
-    email: 'alex.rodriguez@university.edu',
-    phone: '+1 (555) 123-4567',
+    name: 'Emma Chen',
+    email: 'emma.chen@university.edu',
+    phone: '+1 (555) 234-5678',
     university: 'University of Technology',
-    studentId: 'UT2020005',
-    emergencyContact: '+1 (555) 987-6543',
-    emergencyName: 'Maria Rodriguez (Mother)',
-    licenseNumber: 'DL123456789',
-    licenseExpiry: '2027-08-15',
-    insuranceProvider: 'SafeDrive Insurance',
-    insurancePolicy: 'SD-789456123',
-    insuranceExpiry: '2025-12-31'
+    studentId: 'UT2022003',
+    major: 'Computer Science',
+    graduationYear: '2026',
+    dormBuilding: 'North Hall',
+    roomNumber: '304',
+    emergencyContact: '+1 (555) 876-5432',
+    emergencyName: 'Linda Chen (Mother)'
   });
 
-  const [vehicleData, setVehicleData] = useState({
-    make: 'Toyota',
-    model: 'Camry',
-    year: '2020',
-    color: 'Silver',
-    licensePlate: 'ABC123',
-    seats: '4',
-    fuelType: 'Hybrid',
-    lastMaintenance: '2024-11-15'
-  });
-
-  const tabs = ['Overview', 'Vehicle', 'Reviews', 'Earnings', 'Settings'];
+  const tabs = ['Overview', 'Ride History', 'Reviews', 'Payments', 'Settings'];
 
   const togglePreference = (key) => {
     setPreferences(prev => ({
@@ -96,7 +84,7 @@ export default function DriverProfilePage() {
 
   const handleCancelEdit = () => {
     setIsEditingBio(false);
-    setBio('Experienced driver with 5+ years of safe driving. Engineering student who loves meeting new people and sharing rides to reduce costs and environmental impact!');
+    setBio('Computer Science major who loves exploring the city! Always up for sharing rides and meeting new people. Environmentally conscious and budget-friendly student.');
   };
 
   const handleEditProfile = () => {
@@ -118,45 +106,93 @@ export default function DriverProfilePage() {
     }));
   };
 
-  const handleVehicleInputChange = (field, value) => {
-    setVehicleData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   const reviews = [
     {
       id: 1,
-      reviewer: "Sarah Chen",
+      reviewer: "Alex Rodriguez",
       rating: 5,
-      comment: "Alex is an amazing driver! Very safe, punctual, and the car is always clean. Great conversation too!",
-      date: "2 days ago",
-      route: "Campus to Downtown"
+      comment: "Emma is a wonderful passenger! Always on time, respectful, and great company during the ride.",
+      date: "3 days ago",
+      route: "Campus to Downtown Mall"
     },
     {
       id: 2,
       reviewer: "Mike Johnson",
       rating: 5,
-      comment: "Reliable and professional. Alex helped me get to my internship on time every day for a month!",
+      comment: "Very reliable and friendly. Easy to communicate with and always ready at pickup time.",
       date: "1 week ago",
-      route: "Dorms to Tech Park"
+      route: "Dorms to Airport"
     },
     {
       id: 3,
-      reviewer: "Emma Davis",
+      reviewer: "Sarah Davis",
       rating: 4,
-      comment: "Good driver, safe ride. Car was comfortable and Alex was very accommodating with pickup times.",
+      comment: "Pleasant passenger, good conversation. Would definitely offer rides again!",
       date: "2 weeks ago",
-      route: "Campus to Airport"
+      route: "Campus to Train Station"
     }
   ];
 
-  const earnings = [
-    { month: 'December 2024', rides: 28, earnings: 420.50, tips: 45.00 },
-    { month: 'November 2024', rides: 32, earnings: 485.75, tips: 52.25 },
-    { month: 'October 2024', rides: 25, earnings: 375.00, tips: 38.50 },
-    { month: 'September 2024', rides: 30, earnings: 450.25, tips: 41.75 }
+  const rideHistory = [
+    {
+      id: 1,
+      date: 'Jan 15, 2025',
+      route: 'Campus → Downtown Mall',
+      driver: 'Alex Rodriguez',
+      cost: '$12.00',
+      status: 'Completed',
+      rating: 5
+    },
+    {
+      id: 2,
+      date: 'Jan 12, 2025',
+      route: 'Dorms → Airport',
+      driver: 'Mike Johnson',
+      cost: '$25.00',
+      status: 'Completed',
+      rating: 5
+    },
+    {
+      id: 3,
+      date: 'Jan 8, 2025',
+      route: 'Campus → Train Station',
+      driver: 'Sarah Davis',
+      cost: '$8.00',
+      status: 'Completed',
+      rating: 4
+    },
+    {
+      id: 4,
+      date: 'Jan 5, 2025',
+      route: 'Dorms → Shopping Center',
+      driver: 'Tom Wilson',
+      cost: '$15.00',
+      status: 'Completed',
+      rating: 5
+    },
+    {
+      id: 5,
+      date: 'Jan 2, 2025',
+      route: 'Campus → Home (Holiday)',
+      driver: 'Lisa Anderson',
+      cost: '$45.00',
+      status: 'Completed',
+      rating: 4
+    }
+  ];
+
+  const favoriteRoutes = [
+    { route: 'Campus → Downtown Mall', frequency: 12, avgCost: '$12.00' },
+    { route: 'Dorms → Airport', frequency: 8, avgCost: '$25.00' },
+    { route: 'Campus → Train Station', frequency: 6, avgCost: '$8.00' },
+    { route: 'Dorms → Shopping Center', frequency: 5, avgCost: '$15.00' }
+  ];
+
+  const upcomingSchedule = [
+    { time: '9:00 AM', event: 'Data Structures (CS 201)', location: 'Engineering Building' },
+    { time: '11:00 AM', event: 'Calculus III', location: 'Math Building' },
+    { time: '2:00 PM', event: 'Study Group - Algorithms', location: 'Library' },
+    { time: '4:00 PM', event: 'Part-time Job', location: 'Campus Bookstore' }
   ];
 
   return (
@@ -175,13 +211,13 @@ export default function DriverProfilePage() {
                   <ChevronLeft className="w-4 h-4" />
                   <span className="font-medium">Back</span>
                 </button>
-                <h1 className="text-2xl font-bold text-gray-900 text-center">Driver Profile</h1>
+                <h1 className="text-2xl font-bold text-gray-900 text-center">Student Profile</h1>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Driver Info */}
+                {/* Left Column - Student Info */}
                 <div className="space-y-6">
-                  {/* Driver Profile Card */}
+                  {/* Student Profile Card */}
                   <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
                     <div className="text-center">
                       {/* Profile Picture */}
@@ -197,18 +233,24 @@ export default function DriverProfilePage() {
                       {/* Name and Verification */}
                       <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.name}</h2>
                       <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{backgroundColor: '#17252A'}}>
-                        <Award className="w-3 h-3" />
-                        Verified Driver
+                        <GraduationCap className="w-3 h-3" />
+                        Verified Student
                       </div>
                       
-                      {/* Driver Rating */}
+                      {/* Student Info */}
+                      <div className="text-sm text-gray-600 mb-2">
+                        <div>{profileData.major}</div>
+                        <div>Class of {profileData.graduationYear}</div>
+                      </div>
+                      
+                      {/* Passenger Rating */}
                       <div className="flex items-center justify-center gap-1 mb-2">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="font-semibold">4.9</span>
-                        <span className="text-gray-500 text-sm">(89 trips)</span>
+                        <span className="font-semibold">4.8</span>
+                        <span className="text-gray-500 text-sm">(32 rides)</span>
                       </div>
                       
-                      <p className="text-gray-500 text-sm mb-4">Driving since March 2020</p>
+                      <p className="text-gray-500 text-sm mb-4">Member since September 2022</p>
                     </div>
 
                     {/* Contact Info */}
@@ -222,8 +264,8 @@ export default function DriverProfilePage() {
                         <span>{profileData.phone}</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>Driver since March 2020</span>
+                        <Building className="w-4 h-4" />
+                        <span>{profileData.dormBuilding} - Room {profileData.roomNumber}</span>
                       </div>
                     </div>
 
@@ -237,63 +279,64 @@ export default function DriverProfilePage() {
                     </button>
                   </div>
 
-                  {/* Driver Stats */}
+                  {/* Student Stats */}
                   <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Stats</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">My Stats</h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Car className="w-5 h-5 text-gray-600" />
-                          <span className="text-gray-700">Total Trips</span>
+                          <span className="text-gray-700">Total Rides</span>
                         </div>
-                        <span className="font-semibold text-gray-900">89</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Users className="w-5 h-5 text-gray-600" />
-                          <span className="text-gray-700">Passengers Served</span>
-                        </div>
-                        <span className="font-semibold text-gray-900">156</span>
+                        <span className="font-semibold text-gray-900">32</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <DollarSign className="w-5 h-5 text-gray-600" />
-                          <span className="text-gray-700">Total Earned</span>
+                          <span className="text-gray-700">Money Saved</span>
                         </div>
-                        <span className="font-semibold text-gray-900">$1,890</span>
+                        <span className="font-semibold text-gray-900">$485</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Leaf className="w-5 h-5 text-gray-600" />
-                          <span className="text-gray-700">CO₂ Saved</span>
+                          <span className="text-gray-700">CO₂ Reduced</span>
                         </div>
-                        <span className="font-semibold text-gray-900">45.2 kg</span>
+                        <span className="font-semibold text-gray-900">18.6 kg</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Clock className="w-5 h-5 text-gray-600" />
                           <span className="text-gray-700">On-Time Rate</span>
                         </div>
-                        <span className="font-semibold text-gray-900">96%</span>
+                        <span className="font-semibold text-gray-900">94%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Users className="w-5 h-5 text-gray-600" />
+                          <span className="text-gray-700">Drivers Met</span>
+                        </div>
+                        <span className="font-semibold text-gray-900">28</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Current Vehicle */}
+                  {/* Today's Schedule */}
                   <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Vehicle</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Schedule</h3>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <Car className="w-5 h-5 text-gray-600" />
-                        <div>
-                          <div className="font-medium text-gray-900">{vehicleData.year} {vehicleData.make} {vehicleData.model}</div>
-                          <div className="text-sm text-gray-600">{vehicleData.color} • {vehicleData.seats} seats • {vehicleData.fuelType}</div>
+                      {upcomingSchedule.map((item, index) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <div className="text-xs font-medium text-gray-600 w-16 mt-1">{item.time}</div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-900">{item.event}</div>
+                            <div className="text-xs text-gray-600 flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {item.location}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        <div>License Plate: {vehicleData.licensePlate}</div>
-                        <div>Last Maintenance: {vehicleData.lastMaintenance}</div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -343,7 +386,7 @@ export default function DriverProfilePage() {
                               value={bio}
                               onChange={(e) => setBio(e.target.value)}
                               className="w-full p-3 border border-gray-300 rounded-lg resize-none h-20 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Tell passengers about your driving experience..."
+                              placeholder="Tell drivers about yourself..."
                             />
                             <div className="flex gap-2 mt-3">
                               <button 
@@ -366,12 +409,12 @@ export default function DriverProfilePage() {
                         )}
                       </div>
 
-                      {/* Driver Preferences Block */}
+                      {/* Passenger Preferences Block */}
                       <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Preferences</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Ride Preferences</h3>
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-700">🎵 Music allowed</span>
+                            <span className="text-gray-700">🎵 Enjoys music during rides</span>
                             <button
                               onClick={() => togglePreference('musicAllowed')}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
@@ -385,35 +428,7 @@ export default function DriverProfilePage() {
                             </button>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-700">🐕 Pets allowed</span>
-                            <button
-                              onClick={() => togglePreference('petsAllowed')}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                preferences.petsAllowed
-                                  ? 'text-white'
-                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                              }`}
-                              style={preferences.petsAllowed ? {backgroundColor: '#17252A'} : {}}
-                            >
-                              {preferences.petsAllowed ? 'Yes' : 'No'}
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-700">🚭 No smoking</span>
-                            <button
-                              onClick={() => togglePreference('smokingAllowed')}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                !preferences.smokingAllowed
-                                  ? 'text-white'
-                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                              }`}
-                              style={!preferences.smokingAllowed ? {backgroundColor: '#17252A'} : {}}
-                            >
-                              {!preferences.smokingAllowed ? 'No Smoking' : 'Allowed'}
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-700">🤫 Quiet rides available</span>
+                            <span className="text-gray-700">🤫 Prefers quiet rides</span>
                             <button
                               onClick={() => togglePreference('quietRides')}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
@@ -427,11 +442,65 @@ export default function DriverProfilePage() {
                             </button>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-700">👥 Max passengers</span>
-                            <span className="px-3 py-1 rounded-full text-xs font-medium text-white" style={{backgroundColor: '#17252A'}}>
-                              {preferences.maxPassengers}
-                            </span>
+                            <span className="text-gray-700">😊 Enjoys friendly conversation</span>
+                            <button
+                              onClick={() => togglePreference('friendlyChat')}
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                preferences.friendlyChat
+                                  ? 'text-white'
+                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                              }`}
+                              style={preferences.friendlyChat ? {backgroundColor: '#17252A'} : {}}
+                            >
+                              {preferences.friendlyChat ? 'Yes' : 'No'}
+                            </button>
                           </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-700">⏰ Flexible with timing</span>
+                            <button
+                              onClick={() => togglePreference('flexibleTiming')}
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                preferences.flexibleTiming
+                                  ? 'text-white'
+                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                              }`}
+                              style={preferences.flexibleTiming ? {backgroundColor: '#17252A'} : {}}
+                            >
+                              {preferences.flexibleTiming ? 'Yes' : 'No'}
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-700">🌅 Available for early pickups</span>
+                            <button
+                              onClick={() => togglePreference('earlyPickup')}
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                preferences.earlyPickup
+                                  ? 'text-white'
+                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                              }`}
+                              style={preferences.earlyPickup ? {backgroundColor: '#17252A'} : {}}
+                            >
+                              {preferences.earlyPickup ? 'Yes' : 'No'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Favorite Routes */}
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Favorite Routes</h3>
+                        <div className="space-y-3">
+                          {favoriteRoutes.map((route, index) => (
+                            <div key={index} className="flex items-center justify-between py-2 border-b border-gray-300 last:border-b-0">
+                              <div className="flex items-center gap-3">
+                                <MapPin className="w-4 h-4 text-gray-600" />
+                                <div>
+                                  <div className="font-medium text-gray-900">{route.route}</div>
+                                  <div className="text-sm text-gray-600">{route.frequency} rides • Avg: {route.avgCost}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
@@ -448,22 +517,22 @@ export default function DriverProfilePage() {
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <FileText className="w-5 h-5 text-green-600" />
-                              <span className="text-gray-700">Driver's License</span>
+                              <GraduationCap className="w-5 h-5 text-green-600" />
+                              <span className="text-gray-700">Student Status</span>
                             </div>
                             <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">✓ Verified</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <Car className="w-5 h-5 text-green-600" />
-                              <span className="text-gray-700">Vehicle Registration</span>
+                              <Phone className="w-5 h-5 text-green-600" />
+                              <span className="text-gray-700">Phone Number</span>
                             </div>
                             <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">✓ Verified</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <Shield className="w-5 h-5 text-green-600" />
-                              <span className="text-gray-700">Insurance</span>
+                              <Mail className="w-5 h-5 text-green-600" />
+                              <span className="text-gray-700">University Email</span>
                             </div>
                             <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">✓ Verified</span>
                           </div>
@@ -472,113 +541,62 @@ export default function DriverProfilePage() {
                     </div>
                   )}
 
-                  {activeTab === 'Vehicle' && (
-                    <div className="space-y-6">
-                      {/* Vehicle Details */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-gray-900">Vehicle Information</h3>
-                          <button className="text-gray-600 hover:text-gray-800 text-sm flex items-center gap-1">
-                            <Edit3 className="w-4 h-4" />
-                            Edit Vehicle
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Make & Model</label>
-                            <div className="text-gray-900">{vehicleData.year} {vehicleData.make} {vehicleData.model}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
-                            <div className="text-gray-900">{vehicleData.color}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
-                            <div className="text-gray-900">{vehicleData.licensePlate}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Seats</label>
-                            <div className="text-gray-900">{vehicleData.seats} seats</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Fuel Type</label>
-                            <div className="text-gray-900">{vehicleData.fuelType}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Last Maintenance</label>
-                            <div className="text-gray-900">{vehicleData.lastMaintenance}</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Vehicle Photos */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Vehicle Photos</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
-                              <Camera className="w-8 h-8 text-gray-400" />
-                            </div>
-                          ))}
-                        </div>
-                        <button className="mt-4 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2" style={{backgroundColor: '#17252A'}}>
-                          <Camera className="w-4 h-4" />
-                          Add Photos
-                        </button>
-                      </div>
-
-                      {/* Maintenance Records */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Maintenance History</h3>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between py-2 border-b border-gray-300">
-                            <div className="flex items-center gap-3">
-                              <Wrench className="w-4 h-4 text-gray-600" />
-                              <div>
-                                <div className="font-medium text-gray-900">Oil Change & Filter</div>
-                                <div className="text-sm text-gray-600">Nov 15, 2024</div>
+                  {activeTab === 'Ride History' && (
+                    <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Rides</h3>
+                      <div className="space-y-4">
+                        {rideHistory.map(ride => (
+                          <div key={ride.id} className="p-4 rounded-lg border border-gray-300" style={{backgroundColor: '#EBF5F5'}}>
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-3">
+                                <MapPin className="w-4 h-4 text-gray-600" />
+                                <div>
+                                  <div className="font-medium text-gray-900">{ride.route}</div>
+                                  <div className="text-sm text-gray-600">{ride.date} • Driver: {ride.driver}</div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-medium text-gray-900">{ride.cost}</div>
+                                <div className="flex items-center gap-1">
+                                  {[1,2,3,4,5].map(i => (
+                                    <Star 
+                                      key={i} 
+                                      className={`w-3 h-3 ${i <= ride.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                                    />
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                            <span className="text-sm text-gray-500">$65.00</span>
-                          </div>
-                          <div className="flex items-center justify-between py-2 border-b border-gray-300">
-                            <div className="flex items-center gap-3">
-                              <Wrench className="w-4 h-4 text-gray-600" />
-                              <div>
-                                <div className="font-medium text-gray-900">Tire Rotation</div>
-                                <div className="text-sm text-gray-600">Sep 20, 2024</div>
-                              </div>
+                            <div className="flex items-center justify-between">
+                              <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                {ride.status}
+                              </span>
+                              <button className="text-gray-600 hover:text-gray-800 text-sm">
+                                View Details
+                              </button>
                             </div>
-                            <span className="text-sm text-gray-500">$45.00</span>
                           </div>
-                          <div className="flex items-center justify-between py-2">
-                            <div className="flex items-center gap-3">
-                              <Wrench className="w-4 h-4 text-gray-600" />
-                              <div>
-                                <div className="font-medium text-gray-900">Brake Inspection</div>
-                                <div className="text-sm text-gray-600">Aug 10, 2024</div>
-                              </div>
-                            </div>
-                            <span className="text-sm text-gray-500">$120.00</span>
-                          </div>
-                        </div>
+                        ))}
                       </div>
+                      <button className="w-full mt-4 text-white py-2 rounded-lg text-sm font-medium transition-colors" style={{backgroundColor: '#17252A'}}>
+                        View All Rides
+                      </button>
                     </div>
                   )}
 
                   {activeTab === 'Reviews' && (
                     <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Reviews & Ratings</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Reviews from Drivers</h3>
                       <div className="mb-6 p-4 rounded-lg" style={{backgroundColor: '#EBF5F5'}}>
                         <div className="flex items-center gap-4">
                           <div className="text-center">
-                            <div className="text-3xl font-bold text-gray-900">4.9</div>
+                            <div className="text-3xl font-bold text-gray-900">4.8</div>
                             <div className="flex items-center justify-center">
                               {[1,2,3,4,5].map(i => (
                                 <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                               ))}
                             </div>
-                            <div className="text-sm text-gray-500 mt-1">89 reviews</div>
+                            <div className="text-sm text-gray-500 mt-1">32 reviews</div>
                           </div>
                           <div className="flex-1">
                             <div className="space-y-1">
@@ -589,10 +607,10 @@ export default function DriverProfilePage() {
                                   <div className="flex-1 bg-gray-200 rounded-full h-2">
                                     <div 
                                       className="bg-yellow-400 h-2 rounded-full" 
-                                      style={{width: rating === 5 ? '85%' : rating === 4 ? '12%' : '2%'}}
+                                      style={{width: rating === 5 ? '75%' : rating === 4 ? '20%' : '3%'}}
                                     ></div>
                                   </div>
-                                  <span className="text-sm text-gray-500 w-8">{rating === 5 ? '76' : rating === 4 ? '11' : '2'}</span>
+                                  <span className="text-sm text-gray-500 w-8">{rating === 5 ? '24' : rating === 4 ? '6' : '2'}</span>
                                 </div>
                               ))}
                             </div>
@@ -632,74 +650,70 @@ export default function DriverProfilePage() {
                     </div>
                   )}
 
-                  {activeTab === 'Earnings' && (
+                  {activeTab === 'Payments' && (
                     <div className="space-y-6">
-                      {/* Earnings Summary */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Earnings Summary</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">$1,890</div>
-                            <div className="text-sm text-gray-600">Total Earned</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">$177</div>
-                            <div className="text-sm text-gray-600">Total Tips</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">89</div>
-                            <div className="text-sm text-gray-600">Total Trips</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">$21</div>
-                            <div className="text-sm text-gray-600">Avg per Trip</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Monthly Breakdown */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Breakdown</h3>
-                        <div className="space-y-3">
-                          {earnings.map((month, index) => (
-                            <div key={index} className="p-4 rounded-lg" style={{backgroundColor: '#EBF5F5'}}>
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-gray-900">{month.month}</span>
-                                <span className="text-lg font-bold text-gray-900">${month.earnings.toFixed(2)}</span>
-                              </div>
-                              <div className="grid grid-cols-3 gap-4 text-sm">
-                                <div>
-                                  <span className="text-gray-600">Rides: </span>
-                                  <span className="font-medium">{month.rides}</span>
-                                </div>
-                                <div>
-                                  <span className="text-gray-600">Tips: </span>
-                                  <span className="font-medium">${month.tips.toFixed(2)}</span>
-                                </div>
-                                <div>
-                                  <span className="text-gray-600">Avg/Trip: </span>
-                                  <span className="font-medium">${(month.earnings / month.rides).toFixed(2)}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
                       {/* Payment Methods */}
                       <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Payout Method</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Methods</h3>
                         <div className="space-y-4">
                           <div className="border border-gray-300 rounded-lg p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <CreditCard className="w-5 h-5 text-gray-600" />
                                 <div>
-                                  <div className="font-medium text-gray-900">Bank Account ****4532</div>
-                                  <div className="text-sm text-gray-600">Wells Fargo</div>
+                                  <div className="font-medium text-gray-900">**** **** **** 1234</div>
+                                  <div className="text-sm text-gray-600">Expires 08/26</div>
                                 </div>
                               </div>
                               <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Primary</span>
+                            </div>
+                          </div>
+                          <div className="border border-gray-300 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <CreditCard className="w-5 h-5 text-gray-600" />
+                                <div>
+                                  <div className="font-medium text-gray-900">**** **** **** 5678</div>
+                                  <div className="text-sm text-gray-600">Expires 12/27</div>
+                                </div>
+                              </div>
+                              <button className="text-gray-400 hover:text-red-500">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                          <button className="w-full border-2 border-dashed border-gray-400 rounded-lg p-4 text-gray-600 hover:border-gray-500 hover:text-gray-700 transition-colors">
+                            + Add New Payment Method
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Payment History */}
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
+                        <div className="space-y-3">
+                          {rideHistory.slice(0, 5).map(ride => (
+                            <div key={ride.id} className="flex items-center justify-between py-2 border-b border-gray-300 last:border-b-0">
+                              <div className="flex items-center gap-3">
+                                <CreditCard className="w-4 h-4 text-gray-600" />
+                                <div>
+                                  <div className="font-medium text-gray-900">{ride.route}</div>
+                                  <div className="text-sm text-gray-600">{ride.date}</div>
+                                </div>
+                              </div>
+                              <span className="font-medium text-gray-900">{ride.cost}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-4 p-3 rounded-lg" style={{backgroundColor: '#EBF5F5'}}>
+                          <div className="text-sm text-gray-700">
+                            <div className="flex justify-between mb-1">
+                              <span>Total spent this month:</span>
+                              <span className="font-medium">$85.00</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Total lifetime spending:</span>
+                              <span className="font-medium">$485.00</span>
                             </div>
                           </div>
                         </div>
@@ -709,39 +723,39 @@ export default function DriverProfilePage() {
 
                   {activeTab === 'Settings' && (
                     <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Settings</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Settings</h3>
                       <div className="space-y-6">
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-3">Availability</h4>
+                          <h4 className="font-medium text-gray-900 mb-3">Ride Preferences</h4>
                           <div className="space-y-3">
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" defaultChecked />
-                              <span className="text-gray-700">Available for rides</span>
+                              <span className="text-gray-700">Receive ride suggestions</span>
                             </label>
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" defaultChecked />
-                              <span className="text-gray-700">Weekend availability</span>
+                              <span className="text-gray-700">Auto-accept rides from trusted drivers</span>
                             </label>
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" />
-                              <span className="text-gray-700">Late night rides (10PM-6AM)</span>
+                              <span className="text-gray-700">Share location with emergency contacts during rides</span>
                             </label>
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-3">Driver Notifications</h4>
+                          <h4 className="font-medium text-gray-900 mb-3">Notifications</h4>
                           <div className="space-y-3">
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" defaultChecked />
-                              <span className="text-gray-700">Ride requests</span>
+                              <span className="text-gray-700">Ride confirmations</span>
                             </label>
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" defaultChecked />
-                              <span className="text-gray-700">Payment confirmations</span>
+                              <span className="text-gray-700">Driver arrival notifications</span>
                             </label>
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" defaultChecked />
-                              <span className="text-gray-700">New reviews</span>
+                              <span className="text-gray-700">New driver reviews</span>
                             </label>
                             <label className="flex items-center">
                               <input type="checkbox" className="mr-3" />
@@ -767,14 +781,14 @@ export default function DriverProfilePage() {
                                 <span className="text-gray-700">Profile visibility</span>
                               </div>
                               <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
-                                Drivers Only
+                                Students Only
                               </button>
                             </div>
                           </div>
                         </div>
                         <div className="pt-4 border-t border-gray-300">
                           <button className="text-red-600 hover:text-red-700 font-medium">
-                            Deactivate Driver Account
+                            Delete Account
                           </button>
                         </div>
                       </div>
@@ -794,7 +808,7 @@ export default function DriverProfilePage() {
                   <ChevronLeft className="w-4 h-4" />
                   <span className="font-medium">Back to Profile</span>
                 </button>
-                <h1 className="text-2xl font-bold text-gray-900 text-center">Edit Driver Profile</h1>
+                <h1 className="text-2xl font-bold text-gray-900 text-center">Edit Student Profile</h1>
               </div>
 
               <div className="max-w-2xl mx-auto space-y-6">
@@ -862,62 +876,55 @@ export default function DriverProfilePage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
+                      <input
+                        type="text"
+                        value={profileData.studentId}
+                        onChange={(e) => handleProfileInputChange('studentId', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Major</label>
+                      <input
+                        type="text"
+                        value={profileData.major}
+                        onChange={(e) => handleProfileInputChange('major', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+                      <input
+                        type="text"
+                        value={profileData.graduationYear}
+                        onChange={(e) => handleProfileInputChange('graduationYear', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Driver License Information */}
+                {/* Housing Information */}
                 <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver License Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Housing Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">License Number</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Dorm Building</label>
                       <input
                         type="text"
-                        value={profileData.licenseNumber}
-                        onChange={(e) => handleProfileInputChange('licenseNumber', e.target.value)}
+                        value={profileData.dormBuilding}
+                        onChange={(e) => handleProfileInputChange('dormBuilding', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">License Expiry</label>
-                      <input
-                        type="date"
-                        value={profileData.licenseExpiry}
-                        onChange={(e) => handleProfileInputChange('licenseExpiry', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Insurance Information */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Insurance Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Insurance Provider</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Room Number</label>
                       <input
                         type="text"
-                        value={profileData.insuranceProvider}
-                        onChange={(e) => handleProfileInputChange('insuranceProvider', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Policy Number</label>
-                      <input
-                        type="text"
-                        value={profileData.insurancePolicy}
-                        onChange={(e) => handleProfileInputChange('insurancePolicy', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Insurance Expiry</label>
-                      <input
-                        type="date"
-                        value={profileData.insuranceExpiry}
-                        onChange={(e) => handleProfileInputChange('insuranceExpiry', e.target.value)}
+                        value={profileData.roomNumber}
+                        onChange={(e) => handleProfileInputChange('roomNumber', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -957,7 +964,7 @@ export default function DriverProfilePage() {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg resize-none h-24 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Tell passengers about your driving experience..."
+                    placeholder="Tell drivers about yourself..."
                   />
                 </div>
 

@@ -8,6 +8,7 @@ import BookRide from '../pages/bookRide/BookRide.jsx'
 import RideDetails from '../pages/RideDetails.jsx';
 import ConfirmBooking from '../pages/ConfirmBooking.jsx';
 import DriverProfile from '../pages/DriverProfile.jsx';
+import StudentProfile from '../pages/studentprofile/StudentProfile.jsx';
 import Payment from '../pages/payment/payment.jsx';
 import Chatting from '../pages/chat/chatting.jsx';
 import AboutUs from '../pages/AboutUs.jsx';
@@ -31,6 +32,7 @@ const AppRoutes = () => (
     <Route path="/ride-details" element={<RideDetails/>}/>
     <Route path="/conf-book" element={<ConfirmBooking/>}/>
     <Route path="/driverProfile" element={<DriverProfile/>}/>
+    <Route path="/studentProfile" element={<StudentProfile/>}/>
     <Route path="/payment" element={<Payment/>}/>
     <Route path="/chatting" element={<Chatting/>}/>
     <Route path="/about-us" element = {<AboutUs/>}/>
