@@ -7,7 +7,7 @@ import ShareRide from '../pages/ShareRide.jsx'
 import BookRide from '../pages/bookRide/BookRide.jsx'
 import RideDetails from '../pages/RideDetails.jsx';
 import ConfirmBooking from '../pages/ConfirmBooking.jsx';
-import DriverProfile from '../pages/DriverProfile.jsx';
+import DriverProfile from '../pages/driverprofile/DriverProfile.jsx';
 import StudentProfile from '../pages/studentprofile/StudentProfile.jsx';
 import Payment from '../pages/payment/payment.jsx';
 import Chatting from '../pages/chat/chatting.jsx';
