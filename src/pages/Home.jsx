@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+import homeActivity from "../assets/images/home_activity.png";
 
 const LandingPage = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -264,6 +265,7 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
+        
         {/* Map */}
         <div>
           <div className="rounded-xl shadow-md w-full h-96 bg-gray-100 flex items-center justify-center relative overflow-hidden">
@@ -409,12 +411,12 @@ const LandingPage = () => {
       </section>
 
       {/* Login Prompt */}
-      <section className="bg-white px-10 py-16 flex flex-col md:flex-row justify-between items-center gap-10 rounded-t-3xl shadow-inner">
+      <section className="bg-white px-10 py-16 flex flex-col md:flex-row justify-between items-center gap-8 rounded-t-3xl shadow-inner">
         <div className="max-w-md">
-          <h2 className="text-2xl font-bold mb-4">
+          <h2 className="text-5xl font-bold mb-4">
             Log in to see your recent activity
           </h2>
-          <p className="text-sm text-gray-600 mb-6">
+          <p className="text-xl text-gray-600 mb-6">
             View your past rides, saved locations, and booking history.
           </p>
           <button className="bg-[#17252A] text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition">
@@ -422,7 +424,7 @@ const LandingPage = () => {
           </button>
         </div>
         <img
-          src="/app-preview.png"
+          src={homeActivity}
           alt="App Preview"
           className="w-72 md:w-80 rounded-xl"
         />
@@ -457,7 +459,7 @@ const LandingPage = () => {
           className="w-full rounded-xl shadow-md"
         />
         <div>
-          <h2 className="text-3xl font-bold mb-4">
+          <h2 className="text-5xl font-bold mb-4">
             Drive when you want, make what you need
           </h2>
           <p className="text-sm text-gray-700 mb-6">

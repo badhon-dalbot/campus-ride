@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
 import LoginHeader from '../assets/LoginHeader.jsx';
 import LoginFooter from '../assets/LoginFooter.jsx';
 
@@ -13,19 +12,31 @@ export default function CampusRideLogin() {
   });
   const [errorMessage, setErrorMessage] = useState('');
 
-  const inputStyle = {
-    backgroundColor: '#364045',
-    borderColor: '#DEF2F1',
-    color: '#DEF2F1',
-    border: '1px solid #DEF2F1'
-  };
-
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
       input::placeholder {
-        color: #DEF2F1 !important;
-        opacity: 0.7;
+        color: #bbb !important;
+        opacity: 1;
+      }
+      .login-card input:focus {
+        border-color: #fff !important;
+      }
+      .login-tab-active {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .login-tab-inactive {
+        background: transparent !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+      }
+      .login-tab {
+        transition: background 0.2s, color 0.2s;
+      }
+      .login-btn:active {
+        background: #222 !important;
+        color: #fff !important;
       }
     `;
     document.head.appendChild(style);
@@ -46,7 +57,7 @@ export default function CampusRideLogin() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password } = formData;
 
@@ -66,8 +77,37 @@ export default function CampusRideLogin() {
     }
 
     setErrorMessage("");
-    console.log("Login submitted:", formData);
-    // Proceed with backend authentication
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMessage(data.error || "Login failed");
+        return;
+      }
+
+      alert(`${data.message}\nRole: ${data.user.role}`);
+
+      // Role-based redirection
+      // ===Make sure you have routes/pages for /admin/dashboard===
+      // if (data.user.role === "admin") {
+      //   window.location.href = "";
+      // } else if (data.user.role === "drive") {
+      //   window.location.href = "/driverProfile";
+      // } else if (data.user.role === "ride") {
+      //   window.location.href = "";
+      // } else {
+      //   alert("Unknown role. Please contact support.");
+      // }
+    } catch (err) {
+      setErrorMessage("Network error. Please try again.");
+    }
   };
 
   const handleSignupClick = () => {
@@ -75,88 +115,128 @@ export default function CampusRideLogin() {
   };
 
   return (
-    <div>
+    <div style={{
+      minHeight: "100vh",
+      background: "#000",
+      display: "flex",
+      flexDirection: "column"
+    }}>
       <LoginHeader />
 
-      <div className="flex flex-col items-center pt-40 px-4 min-h-screen" style={{ backgroundColor: '#364045' }}>
-        <h1 className="text-xl font-medium mb-6" style={{ color: '#DEF2F1' }}>Login to CampusRide</h1>
-
-        {/* Tabs */}
-        <div className="flex w-full max-w-md mb-4 border-b" style={{ borderColor: '#DEF2F1' }}>
-          <button
-            className={`py-2 px-4 ${activeTab === "ride" ? "border-b-2" : ""}`}
+      <div className="flex flex-col items-center justify-center flex-1" style={{ flex: 1 }}>
+        <div
+          className="login-card shadow-2xl"
+          style={{
+            background: "#111",
+            borderRadius: "32px",
+            padding: "3rem 2.5rem",
+            maxWidth: 400,
+            width: "100%",
+            boxShadow: "0 8px 32px 0 rgba(0,0,0,0.35)",
+            margin: "3rem",
+            border: "2px solid #fff"
+          }}
+        >
+          <h1
+            className="text-4xl font-extrabold mb-10 text-center"
             style={{
-              color: activeTab === "ride" ? '#DEF2F1' : 'rgba(222, 242, 241, 0.6)',
-              borderColor: activeTab === "ride" ? '#DEF2F1' : 'transparent'
+              color: "#fff",
+              letterSpacing: "2px",
+              fontFamily: "UberMove, sans-serif"
             }}
-            onClick={() => handleTabChange("ride")}
           >
-            Login to ride
-          </button> 
-          <button
-            className={`py-2 px-4 ${activeTab === "drive" ? "border-b-2" : ""}`}
-            style={{
-              color: activeTab === "drive" ? '#DEF2F1' : 'rgba(222, 242, 241, 0.6)',
-              borderColor: activeTab === "drive" ? '#DEF2F1' : 'transparent'
-            }}
-            onClick={() => handleTabChange("drive")}
-          >
-            Login to drive
-          </button>
-        </div>
+            Welcome Back
+          </h1>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-          {errorMessage && (
-            <div className="text-red-400 text-sm mb-2">{errorMessage}</div>
-          )}
+          <form onSubmit={handleSubmit} className="space-y-7">
+            {errorMessage && (
+              <div className="text-red-400 text-center text-base mb-2">{errorMessage}</div>
+            )}
 
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            className="w-full rounded p-2"
-            style={inputStyle}
-          />
+            <div>
+              <label className="block mb-2 text-white text-base font-semibold tracking-wide">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className="w-full rounded-xl px-5 py-4 text-lg bg-[#181818] border-2 border-[#222] text-white focus:border-white transition"
+                style={{
+                  outline: "none"
+                }}
+              />
+            </div>
 
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Password"
-              className="w-full rounded p-2 pr-12"
-              style={inputStyle}
-            />
+            <div>
+              <label className="block mb-2 text-white text-base font-semibold tracking-wide">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className="w-full rounded-xl px-5 py-4 text-lg bg-[#181818] border-2 border-[#222] text-white pr-12 focus:border-white transition"
+                  style={{
+                    outline: "none"
+                  }}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    position: "absolute",
+                    right: "1.25rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    padding: 0,
+                    margin: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                    lineHeight: 0
+                  }}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={24} color="#fff" /> : <Eye size={24} color="#fff" />}
+                </button>
+              </div>
+            </div>
+
             <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              style={{ color: '#DEF2F1' }}
+              type="submit"
+              className="login-btn w-full py-3 rounded-full font-bold text-xl transition-colors"
+              style={{
+                background: "#fff",
+                color: "#000",
+                letterSpacing: "1px",
+                boxShadow: "0 2px 8px 0 rgba(255,255,255,0.10)"
+              }}
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              Login
             </button>
+          </form>
+
+          <div className="flex justify-between mt-8 text-base font-medium">
+            <span
+              className="cursor-pointer underline"
+              style={{ color: "#bbb" }}
+              onClick={handleSignupClick}
+            >
+              Forgot Password?
+            </span>
+            <span
+              className="cursor-pointer underline"
+              style={{ color: "#bbb" }}
+              onClick={handleSignupClick}
+            >
+              Sign Up
+            </span>
           </div>
-
-          <button
-            type="submit"
-            className="w-full py-2 rounded transition-colors"
-            style={{ backgroundColor: '#17252A', color: '#DEF2F1' }}
-          >
-            Login Now
-          </button>
-        </form>
-
-        <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
-          Forgot Password? <span className="cursor-pointer underline" onClick={handleSignupClick}>Click here</span>
-        </p>
-        
-        <p className="mt-4 text-sm" style={{ color: '#DEF2F1' }}>
-          Don't have an account? <span className="cursor-pointer underline" onClick={handleSignupClick}>Sign Up</span>
-        </p>
+        </div>
       </div>
 
       <LoginFooter />
