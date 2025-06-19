@@ -9,7 +9,7 @@ import RideDetails from '../pages/RideDetails.jsx';
 import ConfirmBooking from '../pages/ConfirmBooking.jsx';
 import DriverProfile from '../pages/DriverProfile.jsx';
 import Payment from '../pages/payment/payment.jsx';
-import Chatting from '../pages/Chatting.jsx';
+import Chatting from '../pages/chat/chatting.jsx';
 import AboutUs from '../pages/AboutUs.jsx';
 
 
