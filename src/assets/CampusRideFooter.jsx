@@ -2,29 +2,30 @@ import Logo from "./images/logo.png";
 
 export default function CampusRideFooter() {
   return (
-    <footer className="bg-gray-800 text-white">
+    <footer className="bg-[#17252A] text-[#FEFFFF]">
       {/* Logo Section */}
-      <div className="p-4 flex items-center">
+      <div className="px-8 py-6 flex items-center">
         <div className="w-36">
           <img src={Logo} alt="Campus Ride Logo" />
         </div>
-        <div className="ml-2 text-sm text-gray-300">
-          Bangladesh First Community Based Ridesharing Platform
+        <div className="ml-auto text-sm text-[#FEFFFF]">
+          Bangladeshi First Community Based Ridesharing Platform
         </div>
       </div>
 
-      <div className="px-4 pb-2">
-        <button className="text-sm text-gray-300 hover:text-teal-400">
+      {/* Help Center Button */}
+      <div className="px-8 pb-4">
+        <button className="text-sm text-[#FEFFFF] hover:text-teal-400">
           Visit Help Center
         </button>
       </div>
 
       {/* Links Section */}
-      <div className="grid grid-cols-3 gap-8 p-4 border-t border-gray-700">
+      <div className="flex justify-between px-8 py-6 border-t border-gray-600">
         {/* Company Links */}
         <div>
           <h3 className="font-medium mb-4">Company</h3>
-          <ul className="space-y-2 text-sm text-gray-300">
+          <ul className="space-y-3 text-sm text-[#FEFFFF]">
             <li>
               <a href="#" className="hover:text-teal-400">
                 About us
@@ -61,7 +62,7 @@ export default function CampusRideFooter() {
         {/* Products Links */}
         <div>
           <h3 className="font-medium mb-4">Products</h3>
-          <ul className="space-y-2 text-sm text-gray-300">
+          <ul className="space-y-3 text-sm text-[#FEFFFF]">
             <li>
               <a href="#" className="hover:text-teal-400">
                 Ride
@@ -83,7 +84,7 @@ export default function CampusRideFooter() {
         {/* Travel Links */}
         <div>
           <h3 className="font-medium mb-4">Travel</h3>
-          <ul className="space-y-2 text-sm text-gray-300">
+          <ul className="space-y-3 text-sm text-[#FEFFFF]">
             <li>
               <a href="#" className="hover:text-teal-400">
                 Reserve
@@ -114,12 +115,12 @@ export default function CampusRideFooter() {
       </div>
 
       {/* Copyright and Social Media */}
-      <div className="flex justify-between items-center p-4 border-t border-gray-700">
-        <div className="text-xs text-gray-400">
+      <div className="flex justify-between items-center px-8 py-4 border-t border-gray-600">
+        <div className="text-sm text-[#FEFFFF]">
           © 2025 Campus Ride. All right reserved.
         </div>
         <div className="flex space-x-4">
-          <a href="#" className="text-gray-400 hover:text-white">
+          <a href="#" className="text-[#FEFFFF] hover:text-white">
             <svg
               className="w-5 h-5"
               fill="currentColor"
@@ -133,7 +134,7 @@ export default function CampusRideFooter() {
               />
             </svg>
           </a>
-          <a href="#" className="text-gray-400 hover:text-white">
+          <a href="#" className="text-[#FEFFFF] hover:text-white">
             <svg
               className="w-5 h-5"
               fill="currentColor"
@@ -147,7 +148,7 @@ export default function CampusRideFooter() {
               />
             </svg>
           </a>
-          <a href="#" className="text-gray-400 hover:text-white">
+          <a href="#" className="text-[#FEFFFF] hover:text-white">
             <svg
               className="w-5 h-5"
               fill="currentColor"
