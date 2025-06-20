@@ -8,10 +8,6 @@ import RideOffers from './RideOffers.jsx';
 import RideCard from './RideCard.jsx';
 
 export default function FindRide() {
-
-
-
-
   const [rides, setRides] = useState([]);
 
   useEffect(() => {
@@ -26,8 +22,6 @@ export default function FindRide() {
       });
   }, []);
   console.log(rides);
-
-
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -93,7 +87,7 @@ export default function FindRide() {
             {/* Ride Cards */}
             <div className="space-y-4 max-w-3xl">
               {rides.map((ride) => (
-                <RideCard key={ride.ride_id} ride={ride}/>
+                <RideCard key={ride.ride_id} ride={ride} />
               ))}
             </div>
 

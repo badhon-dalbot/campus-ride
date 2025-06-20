@@ -15,10 +15,6 @@ import AboutUs from '../pages/AboutUs.jsx';
 import HelpPage from '../pages/HelpCenter.jsx';
 
 
-// Comment out Login and Root unless you have them created
-// import Login from '../pages/Login';
-// import Root from '../pages/Root';
-
 const AppRoutes = () => (
   <Routes>
     {/* Temporary home page to test routing */}
@@ -34,7 +30,7 @@ const AppRoutes = () => (
     <Route path="/studentProfile" element={<StudentProfile/>}/>
     <Route path="/payment" element={<Payment/>}/>
     <Route path="/chatting" element={<Chatting/>}/>
-    <Route path="/about-us" element = {<AboutUs/>}/>
+    <Route path="/aboutus" element = {<AboutUs/>}/>
     <Route path="/help" element={<HelpPage />} />
 
   </Routes>

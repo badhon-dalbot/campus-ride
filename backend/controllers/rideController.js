@@ -43,24 +43,28 @@ const getRides = async (req, res) => {
 // get all available rides with driver info
 const getAvailableRides = async (req, res) => {
   const query = `
-    SELECT 
-      r.id AS ride_id,
-      r.start_location,
-      r.destination,
-      r.ride_date,
-      r.ride_time,
-      r.seats_available,
-      r.pickup_description,
-      u.firstName AS driver_first_name,
-      u.lastName AS driver_last_name,
-      r.rating AS driver_rating
-    FROM 
-      rides r
-    JOIN 
-      users u ON r.driver_id = u.id
-    WHERE 
-      u.role = 'drive'
-    ORDER BY r.ride_date, r.ride_time
+  SELECT 
+    r.id AS ride_id,
+    r.start_location,
+    r.destination,
+    r.ride_date,
+    r.ride_time,
+    r.seats_available,
+    r.pickup_description,
+    u.firstName AS driver_first_name,
+    u.lastName AS driver_last_name,
+    d.rating AS driver_rating,
+    d.review_count
+  FROM 
+    rides r
+  JOIN 
+    users u ON r.driver_id = u.id
+  JOIN 
+    driver d ON u.id = d.driver_id
+  WHERE 
+    u.role = 'driver'
+  ORDER BY 
+    r.ride_date, r.ride_time;
   `;
 
   try {

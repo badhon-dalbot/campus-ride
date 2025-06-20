@@ -6,7 +6,7 @@ const CampusRideHeader = () => (
   <div className="w-full bg-white border-b border-gray-200 px-6 py-4">
     <div className="flex items-center justify-between max-w-6xl mx-auto">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{backgroundColor: '#17252A'}}>
+        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#17252A' }}>
           <span className="text-white font-bold text-sm">C</span>
         </div>
         <h1 className="text-xl font-bold text-gray-900">CampusRide</h1>
@@ -30,7 +30,7 @@ const CampusRideHeader = () => (
 );
 
 const CampusRideFooter = () => (
-  <div className="w-full text-white px-6 py-8 mt-12" style={{backgroundColor: '#17252A'}}>
+  <div className="w-full text-white px-6 py-8 mt-12" style={{ backgroundColor: '#17252A' }}>
     <div className="max-w-6xl mx-auto">
       <div className="text-center text-sm text-gray-400">
         <p>&copy; 2025 CampusRide. All rights reserved.</p>
@@ -163,9 +163,9 @@ export default function DriverProfilePage() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <CampusRideHeader />
-      
+
       {/* Main Content */}
-      <div className="flex-1 p-6" style={{backgroundColor: '#EBF5F5'}}>
+      <div className="flex-1 p-6" style={{ backgroundColor: '#EBF5F5' }}>
         <div className="max-w-6xl mx-auto">
           {!isEditingProfile ? (
             <>
@@ -182,32 +182,32 @@ export default function DriverProfilePage() {
                 {/* Left Column - Driver Info */}
                 <div className="space-y-6">
                   {/* Driver Profile Card */}
-                  <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                  <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                     <div className="text-center">
                       {/* Profile Picture */}
                       <div className="relative inline-block mb-4">
                         <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
                           <span className="text-2xl text-gray-400">👤</span>
                         </div>
-                        <div className="absolute -bottom-1 -right-1 text-white rounded-full w-6 h-6 flex items-center justify-center" style={{backgroundColor: '#17252A'}}>
+                        <div className="absolute -bottom-1 -right-1 text-white rounded-full w-6 h-6 flex items-center justify-center" style={{ backgroundColor: '#17252A' }}>
                           <span className="text-xs">✓</span>
                         </div>
                       </div>
-                      
+
                       {/* Name and Verification */}
                       <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.name}</h2>
-                      <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{backgroundColor: '#17252A'}}>
+                      <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{ backgroundColor: '#17252A' }}>
                         <Award className="w-3 h-3" />
                         Verified Driver
                       </div>
-                      
+
                       {/* Driver Rating */}
                       <div className="flex items-center justify-center gap-1 mb-2">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
                         <span className="font-semibold">4.9</span>
                         <span className="text-gray-500 text-sm">(89 trips)</span>
                       </div>
-                      
+
                       <p className="text-gray-500 text-sm mb-4">Driving since March 2020</p>
                     </div>
 
@@ -227,10 +227,10 @@ export default function DriverProfilePage() {
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       onClick={handleEditProfile}
                       className="w-full mt-4 text-white py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                      style={{backgroundColor: '#17252A'}}
+                      style={{ backgroundColor: '#17252A' }}
                     >
                       <Edit3 className="w-4 h-4" />
                       Edit Profile
@@ -238,7 +238,7 @@ export default function DriverProfilePage() {
                   </div>
 
                   {/* Driver Stats */}
-                  <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                  <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Stats</h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
@@ -280,7 +280,7 @@ export default function DriverProfilePage() {
                   </div>
 
                   {/* Current Vehicle */}
-                  <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                  <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Vehicle</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
@@ -301,18 +301,17 @@ export default function DriverProfilePage() {
                 {/* Right Column - Tabs Content */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Tabs */}
-                  <div className="rounded-lg border border-gray-200 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                  <div className="rounded-lg border border-gray-200 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                     <div className="grid grid-cols-5">
                       {tabs.map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
-                          className={`px-4 py-3 font-medium text-sm transition-colors border-b-2 ${
-                            activeTab === tab
+                          className={`px-4 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === tab
                               ? 'border-gray-900 text-gray-900'
                               : 'border-transparent text-gray-600 hover:text-gray-800'
-                          }`}
-                          style={activeTab === tab ? {backgroundColor: '#EBF5F5'} : {}}
+                            }`}
+                          style={activeTab === tab ? { backgroundColor: '#EBF5F5' } : {}}
                         >
                           {tab}
                         </button>
@@ -324,11 +323,11 @@ export default function DriverProfilePage() {
                   {activeTab === 'Overview' && (
                     <div className="space-y-6">
                       {/* About Me Block */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="text-lg font-semibold text-gray-900">About Me</h3>
                           {!isEditingBio && (
-                            <button 
+                            <button
                               onClick={handleEditBio}
                               className="text-gray-600 hover:text-gray-800 text-sm flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
                             >
@@ -346,14 +345,14 @@ export default function DriverProfilePage() {
                               placeholder="Tell passengers about your driving experience..."
                             />
                             <div className="flex gap-2 mt-3">
-                              <button 
+                              <button
                                 onClick={handleSaveBio}
                                 className="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                                style={{backgroundColor: '#17252A'}}
+                                style={{ backgroundColor: '#17252A' }}
                               >
                                 Save
                               </button>
-                              <button 
+                              <button
                                 onClick={handleCancelEdit}
                                 className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
                               >
@@ -367,19 +366,18 @@ export default function DriverProfilePage() {
                       </div>
 
                       {/* Driver Preferences Block */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Preferences</h3>
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-gray-700">🎵 Music allowed</span>
                             <button
                               onClick={() => togglePreference('musicAllowed')}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                preferences.musicAllowed
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${preferences.musicAllowed
                                   ? 'text-white'
                                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                              }`}
-                              style={preferences.musicAllowed ? {backgroundColor: '#17252A'} : {}}
+                                }`}
+                              style={preferences.musicAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
                               {preferences.musicAllowed ? 'Yes' : 'No'}
                             </button>
@@ -388,12 +386,11 @@ export default function DriverProfilePage() {
                             <span className="text-gray-700">🐕 Pets allowed</span>
                             <button
                               onClick={() => togglePreference('petsAllowed')}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                preferences.petsAllowed
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${preferences.petsAllowed
                                   ? 'text-white'
                                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                              }`}
-                              style={preferences.petsAllowed ? {backgroundColor: '#17252A'} : {}}
+                                }`}
+                              style={preferences.petsAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
                               {preferences.petsAllowed ? 'Yes' : 'No'}
                             </button>
@@ -402,12 +399,11 @@ export default function DriverProfilePage() {
                             <span className="text-gray-700">🚭 No smoking</span>
                             <button
                               onClick={() => togglePreference('smokingAllowed')}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                !preferences.smokingAllowed
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${!preferences.smokingAllowed
                                   ? 'text-white'
                                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                              }`}
-                              style={!preferences.smokingAllowed ? {backgroundColor: '#17252A'} : {}}
+                                }`}
+                              style={!preferences.smokingAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
                               {!preferences.smokingAllowed ? 'No Smoking' : 'Allowed'}
                             </button>
@@ -416,19 +412,18 @@ export default function DriverProfilePage() {
                             <span className="text-gray-700">🤫 Quiet rides available</span>
                             <button
                               onClick={() => togglePreference('quietRides')}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                preferences.quietRides
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${preferences.quietRides
                                   ? 'text-white'
                                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                              }`}
-                              style={preferences.quietRides ? {backgroundColor: '#17252A'} : {}}
+                                }`}
+                              style={preferences.quietRides ? { backgroundColor: '#17252A' } : {}}
                             >
                               {preferences.quietRides ? 'Yes' : 'No'}
                             </button>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-gray-700">👥 Max passengers</span>
-                            <span className="px-3 py-1 rounded-full text-xs font-medium text-white" style={{backgroundColor: '#17252A'}}>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium text-white" style={{ backgroundColor: '#17252A' }}>
                               {preferences.maxPassengers}
                             </span>
                           </div>
@@ -436,7 +431,7 @@ export default function DriverProfilePage() {
                       </div>
 
                       {/* Verification Status */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Verification Status</h3>
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
@@ -475,7 +470,7 @@ export default function DriverProfilePage() {
                   {activeTab === 'Vehicle' && (
                     <div className="space-y-6">
                       {/* Vehicle Details */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="text-lg font-semibold text-gray-900">Vehicle Information</h3>
                           <button className="text-gray-600 hover:text-gray-800 text-sm flex items-center gap-1">
@@ -512,7 +507,7 @@ export default function DriverProfilePage() {
                       </div>
 
                       {/* Vehicle Photos */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Vehicle Photos</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {[1, 2, 3, 4].map((i) => (
@@ -521,14 +516,14 @@ export default function DriverProfilePage() {
                             </div>
                           ))}
                         </div>
-                        <button className="mt-4 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2" style={{backgroundColor: '#17252A'}}>
+                        <button className="mt-4 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2" style={{ backgroundColor: '#17252A' }}>
                           <Camera className="w-4 h-4" />
                           Add Photos
                         </button>
                       </div>
 
                       {/* Maintenance Records */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Maintenance History</h3>
                         <div className="space-y-3">
                           <div className="flex items-center justify-between py-2 border-b border-gray-300">
@@ -567,14 +562,14 @@ export default function DriverProfilePage() {
                   )}
 
                   {activeTab === 'Reviews' && (
-                    <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                    <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Reviews & Ratings</h3>
-                      <div className="mb-6 p-4 rounded-lg" style={{backgroundColor: '#EBF5F5'}}>
+                      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: '#EBF5F5' }}>
                         <div className="flex items-center gap-4">
                           <div className="text-center">
                             <div className="text-3xl font-bold text-gray-900">4.9</div>
                             <div className="flex items-center justify-center">
-                              {[1,2,3,4,5].map(i => (
+                              {[1, 2, 3, 4, 5].map(i => (
                                 <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                               ))}
                             </div>
@@ -582,14 +577,14 @@ export default function DriverProfilePage() {
                           </div>
                           <div className="flex-1">
                             <div className="space-y-1">
-                              {[5,4,3,2,1].map(rating => (
+                              {[5, 4, 3, 2, 1].map(rating => (
                                 <div key={rating} className="flex items-center gap-2">
                                   <span className="text-sm w-4">{rating}</span>
                                   <Star className="w-3 h-3 text-yellow-400 fill-current" />
                                   <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                    <div 
-                                      className="bg-yellow-400 h-2 rounded-full" 
-                                      style={{width: rating === 5 ? '85%' : rating === 4 ? '12%' : '2%'}}
+                                    <div
+                                      className="bg-yellow-400 h-2 rounded-full"
+                                      style={{ width: rating === 5 ? '85%' : rating === 4 ? '12%' : '2%' }}
                                     ></div>
                                   </div>
                                   <span className="text-sm text-gray-500 w-8">{rating === 5 ? '76' : rating === 4 ? '11' : '2'}</span>
@@ -610,10 +605,10 @@ export default function DriverProfilePage() {
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="font-medium text-gray-900">{review.reviewer}</span>
                                   <div className="flex">
-                                    {[1,2,3,4,5].map(i => (
-                                      <Star 
-                                        key={i} 
-                                        className={`w-3 h-3 ${i <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                                    {[1, 2, 3, 4, 5].map(i => (
+                                      <Star
+                                        key={i}
+                                        className={`w-3 h-3 ${i <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                                       />
                                     ))}
                                   </div>
@@ -635,7 +630,7 @@ export default function DriverProfilePage() {
                   {activeTab === 'Earnings' && (
                     <div className="space-y-6">
                       {/* Earnings Summary */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Earnings Summary</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div className="text-center">
@@ -658,11 +653,11 @@ export default function DriverProfilePage() {
                       </div>
 
                       {/* Monthly Breakdown */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Breakdown</h3>
                         <div className="space-y-3">
                           {earnings.map((month, index) => (
-                            <div key={index} className="p-4 rounded-lg" style={{backgroundColor: '#EBF5F5'}}>
+                            <div key={index} className="p-4 rounded-lg" style={{ backgroundColor: '#EBF5F5' }}>
                               <div className="flex items-center justify-between mb-2">
                                 <span className="font-medium text-gray-900">{month.month}</span>
                                 <span className="text-lg font-bold text-gray-900">${month.earnings.toFixed(2)}</span>
@@ -687,7 +682,7 @@ export default function DriverProfilePage() {
                       </div>
 
                       {/* Payment Methods */}
-                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Payout Method</h3>
                         <div className="space-y-4">
                           <div className="border border-gray-300 rounded-lg p-4">
@@ -708,7 +703,7 @@ export default function DriverProfilePage() {
                   )}
 
                   {activeTab === 'Settings' && (
-                    <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                    <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver Settings</h3>
                       <div className="space-y-6">
                         <div>
@@ -787,7 +782,7 @@ export default function DriverProfilePage() {
             /* Edit Profile Page */
             <>
               <div className="mb-6">
-                <button 
+                <button
                   onClick={handleCancelProfileEdit}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4"
                 >
@@ -799,19 +794,19 @@ export default function DriverProfilePage() {
 
               <div className="max-w-2xl mx-auto space-y-6">
                 {/* Profile Picture Section */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
                   <div className="flex items-center gap-6">
                     <div className="relative">
                       <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
                         <span className="text-2xl text-gray-400">👤</span>
                       </div>
-                      <div className="absolute -bottom-1 -right-1 text-white rounded-full w-6 h-6 flex items-center justify-center" style={{backgroundColor: '#17252A'}}>
+                      <div className="absolute -bottom-1 -right-1 text-white rounded-full w-6 h-6 flex items-center justify-center" style={{ backgroundColor: '#17252A' }}>
                         <span className="text-xs">✓</span>
                       </div>
                     </div>
                     <div>
-                      <button className="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mr-3" style={{backgroundColor: '#17252A'}}>
+                      <button className="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mr-3" style={{ backgroundColor: '#17252A' }}>
                         Upload New Photo
                       </button>
                       <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors">
@@ -823,7 +818,7 @@ export default function DriverProfilePage() {
                 </div>
 
                 {/* Personal Information */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -866,7 +861,7 @@ export default function DriverProfilePage() {
                 </div>
 
                 {/* Driver License Information */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Driver License Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -891,7 +886,7 @@ export default function DriverProfilePage() {
                 </div>
 
                 {/* Insurance Information */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Insurance Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -925,7 +920,7 @@ export default function DriverProfilePage() {
                 </div>
 
                 {/* Emergency Contact */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Emergency Contact</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -951,7 +946,7 @@ export default function DriverProfilePage() {
                 </div>
 
                 {/* Bio Section */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">About Me</h3>
                   <textarea
                     value={bio}
@@ -963,14 +958,14 @@ export default function DriverProfilePage() {
 
                 {/* Save/Cancel Buttons */}
                 <div className="flex gap-4 pt-4">
-                  <button 
+                  <button
                     onClick={handleSaveProfile}
                     className="flex-1 text-white py-3 rounded-lg text-sm font-medium transition-colors"
-                    style={{backgroundColor: '#17252A'}}
+                    style={{ backgroundColor: '#17252A' }}
                   >
                     Save Changes
                   </button>
-                  <button 
+                  <button
                     onClick={handleCancelProfileEdit}
                     className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
                   >
@@ -982,7 +977,7 @@ export default function DriverProfilePage() {
           )}
         </div>
       </div>
-      
+
       {/* Footer */}
       <CampusRideFooter />
     </div>

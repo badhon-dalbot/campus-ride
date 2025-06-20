@@ -112,6 +112,13 @@ const register = async (req, res) => {
       role,
       message: "User registered successfully",
     });
+
+    if (role === "driver") {
+      await db.query(
+        "INSERT INTO driver (user_id, rating, review_count) VALUES (?, ?, ?)",
+        [rows.insertId, 0, 0]
+      );
+    }
   } catch (error) {
     res.status(500).json({ error: "Error registering user" });
   }

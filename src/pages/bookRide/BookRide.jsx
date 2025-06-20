@@ -9,14 +9,14 @@ import PaymentMethod from './PaymentMethod.jsx';
 import PaymentDetails from './PaymentDetails.jsx';
 
 export default function RideBookingApp() {
-  
-  
+
+
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header - Full width, no margins */}
       <CampusRideHeader />
-      
+
       {/* Main Content - With page margins */}
       <div className="flex-1 bg-[#E8F1F1] p-6">
         <div className="max-w-4xl mx-auto">
@@ -34,10 +34,10 @@ export default function RideBookingApp() {
             {/* Left Column */}
             <div className="flex-1 space-y-4">
               {/* Ride Summary */}
-              <RideSummary/>
+              <RideSummary />
 
               {/* Message to Driver */}
-             
+
               <MessageBox />
               {/* Payment Method */}
               <PaymentMethod />
@@ -50,7 +50,7 @@ export default function RideBookingApp() {
           </div>
         </div>
       </div>
-      
+
       {/* Footer - Full width, no margins */}
       <CampusRideFooter />
     </div>

@@ -96,15 +96,15 @@ export default function CampusRideLogin() {
 
       // Role-based redirection
       // ===Make sure you have routes/pages for /admin/dashboard===
-      // if (data.user.role === "admin") {
-      //   window.location.href = "";
-      // } else if (data.user.role === "drive") {
-      //   window.location.href = "/driverProfile";
-      // } else if (data.user.role === "ride") {
-      //   window.location.href = "";
-      // } else {
-      //   alert("Unknown role. Please contact support.");
-      // }
+      if (data.user.role === "admin") {
+        window.location.href = "";
+      } else if (data.user.role === "driver") {
+        window.location.href = "/driverProfile";
+      } else if (data.user.role === "rider") {
+        window.location.href = "/findride";
+      } else {
+        alert("Unknown role. Please contact support.");
+      }
     } catch (err) {
       setErrorMessage("Network error. Please try again.");
     }
