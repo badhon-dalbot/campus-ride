@@ -6,7 +6,7 @@ export default function LoginFooter() {
       <img
         src={logo}
         alt="Campus Ride Logo"
-        className="h-40 object-contain mt-7"
+        className="h-40 object-contain mt-7 ml-10"
       />
     </footer>
   );

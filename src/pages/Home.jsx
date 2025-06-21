@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import Driver_image from "../assets/images/Driver_image.png";
 import homeActivity from "../assets/images/home_activity.png";
+import CampusRideFooter from "../components/CampusRideFooter";
 import CampusRideHeader from "../components/CampusRideHeader";
 
 const LandingPage = () => {
@@ -219,36 +220,6 @@ const LandingPage = () => {
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       {/* Header */}
-      {/* <header className="bg-[#1f2b38] shadow-md flex justify-between items-center px-10 py-4 sticky top-0 z-50 text-white">
-        <div className="text-2xl font-bold flex items-center gap-1">
-          <span className="text-white">Campus</span>Ride
-        </div>
-        <nav className="hidden md:flex space-x-8 text-sm font-medium">
-          <Link to="/" className="hover:text-blue-300 transition">
-            Home
-          </Link>
-          <Link to="/services" className="hover:text-blue-300 transition">
-            Services
-          </Link>
-          <Link to="/ride" className="hover:text-blue-300 transition">
-            Ride
-          </Link>
-          <Link to="/aboutus" className="hover:text-blue-300 transition">
-            About Us
-          </Link>
-          <Link to="/help" className="hover:text-blue-300 transition">
-            Help
-          </Link>
-        </nav>
-        <div className="space-x-4">
-          <button className="bg-[#FEFFFF] text-[#17252A] px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
-            <Link to="/login">Login</Link>
-          </button>
-          <button className="bg-[#FEFFFF] text-[#17252A] px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
-            <Link to="/signup">Sign Up</Link>
-          </button>
-        </div>
-      </header> */}
       <CampusRideHeader />
 
       {/* Hero Section */}
@@ -516,76 +487,7 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1f2b38] text-white px-10 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          <div>
-            <h4 className="font-bold mb-3">Company</h4>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a href="#" className="hover:underline">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Blog
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Products</h4>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a href="#" className="hover:underline">
-                  Ride
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Reserve
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Share your Ride
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Travel</h4>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a href="#" className="hover:underline">
-                  University
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  City
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Campus
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p className="text-sm">
-              CampusRide is a Community-Based Ridesharing Platform developed to
-              empower campus commuters with smart travel options.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <CampusRideFooter />
     </div>
   );
 };

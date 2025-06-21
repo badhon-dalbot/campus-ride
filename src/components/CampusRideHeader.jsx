@@ -38,8 +38,8 @@ export default function CampusRideHeader() {
   }, []);
 
   return (
-    <header className="bg-[#17252A] text-[#FEFFFF] px-8 py-2 shadow-md">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
+    <header className="bg-[#17252A] text-white  py-2 shadow-md">
+      <div className="flex items-center justify-between w-container mx-auto">
         {/* Logo Section */}
         <div>
           <Link to="/">
