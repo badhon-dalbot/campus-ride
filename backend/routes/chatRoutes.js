@@ -1,9 +1,9 @@
 import express from "express";
-import { message, sendMessage } from "../controllers/chatController.js";
+import { getChat } from "../controllers/chatController.js";
 
 const router = express.Router();
 
-router.get("/:user1/:user2", message);
-router.post("/", sendMessage);
-
+// router.get("/:user1/:user2", message);
+// router.post("/", sendMessage);
+ router.get("/:bookingId", getChat);
 export default router;

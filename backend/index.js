@@ -3,16 +3,28 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import authRoutes from "./routes/authRoutes.js";
-import ridesRoutes from "./routes/ridesRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import ridesRoutes from "./routes/ridesRoutes.js";
+import chatSocket from "./sockets/chatSocket.js";
 import driverRoutes from "./routes/driverRoutes.js";
 dotenv.config();
 const app = express();
 
 const port = 3000;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 // CORS configuration for frontend to access backend
 app.use(
@@ -29,11 +41,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
 // Routes for authentication and user management
 app.use("/api/auth", authRoutes);
 
-// Routes for rides management 
+// Routes for rides management
 app.use("/api/rides", ridesRoutes);
 
 // Routes for payment processing
@@ -48,6 +59,7 @@ app.use("/api/chat", chatRoutes);
 // Routes for driver management
 app.use("/api/driver", driverRoutes);
 
+chatSocket(io);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -61,9 +73,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, () => {
+server.listen(port, () => {
   console.log("===============================================");
   console.log(`\n  Server is running at http://localhost:${port}\n`);
   console.log("===============================================");
-
 });
