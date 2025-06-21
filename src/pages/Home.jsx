@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import homeActivity from "../assets/images/home_activity.png";
+import Driver_image from "../assets/images/Driver_image.png";
 
 const LandingPage = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -454,7 +455,7 @@ const LandingPage = () => {
       {/* Driver Call to Action */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-10 px-10 py-20 items-center bg-[#f9fbfc]">
         <img
-          src="/driver-illustration.png"
+          src={Driver_image}
           alt="Driver"
           className="w-full rounded-xl shadow-md"
         />
