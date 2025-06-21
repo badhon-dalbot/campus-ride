@@ -13,6 +13,7 @@ import Payment from '../pages/payment/payment.jsx';
 import Chatting from '../pages/chat/chatting.jsx';
 import AboutUs from '../pages/AboutUs.jsx';
 import HelpPage from '../pages/HelpCenter.jsx';
+import DriverDashboard from '../pages/DriverDashboard.jsx';
 
 
 const AppRoutes = () => (
@@ -32,6 +33,7 @@ const AppRoutes = () => (
     <Route path="/chatting" element={<Chatting/>}/>
     <Route path="/aboutus" element = {<AboutUs/>}/>
     <Route path="/help" element={<HelpPage />} />
+    <Route path="/driverdash" element={<DriverDashboard/>}/>
 
   </Routes>
 );
