@@ -12,6 +12,8 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import ridesRoutes from "./routes/ridesRoutes.js";
 import chatSocket from "./sockets/chatSocket.js";
 import driverRoutes from "./routes/driverRoutes.js";
+import riderRoutes from "./routes/riderRoutes.js";
+
 dotenv.config();
 const app = express();
 
@@ -58,6 +60,9 @@ app.use("/api/chat", chatRoutes);
 
 // Routes for driver management
 app.use("/api/driver", driverRoutes);
+
+// Routes for rider management
+app.use("/api/rider", riderRoutes);
 
 chatSocket(io);
 

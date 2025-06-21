@@ -21,7 +21,6 @@ export default function FindRide() {
         console.error("Error fetching rides:", error);
       });
   }, []);
-  console.log(rides);
 
   return (
     <div className="min-h-screen flex flex-col">

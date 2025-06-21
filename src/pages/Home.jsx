@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, InfoWindow, Circle } from '@react-google-maps/api';
 import homeActivity from "../assets/images/home_activity.png";
 import Driver_image from "../assets/images/Driver_image.png";
 
@@ -33,11 +33,11 @@ const LandingPage = () => {
         (position) => {
           const { latitude, longitude, accuracy } = position.coords;
           console.log('Location obtained:', { latitude, longitude, accuracy });
-          
-          resolve({ 
-            lat: latitude, 
-            lng: longitude, 
-            accuracy: accuracy 
+
+          resolve({
+            lat: latitude,
+            lng: longitude,
+            accuracy: accuracy
           });
         },
         (error) => {
@@ -57,7 +57,7 @@ const LandingPage = () => {
       try {
         console.log('Starting location detection...');
         const location = await getCurrentLocation();
-        
+
         setUserLocation(location);
         setLocationAccuracy(location.accuracy);
         setIsLoading(false);
@@ -112,25 +112,25 @@ const LandingPage = () => {
     setShowFallback(false);
     setMapLoaded(false);
     locationInitialized.current = false;
-    
+
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current);
     }
-    
+
     try {
       console.log('Retrying location detection...');
       const location = await getCurrentLocation();
       setUserLocation(location);
       setLocationAccuracy(location.accuracy);
       setIsLoading(false);
-      
+
       // Set timeout for fallback
       fallbackTimeoutRef.current = setTimeout(() => {
         if (!mapLoaded) {
           setShowFallback(true);
         }
       }, 5000);
-      
+
     } catch (error) {
       console.error("Error getting location:", error);
       setLocationError('Location access denied or unavailable');
@@ -180,7 +180,7 @@ const LandingPage = () => {
     setMapLoaded(true);
     setMapError(false);
     setShowFallback(false);
-    
+
     // Clear the fallback timeout since map loaded successfully
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current);
@@ -191,12 +191,12 @@ const LandingPage = () => {
     console.error('Google Maps error:', error);
     setMapError(true);
     setShowFallback(true);
-    
+
     // Clear the fallback timeout since we're showing fallback now
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current);
     }
-    
+
     // Check for specific billing error
     if (error.message && error.message.includes('BillingNotEnabled')) {
       setLocationError('Google Maps API requires billing to be enabled. Please enable billing for your API key.');
@@ -266,7 +266,7 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Map */}
         <div>
           <div className="rounded-xl shadow-md w-full h-96 bg-gray-100 flex items-center justify-center relative overflow-hidden">
@@ -279,7 +279,7 @@ const LandingPage = () => {
                 </div>
               </div>
             )}
-            
+
             {locationError && !isLoading && (
               <div className="text-center p-4 absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
                 <div>
@@ -289,7 +289,7 @@ const LandingPage = () => {
                     </svg>
                     <p className="text-sm">{locationError}</p>
                   </div>
-                  <button 
+                  <button
                     onClick={handleRetryLocation}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition"
                   >
@@ -298,9 +298,9 @@ const LandingPage = () => {
                 </div>
               </div>
             )}
-            
+
             {userLocation && !isLoading && !showFallback && !mapError && (
-              <LoadScript 
+              <LoadScript
                 googleMapsApiKey="AIzaSyBOG7IFo26OQPV4lPHQweWDhxp_xLSMpSw"
                 onError={onError}
               >
@@ -313,13 +313,28 @@ const LandingPage = () => {
                   onLoad={onLoad}
                 >
                   {mapLoaded && (
-                    <Marker
-                      position={userLocation}
-                      title="Your Current Location"
-                      onClick={() => setShowInfoWindow(true)}
-                    />
+                    <>
+                      <Marker
+                        position={userLocation}
+                        title="Your Current Location"
+                        onClick={() => setShowInfoWindow(true)}
+                      />
+                      {locationAccuracy && (
+                        <Circle
+                          center={userLocation}
+                          radius={locationAccuracy}
+                          options={{
+                            fillColor: '#4285F4',
+                            fillOpacity: 0.1,
+                            strokeColor: '#4285F4',
+                            strokeOpacity: 0.3,
+                            strokeWeight: 1,
+                          }}
+                        />
+                      )}
+                    </>
                   )}
-                  
+
                   {showInfoWindow && (
                     <InfoWindow
                       position={userLocation}
@@ -328,7 +343,7 @@ const LandingPage = () => {
                       <div className="p-2">
                         <h3 className="font-semibold text-sm">Your Location</h3>
                         <p className="text-xs text-gray-600">
-                          Lat: {userLocation.lat.toFixed(6)}<br/>
+                          Lat: {userLocation.lat.toFixed(6)}<br />
                           Lng: {userLocation.lng.toFixed(6)}
                         </p>
                         {locationAccuracy && (
@@ -342,9 +357,9 @@ const LandingPage = () => {
                 </GoogleMap>
               </LoadScript>
             )}
-            
+
             {userLocation && !isLoading && (showFallback || mapError) && (
-              <div 
+              <div
                 className="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl cursor-pointer hover:shadow-lg transition-shadow flex items-center justify-center relative"
                 onClick={handleMapClick}
               >
@@ -358,7 +373,7 @@ const LandingPage = () => {
                   <p className="text-sm text-gray-600 mb-4">
                     {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}
                   </p>
-                  <button 
+                  <button
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 transition"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -375,7 +390,7 @@ const LandingPage = () => {
               </div>
             )}
           </div>
-          
+
         </div>
       </section>
 

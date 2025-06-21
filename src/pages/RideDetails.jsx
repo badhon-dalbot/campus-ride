@@ -22,7 +22,7 @@ const RideDetails = () => {
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       {/* Header */}
-        <CampusRideHeader />
+      <CampusRideHeader />
 
       {/* Page Title */}
       <div className="px-10 py-10">

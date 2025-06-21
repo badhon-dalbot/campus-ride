@@ -19,19 +19,13 @@ export default function StudentInfoCard({ profileData, onEditProfile }) {
           </div>
           
           {/* Name and Verification */}
-          <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.name}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.firstName} {profileData.lastName}</h2>
           <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{backgroundColor: '#17252A'}}>
             <GraduationCap className="w-3 h-3" />
             Verified Student
           </div>
-          
-          {/* Student Info */}
-          <div className="text-sm text-gray-600 mb-2">
-            <div>{profileData.major}</div>
-            <div>Class of {profileData.graduationYear}</div>
-          </div>
-          
-          <p className="text-gray-500 text-sm mb-4">Member since September 2022</p>
+
+          <p className="text-gray-500 text-sm mb-4">Member since {profileData.since ? new Date(profileData.since).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''}</p>
         </div>
 
         {/* Contact Info */}
@@ -43,10 +37,6 @@ export default function StudentInfoCard({ profileData, onEditProfile }) {
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <Phone className="w-4 h-4" />
             <span>{profileData.phone}</span>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <Building className="w-4 h-4" />
-            <span>{profileData.dormBuilding} - Room {profileData.roomNumber}</span>
           </div>
         </div>
 

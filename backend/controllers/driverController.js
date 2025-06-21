@@ -12,6 +12,7 @@ const getDriverProfile = async (req, res) => {
         u.email,
         u.phone,
         u.document,
+        u.created_at,
         d.rating,
         d.review_count,
         v.make,

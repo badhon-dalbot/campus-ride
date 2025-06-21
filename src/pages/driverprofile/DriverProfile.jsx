@@ -57,6 +57,7 @@ export default function DriverProfilePage() {
     phone: '',
     university: '',
     studentId: '',
+    since: '--',
     emergencyContact: '',
     emergencyName: '',
     licenseNumber: '',
@@ -182,6 +183,7 @@ export default function DriverProfilePage() {
           name: `${data.firstName} ${data.lastName}`,
           email: data.email,
           phone: data.phone,
+          since: data.created_at,
           university: data.university || '',
           studentId: data.studentId || '',
           emergencyContact: data.emergencyContact || '',
@@ -277,7 +279,7 @@ export default function DriverProfilePage() {
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />
-                        <span>Driver since March 2020</span>
+                        <span>Driver since {profileData.since ? new Date(profileData.since).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''}</span>
                       </div>
                     </div>
 
@@ -346,7 +348,7 @@ export default function DriverProfilePage() {
                       </div>
                       <div className="text-sm text-gray-600">
                         <div>License Plate: {vehicleData.licensePlate}</div>
-                        <div>Last Maintenance: {vehicleData.lastMaintenance}</div>
+                        <div>Last Maintenance: {vehicleData.lastMaintenance ? new Date(vehicleData.lastMaintenance).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit'}) : ''}</div>
                       </div>
                     </div>
                   </div>
@@ -555,7 +557,7 @@ export default function DriverProfilePage() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Last Maintenance</label>
-                            <div className="text-gray-900">{vehicleData.lastMaintenance}</div>
+                            <div className="text-gray-900">{vehicleData.lastMaintenance ? new Date(vehicleData.lastMaintenance).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit'}) : ''}</div>
                           </div>
                         </div>
                       </div>

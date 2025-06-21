@@ -1,5 +1,5 @@
-// StudentProfilePage.jsx
-import React, { useState } from 'react';
+// RiderProfilePage.jsx
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import CampusRideHeader from '../../assets/CampusRideHeader';
 import CampusRideFooter from '../../assets/CampusRideFooter';
@@ -23,18 +23,20 @@ export default function StudentProfilePage() {
     flexibleTiming: true
   });
   const [profileData, setProfileData] = useState({
-    name: 'Emma Chen',
-    email: 'emma.chen@university.edu',
-    phone: '+1 (555) 234-5678',
-    university: 'University of Technology',
-    studentId: 'UT2022003',
-    major: 'Computer Science',
-    graduationYear: '2026',
-    dormBuilding: 'North Hall',
-    roomNumber: '304',
-    emergencyContact: '+1 (555) 876-5432',
-    emergencyName: 'Linda Chen (Mother)'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    university: '',
+    studentId: '',
+    major: '',
+    graduationYear: '',
+    emergencyContact: '',
+    emergencyName: ''
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const tabs = ['Overview', 'Ride History', 'Payments', 'Settings'];
 
@@ -112,11 +114,50 @@ export default function StudentProfilePage() {
     }
   ];
 
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  console.log(user?.id);
+
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!user?.id) return;
+
+    setLoading(true);
+    fetch(`http://localhost:3000/api/rider/${user.id}/profile`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch rider profile");
+        return res.json();
+      })
+      .then((data) => {
+        console.log('Fetched rider profile:', data);
+        setProfileData({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          since: data.created_at,
+          university: data.university || '',
+          studentId: data.studentId || '',
+          major: data.major || '',
+          graduationYear: data.graduationYear || '',
+          emergencyContact: data.emergencyContact || '',
+          emergencyName: data.emergencyName || ''
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+
   return (
     <div className="min-h-screen flex flex-col">
       <CampusRideHeader />
-      
-      <div className="flex-1 p-6" style={{backgroundColor: '#EBF5F5'}}>
+
+      <div className="flex-1 p-6" style={{ backgroundColor: '#EBF5F5' }}>
         <div className="max-w-6xl mx-auto">
           {!isEditingProfile ? (
             <>
@@ -132,7 +173,7 @@ export default function StudentProfilePage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column - Student Info */}
                 <div className="space-y-6">
-                  <StudentInfoCard 
+                  <StudentInfoCard
                     profileData={profileData}
                     onEditProfile={handleEditProfile}
                   />
@@ -140,7 +181,7 @@ export default function StudentProfilePage() {
 
                 {/* Right Column - Tabs Content */}
                 <div className="lg:col-span-2 space-y-6">
-                  <TabNavigation 
+                  <TabNavigation
                     tabs={tabs}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
@@ -148,7 +189,7 @@ export default function StudentProfilePage() {
 
                   {/* Tab Content */}
                   {activeTab === 'Overview' && (
-                    <OverviewTab 
+                    <OverviewTab
                       bio={bio}
                       preferences={preferences}
                       onTogglePreference={togglePreference}
@@ -181,7 +222,7 @@ export default function StudentProfilePage() {
           )}
         </div>
       </div>
-      
+
       <CampusRideFooter />
     </div>
   );
