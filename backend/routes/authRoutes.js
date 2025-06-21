@@ -1,5 +1,10 @@
 import express from "express";
-import { login, logout, register } from "../controllers/authController.js";
+import {
+  checkToken,
+  login,
+  logout,
+  register,
+} from "../controllers/authController.js";
 import authenticateToken from "../middlewares/authenticate.js";
 import upload from "../middlewares/fileUploads.js";
 
@@ -7,8 +12,8 @@ const router = express.Router();
 
 router.post("/register", upload.single("document"), register);
 router.post("/login", login);
-router.post("/logout", authenticateToken, logout);
-// router.get("/refresh", refreshToken); // Refresh token route
+router.post("/logout", logout);
+router.get("/me", checkToken);
 router.get("/protected", authenticateToken, (req, res) => {
   res
     .status(200)
