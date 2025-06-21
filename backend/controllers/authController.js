@@ -168,7 +168,7 @@ const login = async (req, res) => {
     );
 
     res
-      .cookie("token", token, {
+      .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "Strict",
@@ -229,4 +229,17 @@ const logout = async (req, res) => {
   }
 };
 
-export { login, logout, refreshToken, register };
+const checkToken = async (req, res) => {
+  const token = req.cookies.refreshToken;
+  if (!token) return res.sendStatus(401);
+
+  const [rows] = await db.query(
+    "SELECT * FROM refresh_tokens WHERE token = ?",
+    [token]
+  );
+  if (!rows.length) return res.sendStatus(403);
+
+  res.sendStatus(200);
+};
+
+export { checkToken, login, logout, refreshToken, register };

@@ -1,8 +1,14 @@
-import { Link } from "react-router-dom";
-import { useEffect, useState, useCallback, useRef } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow, Circle } from '@react-google-maps/api';
-import homeActivity from "../assets/images/home_activity.png";
+import {
+  GoogleMap,
+  InfoWindow,
+  LoadScript,
+  Marker,
+} from "@react-google-maps/api";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Driver_image from "../assets/images/Driver_image.png";
+import homeActivity from "../assets/images/home_activity.png";
+import CampusRideFooter from "../components/CampusRideFooter";
+import CampusRideHeader from "../components/CampusRideHeader";
 
 const LandingPage = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -19,7 +25,7 @@ const LandingPage = () => {
   const getCurrentLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation not supported'));
+        reject(new Error("Geolocation not supported"));
         return;
       }
 
@@ -32,12 +38,12 @@ const LandingPage = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude, accuracy } = position.coords;
-          console.log('Location obtained:', { latitude, longitude, accuracy });
+          console.log("Location obtained:", { latitude, longitude, accuracy });
 
           resolve({
             lat: latitude,
             lng: longitude,
-            accuracy: accuracy
+            accuracy: accuracy,
           });
         },
         (error) => {
@@ -55,7 +61,7 @@ const LandingPage = () => {
 
     const initializeLocation = async () => {
       try {
-        console.log('Starting location detection...');
+        console.log("Starting location detection...");
         const location = await getCurrentLocation();
 
         setUserLocation(location);
@@ -65,24 +71,27 @@ const LandingPage = () => {
         // Set a timeout to show fallback if Google Maps doesn't load
         fallbackTimeoutRef.current = setTimeout(() => {
           if (!mapLoaded) {
-            console.log('Google Maps failed to load, showing fallback');
+            console.log("Google Maps failed to load, showing fallback");
             setShowFallback(true);
           }
         }, 5000);
-
       } catch (error) {
         console.error("Error:", error);
-        
-        if (error.message.includes('Geolocation')) {
-          setLocationError('Geolocation not supported');
-        } else if (error.message.includes('denied') || error.code === 1) {
-          setLocationError('Location access denied. Please allow location access in your browser settings.');
+
+        if (error.message.includes("Geolocation")) {
+          setLocationError("Geolocation not supported");
+        } else if (error.message.includes("denied") || error.code === 1) {
+          setLocationError(
+            "Location access denied. Please allow location access in your browser settings."
+          );
         } else if (error.code === 2) {
-          setLocationError('Location unavailable. Please check your internet connection.');
+          setLocationError(
+            "Location unavailable. Please check your internet connection."
+          );
         } else if (error.code === 3) {
-          setLocationError('Location request timeout. Please try again.');
+          setLocationError("Location request timeout. Please try again.");
         } else {
-          setLocationError('Failed to get location. Please try again.');
+          setLocationError("Failed to get location. Please try again.");
         }
 
         // Fallback to default location (Dhaka, Bangladesh)
@@ -118,7 +127,7 @@ const LandingPage = () => {
     }
 
     try {
-      console.log('Retrying location detection...');
+      console.log("Retrying location detection...");
       const location = await getCurrentLocation();
       setUserLocation(location);
       setLocationAccuracy(location.accuracy);
@@ -130,10 +139,9 @@ const LandingPage = () => {
           setShowFallback(true);
         }
       }, 5000);
-
     } catch (error) {
       console.error("Error getting location:", error);
-      setLocationError('Location access denied or unavailable');
+      setLocationError("Location access denied or unavailable");
       setIsLoading(false);
       setShowFallback(true);
     }
@@ -142,15 +150,15 @@ const LandingPage = () => {
   const handleMapClick = useCallback(() => {
     if (userLocation) {
       const googleMapsUrl = `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`;
-      console.log('Opening Google Maps:', googleMapsUrl);
-      window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
+      console.log("Opening Google Maps:", googleMapsUrl);
+      window.open(googleMapsUrl, "_blank", "noopener,noreferrer");
     }
   }, [userLocation]);
 
   const mapContainerStyle = {
-    width: '100%',
-    height: '100%',
-    borderRadius: '12px'
+    width: "100%",
+    height: "100%",
+    borderRadius: "12px",
   };
 
   const mapOptions = {
@@ -176,7 +184,7 @@ const LandingPage = () => {
   };
 
   const onLoad = useCallback((map) => {
-    console.log('Google Maps loaded successfully');
+    console.log("Google Maps loaded successfully");
     setMapLoaded(true);
     setMapError(false);
     setShowFallback(false);
@@ -188,7 +196,7 @@ const LandingPage = () => {
   }, []);
 
   const onError = useCallback((error) => {
-    console.error('Google Maps error:', error);
+    console.error("Google Maps error:", error);
     setMapError(true);
     setShowFallback(true);
 
@@ -198,53 +206,34 @@ const LandingPage = () => {
     }
 
     // Check for specific billing error
-    if (error.message && error.message.includes('BillingNotEnabled')) {
-      setLocationError('Google Maps API requires billing to be enabled. Please enable billing for your API key.');
+    if (error.message && error.message.includes("BillingNotEnabled")) {
+      setLocationError(
+        "Google Maps API requires billing to be enabled. Please enable billing for your API key."
+      );
     } else {
-      setLocationError('Google Maps API error. Please check your API key and billing settings.');
+      setLocationError(
+        "Google Maps API error. Please check your API key and billing settings."
+      );
     }
   }, []);
 
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       {/* Header */}
-      <header className="bg-[#1f2b38] shadow-md flex justify-between items-center px-10 py-4 sticky top-0 z-50 text-white">
-        <div className="text-2xl font-bold flex items-center gap-1">
-          <span className="text-white">Campus</span>Ride
-        </div>
-        <nav className="hidden md:flex space-x-8 text-sm font-medium">
-          <Link to="/" className="hover:text-blue-300 transition">
-            Home
-          </Link>
-          <Link to="/services" className="hover:text-blue-300 transition">
-            Services
-          </Link>
-          <Link to="/ride" className="hover:text-blue-300 transition">
-            Ride
-          </Link>
-          <Link to="/aboutus" className="hover:text-blue-300 transition">
-            About Us
-          </Link>
-          <Link to="/help" className="hover:text-blue-300 transition">
-            Help
-          </Link>
-        </nav>
-        <div className="space-x-4">
-          <button className="bg-[#FEFFFF] text-[#17252A] px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
-            <Link to="/login">Login</Link>
-          </button>
-          <button className="bg-[#FEFFFF] text-[#17252A] px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
-            <Link to="/signup">Sign Up</Link>
-          </button>
-        </div>
-      </header>
+      <CampusRideHeader />
 
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 px-10 py-14 items-center gap-12 bg-[#eaf4f5]">
         <div>
           <h1 className="text-5xl font-bold leading-tight mb-6">
-            Go anywhere with <span className="text-blue-700">Campus</span>Ride
+            Go anywhere with{" "}
+            <span className="inline-block relative highlight-banner px-4 py-1">
+              <span className="relative z-10 text-white font-bold">
+                CampusRide
+              </span>
+            </span>
           </h1>
+
           <div className="bg-white p-6 rounded-2xl shadow-lg space-y-4">
             <input
               type="text"
@@ -275,7 +264,9 @@ const LandingPage = () => {
                 <div>
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 mx-auto mb-2"></div>
                   <p className="text-gray-600">Loading your location...</p>
-                  <p className="text-xs text-gray-500 mt-1">Please allow location access if prompted</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Please allow location access if prompted
+                  </p>
                 </div>
               </div>
             )}
@@ -284,8 +275,18 @@ const LandingPage = () => {
               <div className="text-center p-4 absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
                 <div>
                   <div className="text-red-500 mb-2">
-                    <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    <svg
+                      className="w-8 h-8 mx-auto mb-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
                     </svg>
                     <p className="text-sm">{locationError}</p>
                   </div>
@@ -343,7 +344,8 @@ const LandingPage = () => {
                       <div className="p-2">
                         <h3 className="font-semibold text-sm">Your Location</h3>
                         <p className="text-xs text-gray-600">
-                          Lat: {userLocation.lat.toFixed(6)}<br />
+                          Lat: {userLocation.lat.toFixed(6)}
+                          <br />
                           Lng: {userLocation.lng.toFixed(6)}
                         </p>
                         {locationAccuracy && (
@@ -365,11 +367,21 @@ const LandingPage = () => {
               >
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Your Location</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Your Location
+                  </h3>
                   <p className="text-sm text-gray-600 mb-4">
                     {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}
                   </p>
@@ -382,7 +394,9 @@ const LandingPage = () => {
                   >
                     Open in Google Maps
                   </button>
-                  <p className="text-xs text-gray-500 mt-2">Click to open in Google Maps</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Click to open in Google Maps
+                  </p>
                 </div>
                 <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-2 py-1 rounded text-xs text-gray-700">
                   Click to open
@@ -390,7 +404,6 @@ const LandingPage = () => {
               </div>
             )}
           </div>
-
         </div>
       </section>
 
@@ -489,76 +502,7 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1f2b38] text-white px-10 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          <div>
-            <h4 className="font-bold mb-3">Company</h4>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a href="#" className="hover:underline">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Blog
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Products</h4>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a href="#" className="hover:underline">
-                  Ride
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Reserve
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Share your Ride
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Travel</h4>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a href="#" className="hover:underline">
-                  University
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  City
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Campus
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p className="text-sm">
-              CampusRide is a Community-Based Ridesharing Platform developed to
-              empower campus commuters with smart travel options.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <CampusRideFooter />
     </div>
   );
 };

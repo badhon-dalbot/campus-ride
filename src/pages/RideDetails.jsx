@@ -1,22 +1,20 @@
-import React from 'react';
-
-import CampusRideFooter from '../assets/CampusRideFooter.jsx';
-import CampusRideHeader from '../assets/CampusRideHeader.jsx';
+import CampusRideFooter from "../components/CampusRideFooter.jsx";
+import CampusRideHeader from "../components/CampusRideHeader.jsx";
 
 import {
-  MapPin,
   Calendar,
-  Clock,
-  Route,
   CarFront,
-  Info,
-  UserCheck,
-  Phone,
-  DollarSign,
+  Clock,
   CreditCard,
-  Users,
+  DollarSign,
+  Info,
+  MapPin,
+  Phone,
+  Route,
   StickyNote,
-} from 'lucide-react';
+  UserCheck,
+  Users,
+} from "lucide-react";
 
 const RideDetails = () => {
   return (
@@ -26,7 +24,10 @@ const RideDetails = () => {
 
       {/* Page Title */}
       <div className="px-10 py-10">
-        <h1 className="text-4xl font-bold mb-10 flex items-center gap-2"><Route size={28} />Ride Details</h1>
+        <h1 className="text-4xl font-bold mb-10 flex items-center gap-2">
+          <Route size={28} />
+          Ride Details
+        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Left Side: Ride Information */}
@@ -69,7 +70,10 @@ const RideDetails = () => {
             </div>
 
             {/* Trip Details Heading */}
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><Info size={18} />Trip Details</h2>
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Info size={18} />
+              Trip Details
+            </h2>
 
             {/* Trip Details Boxes */}
             <div className="grid grid-cols-3 gap-6 text-center text-sm">
@@ -92,13 +96,17 @@ const RideDetails = () => {
 
             {/* Stops and Description */}
             <div>
-              <h3 className="font-semibold mt-6 mb-1 flex items-center gap-1"><StickyNote size={16} />Stops</h3>
+              <h3 className="font-semibold mt-6 mb-1 flex items-center gap-1">
+                <StickyNote size={16} />
+                Stops
+              </h3>
               <ul className="list-disc list-inside text-sm space-y-1 text-gray-700">
                 <li>Coffee Shop</li>
                 <li>Library</li>
               </ul>
               <div className="bg-white rounded-lg shadow-md p-4 mt-3 text-sm text-gray-600 italic">
-                Regular commute to campus. I usually park near the Engineering building. Air conditioning, comfortable seats, and good music!
+                Regular commute to campus. I usually park near the Engineering
+                building. Air conditioning, comfortable seats, and good music!
               </div>
             </div>
 
@@ -108,8 +116,12 @@ const RideDetails = () => {
                 <CarFront />
               </div>
               <div>
-                <h4 className="font-semibold text-sm mb-1">Vehicle Information</h4>
-                <p className="text-sm text-gray-700">Toyota Prius (Blue 2020)</p>
+                <h4 className="font-semibold text-sm mb-1">
+                  Vehicle Information
+                </h4>
+                <p className="text-sm text-gray-700">
+                  Toyota Prius (Blue 2020)
+                </p>
                 <p className="text-sm text-gray-500">License: ABC-1234</p>
               </div>
             </div>
@@ -121,7 +133,10 @@ const RideDetails = () => {
             <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md space-y-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-semibold flex items-center gap-1"><UserCheck size={16} />Alex Johnson</p>
+                  <p className="font-semibold flex items-center gap-1">
+                    <UserCheck size={16} />
+                    Alex Johnson
+                  </p>
                   <span className="text-green-600 text-xs">✔️ Verified</span>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
@@ -139,15 +154,21 @@ const RideDetails = () => {
             {/* Price Card */}
             <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="flex items-center gap-1"><DollarSign size={14} /> Ride fare</span>
+                <span className="flex items-center gap-1">
+                  <DollarSign size={14} /> Ride fare
+                </span>
                 <span>$5.00</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="flex items-center gap-1"><DollarSign size={14} /> Service fee</span>
+                <span className="flex items-center gap-1">
+                  <DollarSign size={14} /> Service fee
+                </span>
                 <span>$0.50</span>
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold text-sm">
-                <span className="flex items-center gap-1"><CreditCard size={14} /> Total</span>
+                <span className="flex items-center gap-1">
+                  <CreditCard size={14} /> Total
+                </span>
                 <span>$5.50</span>
               </div>
               <button className="w-full bg-[#1f2b38] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition">

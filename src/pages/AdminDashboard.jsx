@@ -1,15 +1,7 @@
-import React from 'react';
-import CampusRideFooter from '../assets/CampusRideFooter.jsx';
-import CampusRideHeader from '../assets/CampusRideHeader.jsx';
+import CampusRideFooter from "../components/CampusRideFooter.jsx";
+import CampusRideHeader from "../components/CampusRideHeader.jsx";
 
-import {
-  BarChart2,
-  DollarSign,
-  Users,
-  UserCheck,
-  MapPin,
-  Eye
-} from 'lucide-react';
+import { BarChart2, DollarSign, MapPin, UserCheck, Users } from "lucide-react";
 
 const AdminDashboard = () => {
   return (
@@ -59,7 +51,9 @@ const AdminDashboard = () => {
         <div className="lg:col-span-2 bg-white rounded-lg shadow p-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Active Ride</h2>
-            <button className="text-sm bg-[#edf7f8] px-3 py-1 rounded-md border border-gray-300">Today</button>
+            <button className="text-sm bg-[#edf7f8] px-3 py-1 rounded-md border border-gray-300">
+              Today
+            </button>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -75,7 +69,14 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {["In Progress", "Cancel", "Picking Up", "Scheduled", "In Progress", "Picking Up"].map((status, index) => (
+                {[
+                  "In Progress",
+                  "Cancel",
+                  "Picking Up",
+                  "Scheduled",
+                  "In Progress",
+                  "Picking Up",
+                ].map((status, index) => (
                   <tr key={index} className="border-t">
                     <td className="py-2">#RD7829</td>
                     <td>John Smith</td>
@@ -83,17 +84,24 @@ const AdminDashboard = () => {
                     <td>Downtown</td>
                     <td>Airport</td>
                     <td>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        status === "In Progress" ? "bg-green-100 text-green-700" :
-                        status === "Cancel" ? "bg-red-100 text-red-700" :
-                        status === "Picking Up" ? "bg-yellow-100 text-yellow-700" :
-                        "bg-orange-100 text-orange-700"
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-semibold ${
+                          status === "In Progress"
+                            ? "bg-green-100 text-green-700"
+                            : status === "Cancel"
+                            ? "bg-red-100 text-red-700"
+                            : status === "Picking Up"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-orange-100 text-orange-700"
+                        }`}
+                      >
                         {status}
                       </span>
                     </td>
                     <td>
-                      <button className="bg-[#007bff] text-white px-3 py-1 rounded text-xs hover:bg-blue-600">View</button>
+                      <button className="bg-[#007bff] text-white px-3 py-1 rounded text-xs hover:bg-blue-600">
+                        View
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -106,7 +114,9 @@ const AdminDashboard = () => {
         <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
           <MapPin className="w-12 h-12 text-gray-400 mb-4" />
           <h3 className="font-semibold text-lg">Live Tracking Map</h3>
-          <p className="text-sm text-gray-500 text-center mt-2">Real-time vehicle location tracking will be displayed here</p>
+          <p className="text-sm text-gray-500 text-center mt-2">
+            Real-time vehicle location tracking will be displayed here
+          </p>
         </div>
       </div>
 

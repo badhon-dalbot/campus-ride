@@ -1,7 +1,7 @@
 import React from 'react';
 
-import CampusRideFooter from '../assets/CampusRideFooter.jsx';
-import CampusRideHeader from '../assets/CampusRideHeader.jsx';
+import CampusRideFooter from '../components/CampusRideFooter.jsx';
+import CampusRideHeader from '../components/CampusRideHeader.jsx';
 
 import {
   Car,

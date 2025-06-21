@@ -4,4 +4,9 @@
   --color-night-ink: #17252a;
   --color-white: #feffff;
   --color-ice-blue: #ebf5f5;
+  --width-container: 90%;
+}
+.highlight-banner {
+  background-color: #1f2b38;
+  clip-path: polygon(0 25%, 5% 0%, 95% 0%, 100% 25%, 95% 90%, 5% 100%);
 }

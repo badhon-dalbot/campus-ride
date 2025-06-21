@@ -1,10 +1,10 @@
-import Logo from "./images/logo.png";
+import Logo from "../assets/images/logo.png";
 
 export default function CampusRideFooter() {
   return (
-    <footer className="bg-[#17252A] text-[#FEFFFF]">
+    <footer className="bg-night-ink text-white">
       {/* Logo Section */}
-      <div className="px-8 py-6 flex items-center">
+      <div className=" w-container py-6 mx-auto flex items-center">
         <div className="w-36">
           <img src={Logo} alt="Campus Ride Logo" />
         </div>
@@ -14,18 +14,18 @@ export default function CampusRideFooter() {
       </div>
 
       {/* Help Center Button */}
-      <div className="px-8 pb-4">
+      <div className="pb-4 w-container mx-auto">
         <button className="text-sm text-[#FEFFFF] hover:text-teal-400">
           Visit Help Center
         </button>
       </div>
 
       {/* Links Section */}
-      <div className="flex justify-between px-8 py-6 border-t border-gray-600">
+      <div className="flex justify-between w-container mx-auto py-6 border-t border-gray-600">
         {/* Company Links */}
         <div>
           <h3 className="font-medium mb-4">Company</h3>
-          <ul className="space-y-3 text-sm text-[#FEFFFF]">
+          <ul className="space-y-3 text-sm text-white">
             <li>
               <a href="#" className="hover:text-teal-400">
                 About us
@@ -115,7 +115,7 @@ export default function CampusRideFooter() {
       </div>
 
       {/* Copyright and Social Media */}
-      <div className="flex justify-between items-center px-8 py-4 border-t border-gray-600">
+      <div className="flex justify-between items-center w-container mx-auto py-4 border-t border-gray-600">
         <div className="text-sm text-[#FEFFFF]">
           © 2025 Campus Ride. All right reserved.
         </div>
@@ -134,7 +134,7 @@ export default function CampusRideFooter() {
               />
             </svg>
           </a>
-          <a href="#" className="text-[#FEFFFF] hover:text-white">
+          <a href="#" className="text-white hover:text-white-800">
             <svg
               className="w-5 h-5"
               fill="currentColor"

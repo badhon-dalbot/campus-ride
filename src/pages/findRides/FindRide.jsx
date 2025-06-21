@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, MapPin, Calendar, Clock, Star } from 'lucide-react';
 
-import CampusRideFooter from '../../assets/CampusRideFooter.jsx';
-import CampusRideHeader from '../../assets/CampusRideHeader.jsx';
+import CampusRideFooter from '../../components/CampusRideFooter.jsx';
+import CampusRideHeader from '../../components/CampusRideHeader.jsx';
 import Filters from './Filters.jsx';
 import RideOffers from './RideOffers.jsx';
 import RideCard from './RideCard.jsx';

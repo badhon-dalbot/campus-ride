@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Eye, EyeOff, Check } from "lucide-react";
-import LoginHeader from '../assets/LoginHeader.jsx';
-import LoginFooter from '../assets/LoginFooter.jsx';
+import { Check, Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import LoginFooter from "../components/LoginFooter.jsx";
+import LoginHeader from "../components/LoginHeader.jsx";
 
 export default function CampusRideSignup() {
   const [activeTab, setActiveTab] = useState("ride");
@@ -10,17 +10,17 @@ export default function CampusRideSignup() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     file: null,
   });
 
   useEffect(() => {
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       input::placeholder {
         color: #bbb !important;
@@ -53,7 +53,7 @@ export default function CampusRideSignup() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'file' && files && files[0]) {
+    if (name === "file" && files && files[0]) {
       setSelectedFile(files[0]);
       setFormData((prev) => ({
         ...prev,
@@ -69,8 +69,17 @@ export default function CampusRideSignup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { firstName, lastName, phone, email, password, confirmPassword } = formData;
-    if (!firstName || !lastName || !phone || !email || !password || !confirmPassword || !selectedFile) {
+    const { firstName, lastName, phone, email, password, confirmPassword } =
+      formData;
+    if (
+      !firstName ||
+      !lastName ||
+      !phone ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !selectedFile
+    ) {
       alert("All fields are required.");
       return;
     }
@@ -90,19 +99,24 @@ export default function CampusRideSignup() {
   };
 
   const handleLoginClick = () => {
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#000",
-      display: "flex",
-      flexDirection: "column"
-    }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#000",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <LoginHeader />
 
-      <div className="flex flex-col items-center justify-center flex-1" style={{ flex: 1 }}>
+      <div
+        className="flex flex-col items-center justify-center flex-1"
+        style={{ flex: 1 }}
+      >
         <div
           className="signup-card shadow-2xl"
           style={{
@@ -113,7 +127,7 @@ export default function CampusRideSignup() {
             width: "100%",
             boxShadow: "0 8px 32px 0 rgba(0,0,0,0.35)",
             margin: "2.5rem",
-            border: "2px solid #fff"
+            border: "2px solid #fff",
           }}
         >
           <h1
@@ -121,7 +135,7 @@ export default function CampusRideSignup() {
             style={{
               color: "#fff",
               letterSpacing: "2px",
-              fontFamily: "UberMove, sans-serif"
+              fontFamily: "UberMove, sans-serif",
             }}
           >
             Create Your Account
@@ -130,26 +144,30 @@ export default function CampusRideSignup() {
           {/* Tabs */}
           <div className="flex justify-center mb-8 gap-2">
             <button
-              className={`signup-tab px-7 py-2 text-lg font-bold rounded-full ${activeTab === "ride"
-                ? "signup-tab-active"
-                : "signup-tab-inactive"}`}
+              className={`signup-tab px-7 py-2 text-lg font-bold rounded-full ${
+                activeTab === "ride"
+                  ? "signup-tab-active"
+                  : "signup-tab-inactive"
+              }`}
               style={{
                 border: "none",
                 outline: "none",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
               onClick={() => handleTabChange("ride")}
             >
               Ride
             </button>
             <button
-              className={`signup-tab px-7 py-2 text-lg font-bold rounded-full ${activeTab === "drive"
-                ? "signup-tab-active"
-                : "signup-tab-inactive"}`}
+              className={`signup-tab px-7 py-2 text-lg font-bold rounded-full ${
+                activeTab === "drive"
+                  ? "signup-tab-active"
+                  : "signup-tab-inactive"
+              }`}
               style={{
                 border: "none",
                 outline: "none",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
               onClick={() => handleTabChange("drive")}
             >
@@ -246,11 +264,15 @@ export default function CampusRideSignup() {
                   margin: 0,
                   cursor: "pointer",
                   zIndex: 2,
-                  lineHeight: 0
+                  lineHeight: 0,
                 }}
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff size={22} color="#fff" /> : <Eye size={22} color="#fff" />}
+                {showPassword ? (
+                  <EyeOff size={22} color="#fff" />
+                ) : (
+                  <Eye size={22} color="#fff" />
+                )}
               </button>
             </div>
 
@@ -278,11 +300,15 @@ export default function CampusRideSignup() {
                   margin: 0,
                   cursor: "pointer",
                   zIndex: 2,
-                  lineHeight: 0
+                  lineHeight: 0,
                 }}
                 tabIndex={-1}
               >
-                {showConfirmPassword ? <EyeOff size={22} color="#fff" /> : <Eye size={22} color="#fff" />}
+                {showConfirmPassword ? (
+                  <EyeOff size={22} color="#fff" />
+                ) : (
+                  <Eye size={22} color="#fff" />
+                )}
               </button>
             </div>
 
@@ -294,7 +320,7 @@ export default function CampusRideSignup() {
                 background: "#fff",
                 color: "#000",
                 letterSpacing: "1px",
-                boxShadow: "0 2px 8px 0 rgba(255,255,255,0.10)"
+                boxShadow: "0 2px 8px 0 rgba(255,255,255,0.10)",
               }}
             >
               Sign Up Now
@@ -303,7 +329,10 @@ export default function CampusRideSignup() {
 
           <p className="mt-6 text-base text-center" style={{ color: "#bbb" }}>
             Already have an account?{" "}
-            <span className="cursor-pointer underline" onClick={handleLoginClick}>
+            <span
+              className="cursor-pointer underline"
+              onClick={handleLoginClick}
+            >
               Login
             </span>
           </p>
