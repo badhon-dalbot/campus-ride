@@ -37,6 +37,15 @@ export default function CampusRideHeader() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Get user role from sessionStorage (or from context if available)
+  let profilePath = "/studentprofile";
+  try {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user?.role === "driver") profilePath = "/driverProfile";
+    else if (user?.role === "rider") profilePath = "/riderProfile";
+    else if (user?.role === "admin") profilePath = "/admindash"; // or your admin profile route
+  } catch {}
+
   return (
     <header className="bg-[#17252A] text-white  py-2 shadow-md">
       <div className="flex items-center justify-between w-container mx-auto">
@@ -85,7 +94,7 @@ export default function CampusRideHeader() {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white text-[#17252A] rounded-lg shadow-lg z-50">
                   <Link
-                    to="/studentprofile"
+                    to={profilePath}
                     className="block px-4 py-2 hover:bg-gray-100 font-medium"
                     onClick={() => setDropdownOpen(false)}
                   >

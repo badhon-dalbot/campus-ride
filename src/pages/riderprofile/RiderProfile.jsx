@@ -1,8 +1,7 @@
 // RiderProfilePage.jsx
-import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import CampusRideHeader from '../../assets/CampusRideHeader';
-import CampusRideFooter from '../../assets/CampusRideFooter';
 import StudentInfoCard from './RiderInfoCard';
 import TabNavigation from './TabNavigation';
 import OverviewTab from './OverviewTab';
@@ -10,20 +9,11 @@ import RideHistoryTab from './RideHistoryTab';
 import SettingsTab from './SettingsTab';
 import ProfileEditForm from './ProfileEditForm';
 import PaymentProfileSection from './PaymentProfileSection';
-// StudentProfilePage.jsx
-import { ChevronLeft } from "lucide-react";
-import { useState } from "react";
 import CampusRideFooter from "../../components/CampusRideFooter";
 import CampusRideHeader from "../../components/CampusRideHeader";
-import OverviewTab from "./OverviewTab";
-import PaymentProfileSection from "./PaymentProfileSection";
-import ProfileEditForm from "./ProfileEditForm";
-import RideHistoryTab from "./RideHistoryTab";
-import StudentInfoCard from "./RiderInfoCard";
-import SettingsTab from "./SettingsTab";
-import TabNavigation from "./TabNavigation";
 
 export default function StudentProfilePage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Overview");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [bio, setBio] = useState(
@@ -37,18 +27,20 @@ export default function StudentProfilePage() {
     flexibleTiming: true,
   });
   const [profileData, setProfileData] = useState({
-    name: "Emma Chen",
-    email: "emma.chen@university.edu",
-    phone: "+1 (555) 234-5678",
-    university: "University of Technology",
-    studentId: "UT2022003",
-    major: "Computer Science",
-    graduationYear: "2026",
-    dormBuilding: "North Hall",
-    roomNumber: "304",
-    emergencyContact: "+1 (555) 876-5432",
-    emergencyName: "Linda Chen (Mother)",
+    name: "",
+    email: "",
+    phone: "",
+    university: "",
+    studentId: "",
+    major: "",
+    graduationYear: "",
+    dormBuilding: "",
+    roomNumber: "",
+    emergencyContact: "",
+    emergencyName: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const tabs = ["Overview", "Ride History", "Payments", "Settings"];
 
@@ -175,7 +167,7 @@ export default function StudentProfilePage() {
             <>
               {/* Back Button and Title */}
               <div className="mb-6">
-                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4">
+                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4" onClick={() => navigate(-1)}>
                   <ChevronLeft className="w-4 h-4" />
                   <span className="font-medium">Back</span>
                 </button>
@@ -202,7 +194,7 @@ export default function StudentProfilePage() {
                   />
 
                   {/* Tab Content */}
-                  
+
                   {activeTab === 'Overview' && (
                     <OverviewTab
                       bio={bio}

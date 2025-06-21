@@ -95,29 +95,23 @@ export default function CampusRideLogin() {
 
       if (res.status === 200) {
         login();
-        navigate(from, { replace: true });
-      }
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        const userRole = data.user.role;
 
-      if (!res.ok) {
-        setErrorMessage(data.error || "Login failed");
+        let redirectPath = "/";
+        if (userRole === "admin") {
+          redirectPath = "/admindash";
+        } else if (userRole === "driver") {
+          redirectPath = "/driverdash";
+        } else if (userRole === "rider") {
+          redirectPath = "/findride";
+        } else {
+          alert("Unknown role. Please contact support.");
+          return;
+        }
+
+        navigate(redirectPath, { replace: true });
         return;
-      }
-
-      sessionStorage.setItem("user", JSON.stringify(data.user));
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      const userId = user?.id;
-
-      alert(`${data.message}\nRole: ${data.user.role} \nUser ID: ${userId}`);
-
-      // Role-based redirection
-      if (data.user.role === "admin") {
-        window.location.href = "/admindash";
-      } else if (data.user.role === "driver") {
-        window.location.href = "/driverdash";
-      } else if (data.user.role === "rider") { 
-        window.location.href = "/findride";
-      } else {
-        alert("Unknown role. Please contact support.");
       }
     } catch (err) {
       setErrorMessage("Network error. Please try again.");

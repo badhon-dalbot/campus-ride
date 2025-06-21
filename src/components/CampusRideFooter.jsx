@@ -1,4 +1,5 @@
 import Logo from "../assets/images/logo.png";
+import { Link } from "react-router-dom";
 
 export default function CampusRideFooter() {
   return (
@@ -15,9 +16,12 @@ export default function CampusRideFooter() {
 
       {/* Help Center Button */}
       <div className="pb-4 w-container mx-auto">
-        <button className="text-sm text-[#FEFFFF] hover:text-teal-400">
+        <Link
+          to="/help"
+          className="text-sm text-[#FEFFFF] hover:text-teal-400"
+        >
           Visit Help Center
-        </button>
+        </Link>
       </div>
 
       {/* Links Section */}

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import CampusRideFooter from "../components/CampusRideFooter.jsx";
 import CampusRideHeader from "../components/CampusRideHeader.jsx";
 
@@ -17,10 +18,24 @@ import {
 } from "lucide-react";
 
 const RideDetails = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       {/* Header */}
       <CampusRideHeader />
+
+      {/* Back Button */}
+      <div className="px-10 pt-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4"
+        >
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span className="font-medium">Back</span>
+        </button>
+      </div>
 
       {/* Page Title */}
       <div className="px-10 py-10">

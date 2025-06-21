@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Star, Mail, Phone, Calendar, Car, DollarSign, Leaf, Edit3, Bell, MessageSquare, CreditCard, Shield, Eye, Trash2, Award, FileText, Wrench, Users, Clock, MapPin, Camera } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 // Mock components for demonstration
 const CampusRideHeader = () => (
@@ -40,6 +41,7 @@ const CampusRideFooter = () => (
 );
 
 export default function DriverProfilePage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Overview');
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -229,7 +231,7 @@ export default function DriverProfilePage() {
             <>
               {/* Back Button and Title */}
               <div className="mb-6">
-                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4">
+                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4" onClick={() => navigate(-1)}>
                   <ChevronLeft className="w-4 h-4" />
                   <span className="font-medium">Back</span>
                 </button>

@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { Calendar, Clock } from 'lucide-react';
 import { renderStars } from './renderStar.jsx';
+
 export default function RideCard({ ride }) {
+  const navigate = useNavigate();
   return (
     <div key={ride.ride_id} className="rounded-xl p-4 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow w-full" style={{ backgroundColor: '#FFFFFF' }}>
       <h3 className="font-bold text-base mb-3">
@@ -54,10 +57,10 @@ export default function RideCard({ ride }) {
         </div>
         <div className="flex flex-col gap-2 flex-shrink-0">
           <button
-            onClick={() => alert(`Booking ride with ${ride.driver_first_name} ${ride.driver_last_name}`)}
+            onClick={() => navigate("/ride-details", { state: { ride } })}
             className="px-6 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
           >
-            Book Ride
+          Book Ride
           </button>
           <button
             onClick={() => alert(`Contacting ${ride.driver_first_name} ${ride.driver_last_name}`)}
