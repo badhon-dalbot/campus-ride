@@ -8,6 +8,7 @@ import ridesRoutes from "./routes/ridesRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import driverRoutes from "./routes/driverRoutes.js";
 dotenv.config();
 const app = express();
 
@@ -43,6 +44,9 @@ app.use("/api/booking", bookingRoutes);
 
 // Routes for chat functionality
 app.use("/api/chat", chatRoutes);
+
+// Routes for driver management
+app.use("/api/driver", driverRoutes);
 
 
 // Health check endpoint

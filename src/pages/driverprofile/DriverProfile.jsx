@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Star, Mail, Phone, Calendar, Car, DollarSign, Leaf, Edit3, Bell, MessageSquare, CreditCard, Shield, Eye, Trash2, Award, FileText, Wrench, Users, Clock, MapPin, Camera } from 'lucide-react';
 
 // Mock components for demonstration
@@ -76,6 +76,9 @@ export default function DriverProfilePage() {
     fuelType: 'Hybrid',
     lastMaintenance: '2024-11-15'
   });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const tabs = ['Overview', 'Vehicle', 'Reviews', 'Earnings', 'Settings'];
 
@@ -158,6 +161,47 @@ export default function DriverProfilePage() {
     { month: 'October 2024', rides: 25, earnings: 375.00, tips: 38.50 },
     { month: 'September 2024', rides: 30, earnings: 450.25, tips: 41.75 }
   ];
+  // Assuming user data is stored in sessionStorage
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  console.log(user?.id);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setLoading(true);
+    fetch(`http://localhost:3000/api/driver/${user.id}/profile`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch driver profile");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Driver profile data from backend:", data); // <-- Add this line
+        // Set your profileData and vehicleData here based on API response
+        setProfileData({
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          phone: data.phone,
+          // ...map other fields as needed
+        });
+        setVehicleData({
+          make: data.make,
+          model: data.model,
+          year: data.year,
+          color: data.color,
+          licensePlate: data.license_no,
+          seats: data.seats,
+          fuelType: data.fuel_type,
+          lastMaintenance: data.last_maintenance,
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [user?.id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -207,8 +251,6 @@ export default function DriverProfilePage() {
                         <span className="font-semibold">4.9</span>
                         <span className="text-gray-500 text-sm">(89 trips)</span>
                       </div>
-
-                      <p className="text-gray-500 text-sm mb-4">Driving since March 2020</p>
                     </div>
 
                     {/* Contact Info */}
