@@ -1,9 +1,9 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../assets/AuthContext.jsx";
-import LoginFooter from "../assets/LoginFooter.jsx";
-import LoginHeader from "../assets/LoginHeader.jsx";
+import { useAuth } from "../components/AuthContext.jsx";
+import LoginFooter from "../components/LoginFooter.jsx";
+import LoginHeader from "../components/LoginHeader.jsx";
 
 export default function CampusRideLogin() {
   const navigate = useNavigate();

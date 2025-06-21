@@ -1,8 +1,8 @@
 import { ArrowLeft } from "lucide-react";
 import ChatBox from "../chat/ChatBox.jsx";
 
-import CampusRideFooter from "../../assets/CampusRideFooter.jsx";
-import CampusRideHeader from "../../assets/CampusRideHeader.jsx";
+import CampusRideFooter from "../../components/CampusRideFooter.jsx";
+import CampusRideHeader from "../../components/CampusRideHeader.jsx";
 import PaymentDetails from "./PaymentDetails.jsx";
 import PaymentMethod from "./PaymentMethod.jsx";
 import RideSummary from "./RideSummary.jsx";
@@ -39,7 +39,7 @@ export default function RideBookingApp() {
               {/* Message to Driver */}
 
               {/* <MessageBox /> */}
-              <ChatBox bookingId = {1} currentUserId={2} otherUserId={5} />
+              <ChatBox bookingId={1} currentUserId={2} otherUserId={5} />
               {/* Payment Method */}
               <PaymentMethod />
             </div>

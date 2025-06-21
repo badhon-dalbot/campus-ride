@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
-import logo from "./images/logo.png";
+import logo from "../assets/images/logo.png";
+import { useAuth } from "../components/AuthContext";
 export default function CampusRideHeader() {
   const { isLoggedIn, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
