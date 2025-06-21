@@ -132,7 +132,7 @@ git push origin feature-xyz
 ## Check CONTRIBUTING.md (to be added) for full guidelines.
 
 ## 📄 License
-This project is licensed under the MIT License. See [LICENSE](https://github.com/badhon-dalbot/campus-ride/blob/main/LICENSE) for more info.
+This project is licensed under the MIT License. See [LICENSE](https://github.com/badhon-dalbot/campus-ride/tree/main?tab=MIT-1-ov-file) for more info.
 
 
 
