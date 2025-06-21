@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import CampusRideHeader from "../assets/CampusRideHeader";
 import homeActivity from "../assets/images/home_activity.png";
+import Driver_image from "../assets/images/Driver_image.png";
 
 const LandingPage = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -254,8 +255,13 @@ const LandingPage = () => {
       <section className="grid grid-cols-1 md:grid-cols-2 px-10 py-14 items-center gap-12 bg-[#eaf4f5]">
         <div>
           <h1 className="text-5xl font-bold leading-tight mb-6">
-            Go anywhere with <span className="text-blue-700">Campus</span>Ride
-          </h1>
+  Go anywhere with{' '}
+  <span className="inline-block relative highlight-banner px-4 py-1">
+    <span className="relative z-10 text-white font-bold">CampusRide</span>
+  </span>
+</h1>
+
+
           <div className="bg-white p-6 rounded-2xl shadow-lg space-y-4">
             <input
               type="text"
@@ -490,7 +496,7 @@ const LandingPage = () => {
       {/* Driver Call to Action */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-10 px-10 py-20 items-center bg-[#f9fbfc]">
         <img
-          src="/driver-illustration.png"
+          src={Driver_image}
           alt="Driver"
           className="w-full rounded-xl shadow-md"
         />

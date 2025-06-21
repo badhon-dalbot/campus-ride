@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import CampusRideHeader from '../../assets/CampusRideHeader';
 import CampusRideFooter from '../../assets/CampusRideFooter';
-import StudentInfoCard from './StudentInfoCard';
+import StudentInfoCard from './RiderInfoCard';
 import TabNavigation from './TabNavigation';
 import OverviewTab from './OverviewTab';
 import RideHistoryTab from './RideHistoryTab';
