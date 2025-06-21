@@ -42,41 +42,37 @@ export default function CampusRideHeader() {
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Logo Section */}
         <div>
-          <img src={logo} alt="CampusRide Logo" className="w-55 h-16" />
+          <Link to="/">
+            <img src={logo} alt="CampusRide Logo" className="w-55 h-16" />
+          </Link>
         </div>
 
         {/* Navigation Menu */}
         <nav className="flex items-center gap-6">
-          <a
-            href="/"
+          <Link
+            to="/"
             className="hover:text-gray-300 transition-colors font-medium"
           >
             Home
-          </a>
-          <a
-            href="#"
-            className="hover:text-gray-300 transition-colors font-medium"
-          >
-            Services
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="/findride"
             className="hover:text-gray-300 transition-colors font-medium"
           >
             Ride
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="/driverdash"
             className="hover:text-gray-300 transition-colors font-medium"
           >
             Drive
-          </a>
-          <a
-            href="/aboutus"
+          </Link>
+          <Link
+            to="/aboutus"
             className="hover:text-gray-300 transition-colors font-medium"
           >
             About Us
-          </a>
+          </Link>
           {isLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
               <button
@@ -89,7 +85,7 @@ export default function CampusRideHeader() {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white text-[#17252A] rounded-lg shadow-lg z-50">
                   <Link
-                    href="/studentprofile"
+                    to="/studentprofile"
                     className="block px-4 py-2 hover:bg-gray-100 font-medium"
                     onClick={() => setDropdownOpen(false)}
                   >
@@ -106,12 +102,12 @@ export default function CampusRideHeader() {
             </div>
           ) : (
             <>
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="hover:text-gray-300 transition-colors font-medium"
               >
                 Log in
-              </a>
+              </Link>
 
               <button className="bg-white text-[#17252A] px-6 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors">
                 Sign up

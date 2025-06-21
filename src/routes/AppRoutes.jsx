@@ -1,21 +1,21 @@
-import { Routes, Route } from 'react-router-dom';
-import Login from '../pages/Login.jsx';
-import SignUp from '../pages/SignUp.jsx';
-import Home from '../pages/Home.jsx'
-import FindRide from '../pages/findRides/FindRide.jsx'
-import ShareRide from '../pages/ShareRide.jsx'
-import BookRide from '../pages/bookRide/BookRide.jsx'
-import RideDetails from '../pages/RideDetails.jsx';
-import ConfirmBooking from '../pages/ConfirmBooking.jsx';
-import DriverProfile from '../pages/driverprofile/DriverProfile.jsx';
-import RiderProfile from '../pages/riderprofile/RiderProfile.jsx';
-import Payment from '../pages/payment/payment.jsx';
-import Chatting from '../pages/chat/chatting.jsx';
-import AboutUs from '../pages/AboutUs.jsx';
-import HelpPage from '../pages/HelpCenter.jsx';
-import DriverDashboard from '../pages/DriverDashboard.jsx';
-import AdminDashboard from '../pages/AdminDashboard.jsx';
-
+import { Route, Routes } from "react-router-dom";
+import PrivateRoute from "../components/PrivateRoute.jsx";
+import AboutUs from "../pages/AboutUs.jsx";
+import AdminDashboard from "../pages/AdminDashboard.jsx";
+import BookRide from "../pages/bookRide/BookRide.jsx";
+import Chatting from "../pages/chat/chatting.jsx";
+import ConfirmBooking from "../pages/ConfirmBooking.jsx";
+import DriverDashboard from "../pages/DriverDashboard.jsx";
+import DriverProfile from "../pages/driverprofile/DriverProfile.jsx";
+import FindRide from "../pages/findRides/FindRide.jsx";
+import HelpPage from "../pages/HelpCenter.jsx";
+import Home from "../pages/Home.jsx";
+import Login from "../pages/Login.jsx";
+import Payment from "../pages/payment/payment.jsx";
+import RideDetails from "../pages/RideDetails.jsx";
+import RiderProfile from "../pages/riderprofile/RiderProfile.jsx";
+import ShareRide from "../pages/ShareRide.jsx";
+import SignUp from "../pages/SignUp.jsx";
 
 const AppRoutes = () => (
   <Routes>
@@ -23,20 +23,97 @@ const AppRoutes = () => (
     <Route path="/" element={<Home />} />
     <Route path="/login" element={<Login />} />
     <Route path="/signup" element={<SignUp />} />
-    <Route path="/findride" element={<FindRide/>}/>
-    <Route path="/shareride" element={<ShareRide/>}/>
-    <Route path="/bookride" element={<BookRide/>}/>
-    <Route path="/ride-details" element={<RideDetails/>}/>
-    <Route path="/conf-book" element={<ConfirmBooking/>}/>
-    <Route path="/driverProfile" element={<DriverProfile/>}/>
-    <Route path="/riderProfile" element={<RiderProfile/>}/>
-    <Route path="/payment" element={<Payment/>}/>
-    <Route path="/chatting" element={<Chatting/>}/>
-    <Route path="/aboutus" element = {<AboutUs/>}/>
+    <Route path="/aboutus" element={<AboutUs />} />
     <Route path="/help" element={<HelpPage />} />
-    <Route path="/driverdash" element={<DriverDashboard/>}/>
-    <Route path="/admindash" element={<AdminDashboard/>}/>
+    <Route
+      path="/findride"
+      element={
+        <PrivateRoute>
+          <FindRide />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/shareride"
+      element={
+        <PrivateRoute>
+          <ShareRide />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/bookride"
+      element={
+        <PrivateRoute>
+          <BookRide />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/ride-details"
+      element={
+        <PrivateRoute>
+          <RideDetails />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/conf-book"
+      element={
+        <PrivateRoute>
+          <ConfirmBooking />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/driverProfile"
+      element={
+        <PrivateRoute>
+          <DriverProfile />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/riderProfile"
+      element={
+        <PrivateRoute>
+          <RiderProfile />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/payment"
+      element={
+        <PrivateRoute>
+          <Payment />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/chatting"
+      element={
+        <PrivateRoute>
+          <Chatting />
+        </PrivateRoute>
+      }
+    />
 
+    <Route
+      path="/driverdash"
+      element={
+        <PrivateRoute>
+          <DriverDashboard />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/admindash"
+      element={
+        <PrivateRoute>
+          <AdminDashboard />
+        </PrivateRoute>
+      }
+    />
   </Routes>
 );
 
