@@ -86,13 +86,18 @@ export default function CampusRideLogin() {
       });
 
       const data = await res.json();
+      
 
       if (!res.ok) {
         setErrorMessage(data.error || "Login failed");
         return;
       }
 
-      alert(`${data.message}\nRole: ${data.user.role}`);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      const userId = user?.id;
+
+      alert(`${data.message}\nRole: ${data.user.role} \nUser ID: ${userId}`);
 
       // Role-based redirection
       // ===Make sure you have routes/pages for /admin/dashboard===
