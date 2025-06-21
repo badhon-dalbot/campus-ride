@@ -48,9 +48,6 @@ export default function RideCard({ ride }) {
             <p className="font-semibold text-sm">{ride.driver_first_name} {ride.driver_last_name}</p>
             <div className="flex items-center gap-1">
               {renderStars(ride.driver_rating)}
-              {/* {ride.review_count} tips */}
-              {/* This things are not available on the Database. */}
-              {/* At first i have to add this things on Database then i can use it. */}
               <span className="text-xs text-gray-500 ml-1 font-normal">({ride.review_count} tips)</span>
             </div>
           </div>

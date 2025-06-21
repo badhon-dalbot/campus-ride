@@ -52,29 +52,31 @@ export default function DriverProfilePage() {
     maxPassengers: 3
   });
   const [profileData, setProfileData] = useState({
-    name: 'Alex Rodriguez',
-    email: 'alex.rodriguez@university.edu',
-    phone: '+1 (555) 123-4567',
-    university: 'University of Technology',
-    studentId: 'UT2020005',
-    emergencyContact: '+1 (555) 987-6543',
-    emergencyName: 'Maria Rodriguez (Mother)',
-    licenseNumber: 'DL123456789',
-    licenseExpiry: '2027-08-15',
-    insuranceProvider: 'SafeDrive Insurance',
-    insurancePolicy: 'SD-789456123',
-    insuranceExpiry: '2025-12-31'
+    name: '',
+    email: '',
+    phone: '',
+    university: '',
+    studentId: '',
+    emergencyContact: '',
+    emergencyName: '',
+    licenseNumber: '',
+    licenseExpiry: '',
+    insuranceProvider: '',
+    insurancePolicy: '',
+    insuranceExpiry: '',
+    rating: 0,
+    review_count: 0
   });
 
   const [vehicleData, setVehicleData] = useState({
-    make: 'Toyota',
-    model: 'Camry',
-    year: '2020',
-    color: 'Silver',
-    licensePlate: 'ABC123',
-    seats: '4',
-    fuelType: 'Hybrid',
-    lastMaintenance: '2024-11-15'
+    make: '',
+    model: '',
+    year: '',
+    color: '',
+    licensePlate: '',
+    seats: '',
+    fuelType: '',
+    lastMaintenance: ''
   });
 
   const [loading, setLoading] = useState(true);
@@ -174,23 +176,33 @@ export default function DriverProfilePage() {
         return res.json();
       })
       .then((data) => {
-        console.log("Driver profile data from backend:", data); // <-- Add this line
+        console.log("Driver profile data from backend:", data);
         // Set your profileData and vehicleData here based on API response
         setProfileData({
           name: `${data.firstName} ${data.lastName}`,
           email: data.email,
           phone: data.phone,
-          // ...map other fields as needed
+          university: data.university || '',
+          studentId: data.studentId || '',
+          emergencyContact: data.emergencyContact || '',
+          emergencyName: data.emergencyName || '',
+          licenseNumber: data.license_no || '',
+          licenseExpiry: data.license_expiry || '',
+          insuranceProvider: data.insurance_provider || '',
+          insurancePolicy: data.insurance_policy || '',
+          insuranceExpiry: data.insurance_expiry || '',
+          rating: data.rating || 0,
+          review_count: data.review_count || 0
         });
         setVehicleData({
-          make: data.make,
-          model: data.model,
-          year: data.year,
-          color: data.color,
-          licensePlate: data.license_no,
-          seats: data.seats,
-          fuelType: data.fuel_type,
-          lastMaintenance: data.last_maintenance,
+          make: data.make || '',
+          model: data.model || '',
+          year: data.year || '',
+          color: data.color || '',
+          licensePlate: data.license_no || '',
+          seats: data.seats || '',
+          fuelType: data.fuel_type || '',
+          lastMaintenance: data.last_maintenance || ''
         });
         setLoading(false);
       })
@@ -248,8 +260,8 @@ export default function DriverProfilePage() {
                       {/* Driver Rating */}
                       <div className="flex items-center justify-center gap-1 mb-2">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="font-semibold">4.9</span>
-                        <span className="text-gray-500 text-sm">(89 trips)</span>
+                        <span className="font-semibold">{profileData.rating ?? 'N/A'}</span>
+                        <span className="text-gray-500 text-sm">({profileData.review_count})</span>
                       </div>
                     </div>
 
@@ -350,8 +362,8 @@ export default function DriverProfilePage() {
                           key={tab}
                           onClick={() => setActiveTab(tab)}
                           className={`px-4 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === tab
-                              ? 'border-gray-900 text-gray-900'
-                              : 'border-transparent text-gray-600 hover:text-gray-800'
+                            ? 'border-gray-900 text-gray-900'
+                            : 'border-transparent text-gray-600 hover:text-gray-800'
                             }`}
                           style={activeTab === tab ? { backgroundColor: '#EBF5F5' } : {}}
                         >
@@ -416,8 +428,8 @@ export default function DriverProfilePage() {
                             <button
                               onClick={() => togglePreference('musicAllowed')}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${preferences.musicAllowed
-                                  ? 'text-white'
-                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                ? 'text-white'
+                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                 }`}
                               style={preferences.musicAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
@@ -429,8 +441,8 @@ export default function DriverProfilePage() {
                             <button
                               onClick={() => togglePreference('petsAllowed')}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${preferences.petsAllowed
-                                  ? 'text-white'
-                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                ? 'text-white'
+                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                 }`}
                               style={preferences.petsAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
@@ -442,8 +454,8 @@ export default function DriverProfilePage() {
                             <button
                               onClick={() => togglePreference('smokingAllowed')}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${!preferences.smokingAllowed
-                                  ? 'text-white'
-                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                ? 'text-white'
+                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                 }`}
                               style={!preferences.smokingAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
@@ -455,8 +467,8 @@ export default function DriverProfilePage() {
                             <button
                               onClick={() => togglePreference('quietRides')}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${preferences.quietRides
-                                  ? 'text-white'
-                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                ? 'text-white'
+                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                 }`}
                               style={preferences.quietRides ? { backgroundColor: '#17252A' } : {}}
                             >
@@ -609,13 +621,41 @@ export default function DriverProfilePage() {
                       <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: '#EBF5F5' }}>
                         <div className="flex items-center gap-4">
                           <div className="text-center">
-                            <div className="text-3xl font-bold text-gray-900">4.9</div>
+                            <div className="text-3xl font-bold text-gray-900">{profileData.rating}</div>
                             <div className="flex items-center justify-center">
-                              {[1, 2, 3, 4, 5].map(i => (
-                                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                              ))}
+                              {[1, 2, 3, 4, 5].map(i => {
+                                const fill =
+                                  profileData.rating >= i
+                                    ? 100
+                                    : profileData.rating >= i - 1
+                                      ? Math.round(
+                                        Math.max(
+                                          0,
+                                          Math.min(1, profileData.rating - (i - 1))
+                                        ) * 100
+                                      )
+                                      : 0;
+                                return (
+                                  <span key={i} style={{ position: 'relative', display: 'inline-block', width: 16, height: 16 }}>
+                                    <Star className="w-4 h-4 text-gray-300" />
+                                    {fill > 0 && (
+                                      <Star
+                                        className="w-4 h-4 text-yellow-400 fill-current"
+                                        style={{
+                                          position: 'absolute',
+                                          left: 0,
+                                          top: 0,
+                                          width: '100%',
+                                          overflow: 'hidden',
+                                          clipPath: `inset(0 ${100 - fill}% 0 0)`
+                                        }}
+                                      />
+                                    )}
+                                  </span>
+                                );
+                              })}
                             </div>
-                            <div className="text-sm text-gray-500 mt-1">89 reviews</div>
+                            <div className="text-sm text-gray-500 mt-1">{profileData.review_count} reviews</div>
                           </div>
                           <div className="flex-1">
                             <div className="space-y-1">
