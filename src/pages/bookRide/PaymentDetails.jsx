@@ -1,4 +1,5 @@
 export default function PaymentDetails() {
+  
   return (
     <div className="bg-[#D4E4E4] rounded-lg p-5 border border-black shadow-lg">
       <h3 className="text-base font-semibold mb-4 text-gray-800">Price Details</h3>

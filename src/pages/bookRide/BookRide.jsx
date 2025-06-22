@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import ChatBox from "../chat/ChatBox.jsx";
+import { useNavigate } from "react-router-dom";
 
 import CampusRideFooter from "../../components/CampusRideFooter.jsx";
 import CampusRideHeader from "../../components/CampusRideHeader.jsx";
@@ -8,6 +9,7 @@ import PaymentMethod from "./PaymentMethod.jsx";
 import RideSummary from "./RideSummary.jsx";
 
 export default function RideBookingApp() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header - Full width, no margins */}
@@ -18,12 +20,16 @@ export default function RideBookingApp() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <ArrowLeft className="w-4 h-4 mr-2 text-gray-600" />
-              <span className="text-gray-600 text-sm">
-                Back to ride details
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 focus:outline-none text-gray-600 hover:text-gray-800 mb-4"
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M15 18l-6-6 6-6" />
+              </svg>
+              <span className="font-medium">Back to ride details</span>
+            </button>
             <h1 className="text-xl font-semibold text-gray-800">
               Book Your Ride
             </h1>

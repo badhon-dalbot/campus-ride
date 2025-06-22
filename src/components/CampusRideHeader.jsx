@@ -4,6 +4,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { useAuth } from "../components/AuthContext";
+
 export default function CampusRideHeader() {
   const { isLoggedIn, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
@@ -16,7 +17,7 @@ export default function CampusRideHeader() {
         "http://localhost:3000/api/auth/logout",
         {},
         {
-          withCredentials: true, // Ensure cookies are sent with the request
+          withCredentials: true,
         }
       );
       logout();
@@ -37,7 +38,7 @@ export default function CampusRideHeader() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Get user role from sessionStorage (or from context if available)
+  // Get profile path based on user role from context
   let profilePath = "/studentprofile";
   try {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -86,7 +87,7 @@ export default function CampusRideHeader() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="text-white text-2xl focus:outline-none"
+                className="text-white text-3xl focus:outline-none hover:text-gray-300 transition-colors"
               >
                 <FaUserCircle />
               </button>
@@ -95,14 +96,14 @@ export default function CampusRideHeader() {
                 <div className="absolute right-0 mt-2 w-40 bg-white text-[#17252A] rounded-lg shadow-lg z-50">
                   <Link
                     to={profilePath}
-                    className="block px-4 py-2 hover:bg-gray-100 font-medium"
+                    className="block px-4 py-2 hover:bg-black hover:text-white rounded-lg font-medium"
                     onClick={() => setDropdownOpen(false)}
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 font-medium"
+                    className="w-full text-left px-4 py-2 hover:bg-red-700 hover:text-white rounded-lg font-medium"
                   >
                     Logout
                   </button>

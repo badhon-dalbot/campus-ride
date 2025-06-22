@@ -51,6 +51,7 @@ const getAvailableRides = async (req, res) => {
     r.ride_time,
     r.seats_available,
     r.pickup_description,
+    u.id AS driver_id,
     u.firstName AS driver_first_name,
     u.lastName AS driver_last_name,
     d.rating AS driver_rating,
@@ -76,4 +77,18 @@ const getAvailableRides = async (req, res) => {
   }
 };
 
-export { createRide, getAvailableRides, getRides };
+const getRideById = async (req, res) => {
+  const rideId = req.params.id;
+  try {
+    const query = "SELECT * FROM rides WHERE id = ?";
+    const [rows] = await db.query(query, [rideId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Ride not found" });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Database error" });
+  }
+};
+
+export { createRide, getAvailableRides, getRides, getRideById };

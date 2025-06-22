@@ -57,10 +57,14 @@ export default function RideCard({ ride }) {
         </div>
         <div className="flex flex-col gap-2 flex-shrink-0">
           <button
-            onClick={() => navigate("/ride-details", { state: { ride } })}
+            onClick={() => {
+              localStorage.setItem("selectedRideId", ride.ride_id);
+              localStorage.setItem("selectedDriverId", ride.driver_id);
+              navigate("/ride-details", { state: { ride } });
+            }}
             className="px-6 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
           >
-          Book Ride
+            Book Ride
           </button>
           <button
             onClick={() => alert(`Contacting ${ride.driver_first_name} ${ride.driver_last_name}`)}

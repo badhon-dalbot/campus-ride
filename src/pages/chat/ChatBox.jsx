@@ -65,7 +65,7 @@ const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
       <div className="h-64 overflow-y-auto px-2 py-1 space-y-2 custom-scrollbar">
         {messages.map((msg) => (
           <div
-            key={msg.id}
+            key={msg.chat_id}
             className={`flex ${
               msg.sender_id === currentUserId ? "justify-end" : "justify-start"
             }`}

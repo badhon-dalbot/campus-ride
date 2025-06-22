@@ -1,4 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 import CampusRideFooter from "../components/CampusRideFooter.jsx";
 import CampusRideHeader from "../components/CampusRideHeader.jsx";
 
@@ -19,6 +21,38 @@ import {
 
 const RideDetails = () => {
   const navigate = useNavigate();
+  const [ride, setRide] = useState(null);
+  const [driver, setDriver] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const rideId = localStorage.getItem("selectedRideId");
+    const driverId = localStorage.getItem("selectedDriverId");
+
+    // Fetch ride details
+    if (rideId) {
+      axios.get(`http://localhost:3000/api/rides/${rideId}`)
+        .then(res => {
+          setRide(res.data);
+          console.log("Ride data fetched:", res.data);
+        })
+        .catch(err => console.error("Failed to fetch ride data", err));
+    }
+
+    // Fetch driver details
+    if (driverId) {
+      axios.get(`http://localhost:3000/api/driver/${driverId}/profile`)
+        .then(res => {
+          setDriver(res.data);
+        })
+        .catch(err => console.error("Failed to fetch driver data", err));
+    }
+  }, []);
+
+  const handleBookRide = () => {
+    navigate('/bookride');
+  }
+
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       {/* Header */}
@@ -48,36 +82,44 @@ const RideDetails = () => {
           {/* Left Side: Ride Information */}
           <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md md:col-span-2 space-y-6">
             {/* Route Info */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div className="flex items-start gap-2">
-                <MapPin className="mt-1" size={16} />
-                <div>
-                  <p className="font-semibold">Pickup</p>
-                  <p>Downtown</p>
+            {ride && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="flex items-start gap-2">
+                  <MapPin className="mt-1" size={16} />
+                  <div>
+                    <p className="font-semibold">Pickup</p>
+                    {ride.start_location}
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="mt-1" size={16} />
+                  <div>
+                    <p className="font-semibold">Dropoff</p>
+                    {ride.destination}
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Calendar className="mt-1" size={16} />
+                  <div>
+                    <p className="font-semibold">Date</p>
+                    <p>Today</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Clock className="mt-1" size={16} />
+                  <div>
+                    <p className="font-semibold">Time</p>
+                    {ride.ride_time &&
+                      new Date(`1970-01-01T${ride.ride_time}`).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                    }
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="mt-1" size={16} />
-                <div>
-                  <p className="font-semibold">Dropoff</p>
-                  <p>North Campus</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Calendar className="mt-1" size={16} />
-                <div>
-                  <p className="font-semibold">Date</p>
-                  <p>Today</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Clock className="mt-1" size={16} />
-                <div>
-                  <p className="font-semibold">Time</p>
-                  <p>8:00 AM</p>
-                </div>
-              </div>
-            </div>
+            )}
 
             {/* Map Placeholder */}
             <div className="bg-white h-64 rounded-lg flex items-center justify-center text-gray-400">
@@ -102,11 +144,13 @@ const RideDetails = () => {
                 <p className="text-gray-600 mb-1">Duration</p>
                 <p className="font-semibold text-lg">15 minutes</p>
               </div>
-              <div className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-center items-center">
-                <Users className="mb-1 text-gray-500" />
-                <p className="text-gray-600 mb-1">Available Seats</p>
-                <p className="font-semibold text-lg">3</p>
-              </div>
+              {ride && (
+                <div className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-center items-center">
+                  <Users className="mb-1 text-gray-500" />
+                  <p className="text-gray-600 mb-1">Available Seats</p>
+                  <p className="font-semibold text-lg">{ride.seats_available}</p>
+                </div>
+              )}
             </div>
 
             {/* Stops and Description */}
@@ -126,45 +170,50 @@ const RideDetails = () => {
             </div>
 
             {/* Vehicle Information */}
-            <div className="bg-white p-4 rounded-lg flex items-center gap-4 mt-6">
-              <div className="w-12 h-12 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
-                <CarFront />
+            {driver && (
+              <div className="bg-white p-4 rounded-lg flex items-center gap-4 mt-6">
+                <div className="w-12 h-12 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
+                  <CarFront />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm mb-1">
+                    Vehicle Information
+                  </h4>
+                  <p className="text-sm text-gray-700">
+                    {/* Toyota Prius (Blue 2020) */}
+                    {driver.make} {driver.model} ({driver.color})
+                  </p>
+                  <p className="text-sm text-gray-500">License: {driver.license_no}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-1">
-                  Vehicle Information
-                </h4>
-                <p className="text-sm text-gray-700">
-                  Toyota Prius (Blue 2020)
-                </p>
-                <p className="text-sm text-gray-500">License: ABC-1234</p>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Right Sidebar Cards */}
           <div className="space-y-8">
             {/* Driver Card */}
-            <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md space-y-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-semibold flex items-center gap-1">
-                    <UserCheck size={16} />
-                    Alex Johnson
-                  </p>
-                  <span className="text-green-600 text-xs">✔️ Verified</span>
+            {driver && (
+              <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-semibold flex items-center gap-1">
+                      <UserCheck size={16} />
+                      {driver.firstName} {driver.lastName}
+                    </p>
+                    <span className="text-green-600 text-xs">✔️ Verified</span>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
+                    IMG
+                  </div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
-                  IMG
+                <button className="w-full bg-white text-[#1f2b38] px-4 py-2 rounded-lg text-sm hover:opacity-90 transition flex items-center justify-center gap-2">
+                  <Phone size={16} /> Contact Driver
+                </button>
+                <div className="bg-white rounded-lg shadow-md p-3 mt-2 text-xs text-gray-600">
+                  Contact the driver to confirm pickup details before booking.
                 </div>
               </div>
-              <button className="w-full bg-white text-[#1f2b38] px-4 py-2 rounded-lg text-sm hover:opacity-90 transition flex items-center justify-center gap-2">
-                <Phone size={16} /> Contact Driver
-              </button>
-              <div className="bg-white rounded-lg shadow-md p-3 mt-2 text-xs text-gray-600">
-                Contact the driver to confirm pickup details before booking.
-              </div>
-            </div>
+            )}
 
             {/* Price Card */}
             <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md space-y-3">
@@ -186,7 +235,7 @@ const RideDetails = () => {
                 </span>
                 <span>$5.50</span>
               </div>
-              <button className="w-full bg-[#1f2b38] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition">
+              <button onClick={handleBookRide} className="w-full bg-[#1f2b38] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition">
                 Book Ride
               </button>
             </div>
