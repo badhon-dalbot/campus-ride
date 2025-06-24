@@ -64,8 +64,16 @@ const getAvailableRides = async (req, res) => {
     driver d ON u.id = d.driver_id
   WHERE 
     u.role = 'driver'
+    AND r.seats_available > 0
+    AND (
+      r.ride_date > CURDATE() 
+      OR (
+        r.ride_date = CURDATE() 
+        AND r.ride_time > CURTIME()
+      )
+    )
   ORDER BY 
-    r.ride_date, r.ride_time;
+    r.ride_date ASC, r.ride_time ASC;
   `;
 
   try {

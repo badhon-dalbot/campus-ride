@@ -22,7 +22,7 @@ const generateAccessToken = (user) => {
 //   ]);
 //   return token;
 // };
-const generateRefreshToken = async (user, userId) => {
+const generateRefreshToken = async (user, userId, isAdmin = false) => {
   const token = jwt.sign(
     user,
     process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken",
@@ -30,6 +30,10 @@ const generateRefreshToken = async (user, userId) => {
       expiresIn: "7d",
     }
   );
+
+  if (isAdmin) {
+    return token;
+  }
 
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -129,43 +133,28 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    if (rows.length === 0) {
-      return res.status(400).json({ error: "User not found" });
-    }
-    const user = rows[0];
+    // First: try users table
+    let [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    let user = rows[0];
+    let isAdmin = false;
 
-    if (!user.password) {
-      return res.status(400).json({ error: "Missing user password" });
+    // If not found: try admin table
+    if (!user) {
+      [rows] = await db.query("SELECT * FROM admin WHERE email = ?", [email]);
+      user = rows[0];
+      isAdmin = true;
     }
-    if (!password) {
-      return res.status(400).json({ error: "Invalid password" });
-    }
+
+    if (!user) return res.status(400).json({ error: "User not found" });
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: "Invalid password" });
-    }
+    if (!isPasswordValid) return res.status(400).json({ error: "Invalid password" });
 
-    const token = jwt.sign(
-      { id: user.id, name: user.firstName, email: user.email, role: user.role },
-      "myaccesstoken",
-      { expiresIn: "15m" }
-    );
+    const role = isAdmin ? "admin" : user.role;
+    const name = user.firstName || user.name || "Admin";
 
-    // Generate tokens
-    const accessToken = generateAccessToken({
-      id: user.id,
-      name: user.firstName,
-    });
-    const refreshToken = await generateRefreshToken(
-      {
-        id: user.id,
-        name: user.firstName,
-      },
-      user.id
-    );
+    const accessToken = generateAccessToken({ id: user.id, name, email, role });
+    const refreshToken = await generateRefreshToken({ id: user.id, name }, user.id, isAdmin);
 
     res
       .cookie("refreshToken", refreshToken, {
@@ -175,13 +164,16 @@ const login = async (req, res) => {
       })
       .json({
         message: "Login Successful",
-        user: { id: user.id, email: user.email, role: user.role },
+        user: { id: user.id, email: user.email, role },
       });
+
+    console.log(`[LOGIN SUCCESS] Role: ${role}, Email: ${email}`);
   } catch (error) {
-    console.error("Error during login:", error);
-    return res.status(500).json({ error: "Error logging in" });
+    console.error("[LOGIN ERROR]:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 // Refresh access token
 const refreshToken = async (req, res) => {
@@ -233,13 +225,14 @@ const checkToken = async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) return res.sendStatus(401);
 
-  const [rows] = await db.query(
-    "SELECT * FROM refresh_tokens WHERE token = ?",
-    [token]
-  );
-  if (!rows.length) return res.sendStatus(403);
+  try {
+    const user = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken");
 
-  res.sendStatus(200);
+    return res.status(200).json({ message: "Token valid", user });
+  } catch (error) {
+    return res.sendStatus(403);
+  }
 };
+
 
 export { checkToken, login, logout, refreshToken, register };

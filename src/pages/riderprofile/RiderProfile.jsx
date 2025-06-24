@@ -172,7 +172,7 @@ export default function StudentProfilePage() {
                   <span className="font-medium">Back</span>
                 </button>
                 <h1 className="text-2xl font-bold text-gray-900 text-center">
-                  Student Profile
+                  Rider Profile
                 </h1>
               </div>
 

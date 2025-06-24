@@ -18,10 +18,10 @@ export default function RideCard({ ride }) {
           <Clock size={16} />
           <span>
             {ride.ride_time
-              ? new Date(`2025-06-15T${ride.ride_time}Z`).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
+              ? new Date(`1970-01-01T${ride.ride_time}`).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
               })
               : 'N/A'
             }
