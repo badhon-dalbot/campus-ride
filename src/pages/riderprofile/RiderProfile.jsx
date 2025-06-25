@@ -139,6 +139,8 @@ export default function StudentProfilePage() {
           email: data.email,
           phone: data.phone,
           since: data.created_at,
+          status: data.account_status,
+          about: data.about || '',
           university: data.university || '',
           studentId: data.studentId || '',
           major: data.major || '',
@@ -146,6 +148,7 @@ export default function StudentProfilePage() {
           emergencyContact: data.emergencyContact || '',
           emergencyName: data.emergencyName || ''
         });
+        setBio(data.about || "");
         setLoading(false);
       })
       .catch((err) => {
