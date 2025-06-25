@@ -46,10 +46,12 @@ const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
     if (!text.trim()) return;
 
     const msg = {
+      chat_id: Date.now(), // Using timestamp as a unique ID for simplicity
       booking_id: bookingId,
       sender_id: currentUserId,
       receiver_id: otherUserId,
       message: text,
+      timestamp: new Date().toISOString(),
     };
 
     socket.emit("send_message", msg);

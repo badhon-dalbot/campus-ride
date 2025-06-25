@@ -15,6 +15,7 @@ const AuthProvider = ({ children }) => {
         });
         console.log("Auth check response:", res);
         if (res.status === 200) {
+          localStorage.setItem("user", JSON.stringify(res.data));
           setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);

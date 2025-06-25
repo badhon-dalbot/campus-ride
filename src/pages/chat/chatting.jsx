@@ -1,12 +1,12 @@
+import axios from "axios";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Import all components from the chatting folder
 import CampusRideFooter from "../../components/CampusRideFooter";
 import CampusRideHeader from "../../components/CampusRideHeader";
 import ActiveRide from "./ActiveRide";
 import PastRideChat from "./PastRideChat";
-import PastRidesList from "./PastRidesList";
 import SafetyGuidelines from "./SafetyGuidelines";
 
 export default function RideTracker() {
@@ -15,206 +15,39 @@ export default function RideTracker() {
 
   // User role - 'driver' or 'passenger'
   const [userRole] = useState("driver"); // Change to 'driver' to test driver view
+  const user = localStorage.getItem("user");
+  const driverId = user ? JSON.parse(user).user.id : null; // Get driver ID from local storage
+  console.log("Driver ID:", driverId);
 
-  // Current active rides data - can have multiple active rides
-  const activeRides = [
-    {
-      id: "RIDE-2025-001",
-      status: "active",
-      // If user is driver, this contains passenger info. If user is passenger, this contains driver info.
-      contact:
-        userRole === "driver"
-          ? {
-              role: "driver",
-              name: "Ahmed Rahman",
-              rating: 4.8,
-              phone: "+880 1712-345678",
-              car: "Red Honda Civic",
-              licensePlate: "DHK-1234",
-              avatar: "https://i.pravatar.cc/150?img=1",
-            }
-          : {
-              role: "passenger",
-              name: "Sarah Khan",
-              institution: "UIU",
-              phone: "+880 1812-345678",
-              avatar: "https://i.pravatar.cc/150?img=2",
-            },
-      // For drivers: list of passengers with their stops
-      // For passengers: just their own journey
-      passengers:
-        userRole === "driver"
-          ? [
-              {
-                name: "Sarah Khan",
-                institution: "UIU",
-                phone: "+880 1812-345678",
-                avatar: "https://i.pravatar.cc/150?img=2",
-                pickupLocation: "UIU Main Gate",
-                dropoffLocation: "Dhanmondi 27",
-                pickupTime: "3:00 PM",
-                status: "picked_up",
-              },
-              {
-                name: "Rashid Ahmed",
-                institution: "NSU",
-                phone: "+880 1712-987654",
-                avatar: "https://i.pravatar.cc/150?img=3",
-                pickupLocation: "NSU Campus",
-                dropoffLocation: "Farmgate",
-                pickupTime: "3:15 PM",
-                status: "waiting",
-              },
-            ]
-          : null,
-      // Trip route information
-      route: {
-        from: userRole === "driver" ? "UIU Main Gate" : "UIU Main Gate",
-        to: userRole === "driver" ? "Multiple Stops" : "Dhanmondi 27",
-        pickupTime: "3:00 PM",
-        estimatedArrival: userRole === "driver" ? "4:00 PM" : "3:45 PM",
-        distance: "15.2 km",
-        fare: userRole === "driver" ? 500 : 250, // Total fare for driver, individual fare for passenger
-        eta: "3 mins",
-        nextStop: userRole === "driver" ? "UIU Main Gate (Sarah pickup)" : null,
-      },
-      // Chat messages for this ride
-      messages: [
-        {
-          id: 1,
-          sender: userRole === "passenger" ? "driver" : "passenger",
-          content:
-            userRole === "passenger"
-              ? "I'm Ahmed, your driver. Red Honda Civic, arriving in 3 minutes."
-              : "Hi! I'm Sarah from UIU. I'll be ready at the main gate entrance.",
-          time: "2:57 PM",
-        },
-        {
-          id: 2,
-          sender: userRole === "passenger" ? "passenger" : "driver",
-          content:
-            userRole === "passenger"
-              ? "Great! I'm Sarah from UIU, standing by the main gate entrance."
-              : "Perfect! I'll be there in my Red Honda Civic in 3 minutes.",
-          time: "2:58 PM",
-        },
-      ],
-    },
-    // Second active ride (only for driver to show multiple rides)
-    ...(userRole === "driver"
-      ? [
-          {
-            id: "RIDE-2025-002",
-            status: "active",
-            contact: {
-              role: "driver",
-              name: "Karim Hassan",
-              rating: 4.9,
-              phone: "+880 1512-345678",
-              car: "Blue Toyota Corolla",
-              licensePlate: "DHK-5678",
-              avatar: "https://i.pravatar.cc/150?img=4",
-            },
-            passengers: [
-              {
-                name: "Fatima Ali",
-                institution: "BRAC University",
-                phone: "+880 1612-111222",
-                avatar: "https://i.pravatar.cc/150?img=5",
-                pickupLocation: "BRAC University",
-                dropoffLocation: "Gulshan 2",
-                pickupTime: "4:00 PM",
-                status: "waiting",
-              },
-            ],
-            route: {
-              from: "BRAC University",
-              to: "Gulshan 2",
-              pickupTime: "4:00 PM",
-              estimatedArrival: "4:30 PM",
-              distance: "8.5 km",
-              fare: 300,
-              eta: "15 mins",
-              nextStop: "BRAC University (Fatima pickup)",
-            },
-            messages: [
-              {
-                id: 1,
-                sender: "passenger",
-                content:
-                  "Hi! I'm Fatima from BRAC University. Ready for pickup at the main entrance.",
-                time: "3:55 PM",
-              },
-            ],
-          },
-        ]
-      : []),
-  ];
+  const [activeRides, setActiveRides] = useState([]);
+  const [pastRides, setPastRides] = useState([]);
+  const [selectedRide, setSelectedRide] = useState(null);
 
-  // Past rides data with full conversation history
-  const pastRides = [
-    {
-      id: "RIDE-2025-003",
-      contact:
-        userRole === "passenger"
-          ? {
-              name: "Sarah Khan",
-              role: "driver",
-              avatar: "https://i.pravatar.cc/150?img=2",
-              rating: 4.9,
-              phone: "+880 1812-345678",
-            }
-          : {
-              name: "Mike Rahman",
-              role: "passenger",
-              institution: "NSU",
-              avatar: "https://i.pravatar.cc/150?img=3",
-              phone: "+880 1712-987654",
-            },
-      route: {
-        from: "NSU Campus",
-        to: "Farmgate",
-        date: "2025-01-14",
-        time: "4:30 PM",
-        fare: 180,
-        car: userRole === "passenger" ? "Blue Toyota Corolla" : null,
-        licensePlate: userRole === "passenger" ? "DHK-5678" : null,
-      },
-      date: "Yesterday",
-      status: "completed",
-      messages: [
-        {
-          id: 1,
-          sender: userRole === "passenger" ? "passenger" : "driver",
-          content:
-            userRole === "passenger"
-              ? "Hi! Ready for pickup at NSU main gate"
-              : "Hi! I'm Mike from NSU. Ready for pickup at the main gate.",
-          time: "4:25 PM",
-        },
-        {
-          id: 2,
-          sender: userRole === "passenger" ? "driver" : "passenger",
-          content:
-            userRole === "passenger"
-              ? "Great! Blue Toyota coming your way. See you in 2 minutes."
-              : "Perfect! I'll be waiting right at the entrance.",
-          time: "4:28 PM",
-        },
-        {
-          id: 3,
-          sender: userRole === "passenger" ? "passenger" : "driver",
-          content: "Thanks for the ride! 5 stars ⭐",
-          time: "5:16 PM",
-        },
-      ],
-    },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Function to send a message (either typed or quick message)
-  const handleSendMessage = (rideId, messageText) => {
-    console.log("Sending message for ride:", rideId, messageText);
-  };
+  useEffect(() => {
+    async function load() {
+      try {
+        setLoading(true);
+        const [activeRes, pastRes] = await Promise.all([
+          axios.get(
+            `http://localhost:3000/api/driver/${driverId}/active-rides`
+          ),
+          axios.get(`/api/driver/${driverId}/past-rides`),
+        ]);
+        console.log("Active Rides Response:", activeRes.data);
+        setActiveRides(activeRes.data); // 👉 shape must match <ActiveRide/>
+        setPastRides(pastRes.data); // 👉 id, route, contact, etc.
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load rides. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [driverId]);
 
   // Function to select a past ride and show it in right panel
   const handleSelectPastRide = (ride) => {
@@ -225,6 +58,19 @@ export default function RideTracker() {
   const handleClosePastRideChat = () => {
     setSelectedPastRide(null);
   };
+  if (loading)
+    return (
+      <div className="h-screen flex items-center justify-center text-gray-600">
+        Loading rides…
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="h-screen flex items-center justify-center text-red-600">
+        {error}
+      </div>
+    );
 
   return (
     <div
@@ -254,19 +100,20 @@ export default function RideTracker() {
               {/* Active Rides - Show all active rides */}
               {activeRides.map((ride) => (
                 <ActiveRide
-                  key={ride.id}
+                  key={ride.ride_id}
                   ride={ride}
                   userRole={userRole}
-                  onSendMessage={handleSendMessage}
+                  bookingId={ride.passengers[0]?.booking_id}
+                  // onSendMessage={handleSendMessage}
                 />
               ))}
 
               {/* Recent Ride Communications List */}
-              <PastRidesList
+              {/* <PastRidesList
                 pastRides={pastRides}
                 selectedPastRide={selectedPastRide}
                 onSelectPastRide={handleSelectPastRide}
-              />
+              /> */}
             </div>
 
             {/* Right Column - Past Ride Chat (Only appears when a past ride is selected) */}
