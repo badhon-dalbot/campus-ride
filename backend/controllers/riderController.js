@@ -12,6 +12,8 @@ const getRiderProfile = async (req, res) => {
         email,
         phone,
         document,
+        about,
+        account_status,
         created_at
       FROM users
       WHERE id = ? AND role = 'rider'`,

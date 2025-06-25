@@ -22,7 +22,7 @@ export default function StudentInfoCard({ profileData, onEditProfile }) {
           <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.firstName} {profileData.lastName}</h2>
           <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{backgroundColor: '#17252A'}}>
             <GraduationCap className="w-3 h-3" />
-            Verified Student
+            {profileData.status}
           </div>
 
           <p className="text-gray-500 text-sm mb-4">Member since {profileData.since ? new Date(profileData.since).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''}</p>

@@ -14,8 +14,7 @@ export default function DriverProfilePage() {
     musicAllowed: true,
     petsAllowed: false,
     smokingAllowed: false,
-    quietRides: false,
-    maxPassengers: 3
+    quietRides: false
   });
   const [profileData, setProfileData] = useState({
     name: '',
@@ -52,10 +51,32 @@ export default function DriverProfilePage() {
   const tabs = ['Overview', 'Vehicle', 'Reviews', 'Earnings', 'Settings'];
 
   const togglePreference = (key) => {
-    setPreferences(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+    const updated = {
+      ...preferences,
+      [key]: !preferences[key]
+    };
+    setPreferences(updated);
+
+    // Convert to backend format
+    const backendPrefs = {
+      music: updated.musicAllowed ? "Yes" : "No",
+      pet: updated.petsAllowed ? "Yes" : "No",
+      smoking: updated.smokingAllowed ? "No Smoking" : "Allowed",
+      quietRide: updated.quietRides ? "Yes" : "No"
+    };
+
+    fetch(`http://localhost:3000/api/driver/${user.id}/preferences`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(backendPrefs),
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to update preferences');
+    })
+    .catch(err => {
+      setPreferences(preferences);
+      alert('Failed to update preferences');
+    });
   };
 
   const handleEditBio = () => {
@@ -63,7 +84,23 @@ export default function DriverProfilePage() {
   };
 
   const handleSaveBio = () => {
-    setIsEditingBio(false);
+    fetch(`http://localhost:3000/api/driver/${user.id}/bio`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ about: bio }),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to update bio');
+        return res.json();
+      })
+      .then(data => {
+        setIsEditingBio(false);
+        // Optionally, show a success message
+      })
+      .catch(err => {
+        alert('Failed to update bio');
+        // Optionally, revert bio or handle error
+      });
   };
 
   const handleCancelEdit = () => {
@@ -160,7 +197,14 @@ export default function DriverProfilePage() {
           insurancePolicy: data.insurance_policy || '',
           insuranceExpiry: data.insurance_expiry || '',
           rating: data.rating || 0,
-          review_count: data.review_count || 0
+          review_count: data.review_count || 0,
+          about: data.about || '',
+          status: data.account_status,
+          one_star: data.one_star,
+          two_star: data.two_star,
+          three_star: data.three_star,
+          four_star: data.four_star,
+          five_star: data.five_star
         });
         setVehicleData({
           make: data.make || '',
@@ -172,6 +216,13 @@ export default function DriverProfilePage() {
           fuelType: data.fuel_type || '',
           lastMaintenance: data.last_maintenance || ''
         });
+        setPreferences({
+          musicAllowed: data.music === "Yes",
+          petsAllowed: data.pet === "Yes",
+          smokingAllowed: data.smoking === "No Smoking",
+          quietRides: data.quietRide === "Yes"
+        });
+        setBio(data.about || "");
         setLoading(false);
       })
       .catch((err) => {
@@ -182,6 +233,21 @@ export default function DriverProfilePage() {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+
+  const totalReviews = 
+    (profileData.one_star || 0) +
+    (profileData.two_star || 0) +
+    (profileData.three_star || 0) +
+    (profileData.four_star || 0) +
+    (profileData.five_star || 0);
+
+  const starCounts = {
+    5: profileData.five_star || 0,
+    4: profileData.four_star || 0,
+    3: profileData.three_star || 0,
+    2: profileData.two_star || 0,
+    1: profileData.one_star || 0,
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -222,7 +288,7 @@ export default function DriverProfilePage() {
                       <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.name}</h2>
                       <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{ backgroundColor: '#17252A' }}>
                         <Award className="w-3 h-3" />
-                        Verified Driver
+                        {/* Verified Driver */}{profileData.status}
                       </div>
 
                       {/* Driver Rating */}
@@ -427,7 +493,7 @@ export default function DriverProfilePage() {
                                 }`}
                               style={!preferences.smokingAllowed ? { backgroundColor: '#17252A' } : {}}
                             >
-                              {!preferences.smokingAllowed ? 'No Smoking' : 'Allowed'}
+                              {preferences.smokingAllowed ? 'No Smoking' : 'Allowed'}
                             </button>
                           </div>
                           <div className="flex items-center justify-between">
@@ -440,13 +506,13 @@ export default function DriverProfilePage() {
                                 }`}
                               style={preferences.quietRides ? { backgroundColor: '#17252A' } : {}}
                             >
-                              {preferences.quietRides ? 'Yes' : 'No'}
+                              {!preferences.quietRides ? 'Yes' : 'No'}
                             </button>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-gray-700">👥 Max passengers</span>
                             <span className="px-3 py-1 rounded-full text-xs font-medium text-white" style={{ backgroundColor: '#17252A' }}>
-                              {preferences.maxPassengers}
+                              {vehicleData.seats}
                             </span>
                           </div>
                         </div>
@@ -627,19 +693,23 @@ export default function DriverProfilePage() {
                           </div>
                           <div className="flex-1">
                             <div className="space-y-1">
-                              {[5, 4, 3, 2, 1].map(rating => (
-                                <div key={rating} className="flex items-center gap-2">
-                                  <span className="text-sm w-4">{rating}</span>
-                                  <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                  <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                    <div
-                                      className="bg-yellow-400 h-2 rounded-full"
-                                      style={{ width: rating === 5 ? '85%' : rating === 4 ? '12%' : '2%' }}
-                                    ></div>
+                              {[5, 4, 3, 2, 1].map(rating => {
+                                const count = starCounts[rating];
+                                const percent = totalReviews ? (count / totalReviews) * 100 : 0;
+                                return (
+                                  <div key={rating} className="flex items-center gap-2">
+                                    <span className="text-sm w-4">{rating}</span>
+                                    <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                                    <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                      <div
+                                        className="bg-yellow-400 h-2 rounded-full"
+                                        style={{ width: `${percent}%` }}
+                                      ></div>
+                                    </div>
+                                    <span className="text-sm text-gray-500 w-8">{count}</span>
                                   </div>
-                                  <span className="text-sm text-gray-500 w-8">{rating === 5 ? '76' : rating === 4 ? '11' : '2'}</span>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         </div>

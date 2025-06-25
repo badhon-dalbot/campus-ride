@@ -167,9 +167,7 @@ const login = async (req, res) => {
         user: { id: user.id, email: user.email, role },
       });
 
-    console.log(`[LOGIN SUCCESS] Role: ${role}, Email: ${email}`);
   } catch (error) {
-    console.error("[LOGIN ERROR]:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -195,7 +193,6 @@ const refreshToken = async (req, res) => {
 
     res.json({ newAccessToken });
   } catch (error) {
-    console.error("Error refreshing token:", error);
     res.status(500).json({ error: "Error refreshing token" });
   }
 };
@@ -216,7 +213,6 @@ const logout = async (req, res) => {
     });
     res.sendStatus(204);
   } catch (error) {
-    console.error("Logout error:", error);
     res.status(500).json({ error: error.message });
   }
 };
