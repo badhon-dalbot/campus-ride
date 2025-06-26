@@ -41,13 +41,13 @@ const getDriverProfile = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'Driver not found' });
+      return res.status(404).json({ message: "Driver not found" });
     }
 
     res.status(200).json(rows[0]);
   } catch (error) {
-    console.error('Error fetching driver profile:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error fetching driver profile:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -56,13 +56,13 @@ const updatePreferences = async (req, res) => {
   const { music, pet, smoking, quietRide } = req.body;
   try {
     await db.query(
-      'UPDATE driver SET music = ?, pet = ?, smoking = ?, quietRide = ? WHERE driver_id = ?',
+      "UPDATE driver SET music = ?, pet = ?, smoking = ?, quietRide = ? WHERE driver_id = ?",
       [music, pet, smoking, quietRide, driverId]
     );
-    
-    res.status(200).json({ message: 'Preferences updated successfully' });
+
+    res.status(200).json({ message: "Preferences updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update preferences' });
+    res.status(500).json({ error: "Failed to update preferences" });
   }
 };
 
@@ -70,20 +70,124 @@ const updateDriverBio = async (req, res) => {
   const driverId = req.params.id;
   const { about } = req.body;
   if (!about) {
-    return res.status(400).json({ error: 'Bio (about) is required' });
+    return res.status(400).json({ error: "Bio (about) is required" });
   }
   try {
-    const [result] = await db.query(
-      'UPDATE users SET about = ? WHERE id = ?',
-      [about, driverId]
-    );
+    const [result] = await db.query("UPDATE users SET about = ? WHERE id = ?", [
+      about,
+      driverId,
+    ]);
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Driver not found' });
+      return res.status(404).json({ error: "Driver not found" });
     }
-    res.status(200).json({ message: 'Bio updated successfully' });
+    res.status(200).json({ message: "Bio updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update bio' });
+    res.status(500).json({ error: "Failed to update bio" });
   }
 };
 
-export { getDriverProfile, updatePreferences, updateDriverBio };
+const getDriverDashboard = async (req, res) => {
+  const driverId = +req.params.id;
+  if (!driverId) return res.status(400).json({ error: 'Invalid driver ID' });
+
+  try {
+    // 1. Summary
+    const [summaryRows] = await db.query(`
+      SELECT
+        COALESCE(SUM(p.amount), 0) AS total_earnings,
+        d.rating,
+        (SELECT COUNT(*) FROM rides WHERE driver_id = ?) AS total_trips,
+        (SELECT COUNT(*) FROM booking b JOIN rides r ON b.ride_id = r.id WHERE r.driver_id = ?) AS total_ride_requests
+      FROM payment p
+      JOIN booking b ON p.booking_id = b.id
+      JOIN rides r ON b.ride_id = r.id
+      JOIN driver d ON r.driver_id = d.driver_id
+      WHERE r.driver_id = ? AND b.status IN ('accepted', 'confirmed');
+    `, [driverId, driverId, driverId]);
+
+    // Vehicle info
+    const [vehicleRows] = await db.query(
+      `SELECT * FROM vehicle WHERE driver_id = ? LIMIT 1`, [driverId]
+    );
+
+    // 2. Upcoming rides
+    const [upcomingRides] = await db.query(`
+      SELECT
+        CONCAT(u.firstname, ' ', u.lastname) AS passenger_name,
+        r.start_location AS pickup_point,
+        r.destination,
+        r.ride_time AS time,
+        r.ride_date AS date,
+        b.status AS booking_status,
+        p.amount AS ride_fare
+      FROM booking b
+      JOIN rides r ON b.ride_id = r.id
+      JOIN users u ON b.user_id = u.id
+      LEFT JOIN payment p ON p.booking_id = b.id
+      WHERE r.driver_id = ? AND r.ride_date >= CURDATE() AND b.status IN ('accepted', 'confirmed')
+      ORDER BY r.ride_date, r.ride_time;
+    `, [driverId]);
+
+    // 3. Pending requests
+    const [pendingRequests] = await db.query(`
+      SELECT
+        r.start_location AS from_location,
+        r.destination AS to_location,
+        r.ride_date AS date,
+        r.ride_time AS time,
+        CONCAT(u.firstname, ' ', u.lastname) AS passenger,
+        b.seats AS seats,
+        p.amount AS fare,
+        CASE WHEN b.seats > 0 THEN ROUND(p.amount / b.seats, 2) ELSE 0 END AS fare_per_seat,
+        d.rating AS passenger_rating
+      FROM booking b
+      JOIN rides r ON b.ride_id = r.id
+      JOIN users u ON b.user_id = u.id
+      LEFT JOIN payment p ON p.booking_id = b.id
+      LEFT JOIN driver d ON u.id = d.driver_id
+      WHERE r.driver_id = ? AND b.status = 'pending'
+      ORDER BY r.ride_date, r.ride_time;
+    `, [driverId]);
+
+    // 4. Accepted requests
+    const [acceptedRequests] = await db.query(`
+      SELECT
+        r.start_location AS from_location,
+        r.destination AS to_location,
+        r.ride_date AS date,
+        r.ride_time AS time,
+        CONCAT(u.firstname, ' ', u.lastname) AS passenger,
+        b.seats AS seats,
+        p.amount AS fare,
+        CASE WHEN b.seats > 0 THEN ROUND(p.amount / b.seats, 2) ELSE 0 END AS fare_per_seat,
+        d.rating AS passenger_rating
+      FROM booking b
+      JOIN rides r ON b.ride_id = r.id
+      JOIN users u ON b.user_id = u.id
+      LEFT JOIN payment p ON p.booking_id = b.id
+      LEFT JOIN driver d ON u.id = d.driver_id
+      WHERE r.driver_id = ? AND b.status = 'accepted'
+      ORDER BY r.ride_date, r.ride_time;
+    `, [driverId]);
+
+    res.json({
+      summary: summaryRows[0],
+      vehicle: vehicleRows[0] || null,
+      upcomingRides,
+      pendingRequests,
+      acceptedRequests
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+
+export {
+  getDriverDashboard,
+  getDriverProfile,
+  updateDriverBio,
+  updatePreferences,
+};
