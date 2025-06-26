@@ -27,7 +27,8 @@ export default function StudentProfilePage() {
     flexibleTiming: true,
   });
   const [profileData, setProfileData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     university: "",
@@ -45,10 +46,28 @@ export default function StudentProfilePage() {
   const tabs = ["Overview", "Ride History", "Payments", "Settings"];
 
   const togglePreference = (key) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    const updated = {
+      ...preferences,
+      [key]: !preferences[key],
+    };
+    setPreferences(updated);
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    fetch(`http://localhost:3000/api/rider/${user.id}/preferences`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updated),
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update preferences");
+        // Optionally show a success message
+      })
+      .catch((err) => {
+        // Optionally handle error
+      });
   };
 
   const handleEditProfile = () => {
@@ -126,6 +145,8 @@ export default function StudentProfilePage() {
     if (!user?.id) return;
 
     setLoading(true);
+
+    // Fetch profile
     fetch(`http://localhost:3000/api/rider/${user.id}/profile`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch rider profile");
@@ -155,7 +176,46 @@ export default function StudentProfilePage() {
         setError(err.message);
         setLoading(false);
       });
+
+    // Fetch preferences
+    fetch(`http://localhost:3000/api/rider/${user.id}/preferences`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch preferences");
+        return res.json();
+      })
+      .then((prefs) => {
+        setPreferences({
+          musicAllowed: !!prefs.musicAllowed,
+          quietRides: !!prefs.quietRides,
+          friendlyChat: !!prefs.friendlyChat,
+          earlyPickup: !!prefs.earlyPickup,
+          flexibleTiming: !!prefs.flexibleTiming,
+        });
+      })
+      .catch((err) => {
+        // Optionally handle error
+      });
+
   }, []);
+
+  const handleSaveBio = async (newBio) => {
+    try {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      const res = await fetch(`http://localhost:3000/api/rider/${user.id}/bio`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ about: newBio }),
+        credentials: 'include', // if you use cookies/session
+      });
+      if (!res.ok) throw new Error('Failed to update bio');
+      setBio(newBio); // update local state
+      // Optionally show a success message here
+    } catch (err) {
+      alert("Failed to update bio: " + err.message);
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
@@ -203,6 +263,7 @@ export default function StudentProfilePage() {
                       bio={bio}
                       preferences={preferences}
                       onTogglePreference={togglePreference}
+                      onSaveBio={handleSaveBio}
                     />
                   )}
 

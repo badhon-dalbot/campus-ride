@@ -61,7 +61,7 @@ export default function ProfileEditForm({
           <ChevronLeft className="w-4 h-4" />
           <span className="font-medium">Back to Profile</span>
         </button>
-        <h1 className="text-2xl font-bold text-gray-900 text-center">Edit Student Profile</h1>
+        <h1 className="text-2xl font-bold text-gray-900 text-center">Edit Rider Profile</h1>
       </div>
 
       <div className="max-w-2xl mx-auto space-y-6">
@@ -162,10 +162,19 @@ export default function ProfileEditForm({
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
               <input
                 type="text"
-                value={profileData.name}
+                value={profileData.firstName}
+                onChange={(e) => onProfileInputChange('name', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+              <input
+                type="text"
+                value={profileData.lastName}
                 onChange={(e) => onProfileInputChange('name', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -276,17 +285,6 @@ export default function ProfileEditForm({
               />
             </div>
           </div>
-        </div>
-
-        {/* Bio Section */}
-        <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">About Me</h3>
-          <textarea
-            value={bio}
-            onChange={(e) => onBioChange(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg resize-none h-24 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Tell drivers about yourself..."
-          />
         </div>
 
         {/* Save/Cancel Buttons */}

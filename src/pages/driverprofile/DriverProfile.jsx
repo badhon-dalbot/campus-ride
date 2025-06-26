@@ -17,7 +17,8 @@ export default function DriverProfilePage() {
     quietRides: false
   });
   const [profileData, setProfileData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     university: '',
@@ -183,7 +184,8 @@ export default function DriverProfilePage() {
         console.log("Driver profile data from backend:", data);
         // Set your profileData and vehicleData here based on API response
         setProfileData({
-          name: `${data.firstName} ${data.lastName}`,
+          firstName: data.firstName,
+          lastName: data.lastName,
           email: data.email,
           phone: data.phone,
           since: data.created_at,
@@ -285,7 +287,7 @@ export default function DriverProfilePage() {
                       </div>
 
                       {/* Name and Verification */}
-                      <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.name}</h2>
+                      <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.firstName} {profileData.lastName}</h2>
                       <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{ backgroundColor: '#17252A' }}>
                         <Award className="w-3 h-3" />
                         {/* Verified Driver */}{profileData.status}
@@ -942,10 +944,19 @@ export default function DriverProfilePage() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                       <input
                         type="text"
-                        value={profileData.name}
+                        value={profileData.firstName}
+                        onChange={(e) => handleProfileInputChange('name', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                      <input
+                        type="text"
+                        value={profileData.lastName}
                         onChange={(e) => handleProfileInputChange('name', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -1063,17 +1074,6 @@ export default function DriverProfilePage() {
                       />
                     </div>
                   </div>
-                </div>
-
-                {/* Bio Section */}
-                <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">About Me</h3>
-                  <textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg resize-none h-24 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Tell passengers about your driving experience..."
-                  />
                 </div>
 
                 {/* Save/Cancel Buttons */}
