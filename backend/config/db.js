@@ -17,7 +17,7 @@ const db = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
-  database: "campusride",
+  database: "campus_ride",
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
