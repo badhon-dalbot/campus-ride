@@ -1,31 +1,55 @@
 // components/StudentInfoCard.jsx
-import React from 'react';
-import { Mail, Phone, Edit3, GraduationCap, Building, Car, DollarSign, Leaf, Clock } from 'lucide-react';
+import {
+  Car,
+  Clock,
+  DollarSign,
+  Edit3,
+  GraduationCap,
+  Leaf,
+  Mail,
+  Phone,
+} from "lucide-react";
 
 export default function StudentInfoCard({ profileData, onEditProfile }) {
   return (
     <>
       {/* Student Profile Card */}
-      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+      <div
+        className="rounded-lg border border-gray-200 p-6 shadow-sm"
+        style={{ backgroundColor: "#D7E5E5" }}
+      >
         <div className="text-center">
           {/* Profile Picture */}
           <div className="relative inline-block mb-4">
             <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-2xl text-gray-400">👤</span>
             </div>
-            <div className="absolute -bottom-1 -right-1 text-white rounded-full w-6 h-6 flex items-center justify-center" style={{backgroundColor: '#17252A'}}>
-              <span className="text-xs">✓</span>
+            <div className="absolute -bottom-1 -right-1 text-white rounded-full w-6 h-6 flex items-center justify-center bg-night-ink">
+              <span className="text-xs"> {(profileData.status === 'verified' ? '✓' : 'x' )} </span>
             </div>
           </div>
-          
+
           {/* Name and Verification */}
-          <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.firstName} {profileData.lastName}</h2>
-          <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2" style={{backgroundColor: '#17252A'}}>
+          <h2 className="text-xl font-semibold text-gray-900 mb-1">
+            {profileData.firstName} {profileData.lastName}
+          </h2>
+          <div
+            className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2"
+            style={{ backgroundColor: "#17252A" }}
+          >
             <GraduationCap className="w-3 h-3" />
             {profileData.status}
           </div>
 
-          <p className="text-gray-500 text-sm mb-4">Member since {profileData.since ? new Date(profileData.since).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''}</p>
+          <p className="text-gray-500 text-sm mb-4">
+            Member since{" "}
+            {profileData.since
+              ? new Date(profileData.since).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                })
+              : ""}
+          </p>
         </div>
 
         {/* Contact Info */}
@@ -40,10 +64,10 @@ export default function StudentInfoCard({ profileData, onEditProfile }) {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={onEditProfile}
           className="w-full mt-4 text-white py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-          style={{backgroundColor: '#17252A'}}
+          style={{ backgroundColor: "#17252A" }}
         >
           <Edit3 className="w-4 h-4" />
           Edit Profile
@@ -51,7 +75,10 @@ export default function StudentInfoCard({ profileData, onEditProfile }) {
       </div>
 
       {/* Student Stats */}
-      <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{backgroundColor: '#D7E5E5'}}>
+      <div
+        className="rounded-lg border border-gray-200 p-6 shadow-sm"
+        style={{ backgroundColor: "#D7E5E5" }}
+      >
         <h3 className="text-lg font-semibold text-gray-900 mb-4">My Stats</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
