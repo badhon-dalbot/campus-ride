@@ -86,6 +86,48 @@ const updateDriverBio = async (req, res) => {
   }
 };
 
+const updateVehicleInfo = async (req, res) => {
+  const driverId = req.params.id;
+  const { make, model, color, licensePlate, seats, fuelType, lastMaintenance } = req.body;
+
+  try {
+    // Check if vehicle record exists for this driver
+    const [existingVehicle] = await db.query(
+      "SELECT vehicle_id FROM vehicle WHERE driver_id = ?",
+      [driverId]
+    );
+
+    if (existingVehicle.length > 0) {
+      // Update existing vehicle record
+      await db.query(
+        `UPDATE vehicle SET 
+         make = ?, 
+         model = ?, 
+         color = ?, 
+         license_no = ?, 
+         seats = ?, 
+         fuel_type = ?, 
+         last_maintenance = ? 
+         WHERE driver_id = ?`,
+        [make, model, color, licensePlate, seats, fuelType, lastMaintenance, driverId]
+      );
+    } else {
+      // Insert new vehicle record
+      await db.query(
+        `INSERT INTO vehicle 
+         (driver_id, make, model, color, license_no, seats, fuel_type, last_maintenance) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [driverId, make, model, color, licensePlate, seats, fuelType, lastMaintenance]
+      );
+    }
+
+    res.status(200).json({ message: "Vehicle information updated successfully" });
+  } catch (error) {
+    console.error("Error updating vehicle info:", error);
+    res.status(500).json({ error: "Failed to update vehicle information" });
+  }
+};
+
 const getDriverDashboard = async (req, res) => {
   const driverId = +req.params.id;
   if (!driverId) return res.status(400).json({ error: "Invalid driver ID" });
@@ -206,4 +248,5 @@ export {
   getDriverProfile,
   updateDriverBio,
   updatePreferences,
+  updateVehicleInfo,
 };
