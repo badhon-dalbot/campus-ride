@@ -148,13 +148,18 @@ const login = async (req, res) => {
     if (!user) return res.status(400).json({ error: "User not found" });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return res.status(400).json({ error: "Invalid password" });
+    if (!isPasswordValid)
+      return res.status(400).json({ error: "Invalid password" });
 
     const role = isAdmin ? "admin" : user.role;
     const name = user.firstName || user.name || "Admin";
 
     const accessToken = generateAccessToken({ id: user.id, name, email, role });
-    const refreshToken = await generateRefreshToken({ id: user.id, name }, user.id, isAdmin);
+    const refreshToken = await generateRefreshToken(
+      { id: user.id, name, role },
+      user.id,
+      isAdmin
+    );
 
     res
       .cookie("refreshToken", refreshToken, {
@@ -166,12 +171,10 @@ const login = async (req, res) => {
         message: "Login Successful",
         user: { id: user.id, email: user.email, role },
       });
-
   } catch (error) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 // Refresh access token
 const refreshToken = async (req, res) => {
@@ -180,15 +183,21 @@ const refreshToken = async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      "SELECT * FROM refresh_tokens WHERE token = ?",
+      `SELECT rt.*, u.role
+   FROM refresh_tokens rt
+   JOIN users u ON rt.user_id = u.id
+   WHERE rt.token = ?;`,
       [refreshToken]
     );
+
     if (rows.length === 0) return res.sendStatus(403);
+    console.log("Rows:", [rows]);
 
     const user = jwt.verify(refreshToken, "myrefreshtoken");
     const newAccessToken = generateAccessToken({
       id: user.id,
       name: user.firstName,
+      role: rows[0].role,
     });
 
     res.json({ newAccessToken });
@@ -222,13 +231,16 @@ const checkToken = async (req, res) => {
   if (!token) return res.sendStatus(401);
 
   try {
-    const user = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken");
+    const user = jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken"
+    );
+    console.log(user);
 
     return res.status(200).json({ message: "Token valid", user });
   } catch (error) {
     return res.sendStatus(403);
   }
 };
-
 
 export { checkToken, login, logout, refreshToken, register };
