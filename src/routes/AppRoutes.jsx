@@ -109,9 +109,9 @@ const AppRoutes = () => (
     <Route
       path="/admindash"
       element={
-        <PrivateRoute>
+        // <PrivateRoute>
           <AdminDashboard />
-        </PrivateRoute>
+        // </PrivateRoute>
       }
     />
   </Routes>
