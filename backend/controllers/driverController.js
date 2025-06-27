@@ -88,7 +88,8 @@ const updateDriverBio = async (req, res) => {
 
 const updateVehicleInfo = async (req, res) => {
   const driverId = req.params.id;
-  const { make, model, color, licensePlate, seats, fuelType, lastMaintenance } = req.body;
+  const { make, model, color, licensePlate, seats, fuelType, lastMaintenance } =
+    req.body;
 
   try {
     // Check if vehicle record exists for this driver
@@ -109,7 +110,16 @@ const updateVehicleInfo = async (req, res) => {
          fuel_type = ?, 
          last_maintenance = ? 
          WHERE driver_id = ?`,
-        [make, model, color, licensePlate, seats, fuelType, lastMaintenance, driverId]
+        [
+          make,
+          model,
+          color,
+          licensePlate,
+          seats,
+          fuelType,
+          lastMaintenance,
+          driverId,
+        ]
       );
     } else {
       // Insert new vehicle record
@@ -117,11 +127,22 @@ const updateVehicleInfo = async (req, res) => {
         `INSERT INTO vehicle 
          (driver_id, make, model, color, license_no, seats, fuel_type, last_maintenance) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [driverId, make, model, color, licensePlate, seats, fuelType, lastMaintenance]
+        [
+          driverId,
+          make,
+          model,
+          color,
+          licensePlate,
+          seats,
+          fuelType,
+          lastMaintenance,
+        ]
       );
     }
 
-    res.status(200).json({ message: "Vehicle information updated successfully" });
+    res
+      .status(200)
+      .json({ message: "Vehicle information updated successfully" });
   } catch (error) {
     console.error("Error updating vehicle info:", error);
     res.status(500).json({ error: "Failed to update vehicle information" });
@@ -243,9 +264,27 @@ ORDER BY b.booked_at DESC;
   }
 };
 
+const getTotalTrips = async (req, res) => {
+  const driverId = req.params.id;
+
+  try {
+    const [rows] = await db.query(
+      `SELECT COUNT(*) AS total_trips
+       FROM rides
+       WHERE driver_id = ? AND status = 'completed'`,
+      [driverId]
+    );
+
+    res.json(rows[0]); // { total_trips: 24 }
+  } catch (error) {
+    console.error("Error fetching total trips:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 export {
   getDriverDashboard,
   getDriverProfile,
+  getTotalTrips,
   updateDriverBio,
   updatePreferences,
   updateVehicleInfo,

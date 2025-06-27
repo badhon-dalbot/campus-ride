@@ -62,7 +62,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/bookride"
+      path="/bookride/:rideId"
       element={
         <PrivateRoute>
           <BookRide />
@@ -113,7 +113,7 @@ const AppRoutes = () => (
       path="/chatting"
       element={
         // <PrivateRoute>
-          <Chatting />
+        <Chatting />
         // </PrivateRoute>
       }
     />

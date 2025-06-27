@@ -1,15 +1,37 @@
-import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import ChatBox from "../chat/ChatBox.jsx";
-import { useNavigate } from "react-router-dom";
 
 import CampusRideFooter from "../../components/CampusRideFooter.jsx";
 import CampusRideHeader from "../../components/CampusRideHeader.jsx";
+import { getRideById } from "../../services/rideAPI.js";
 import PaymentDetails from "./PaymentDetails.jsx";
 import PaymentMethod from "./PaymentMethod.jsx";
 import RideSummary from "./RideSummary.jsx";
 
 export default function RideBookingApp() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const { rideId } = useParams();
+  const [ride, setRide] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchRide = async () => {
+      try {
+        const data = await getRideById(rideId);
+        setRide(data);
+      } catch (err) {
+        console.error("Error fetching ride:", err);
+        setError("Ride not found or server error.");
+      }
+    };
+
+    fetchRide();
+  }, [rideId]);
+
   const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header - Full width, no margins */}
@@ -25,8 +47,15 @@ export default function RideBookingApp() {
               onClick={() => navigate(-1)}
               className="flex items-center gap-2 focus:outline-none text-gray-600 hover:text-gray-800 mb-4"
             >
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M15 18l-6-6 6-6" />
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M15 18l-6-6 6-6" />
               </svg>
               <span className="font-medium">Back to ride details</span>
             </button>
@@ -40,19 +69,23 @@ export default function RideBookingApp() {
             {/* Left Column */}
             <div className="flex-1 space-y-4">
               {/* Ride Summary */}
-              <RideSummary />
+              <RideSummary ride={ride} />
 
               {/* Message to Driver */}
 
               {/* <MessageBox /> */}
-              <ChatBox bookingId={1} currentUserId={2} otherUserId={5} />
+              <ChatBox
+                bookingId={ride?.ride?.ride_id}
+                currentUserId={user.user.id}
+                otherUserId={ride?.ride?.driver_id}
+              />
               {/* Payment Method */}
               <PaymentMethod />
             </div>
 
             {/* Right Column - Price Details */}
             <div className="w-64">
-              <PaymentDetails />
+              <PaymentDetails fare={ride?.fare} />
             </div>
           </div>
         </div>
