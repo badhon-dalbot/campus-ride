@@ -96,42 +96,70 @@ const getRideById = async (req, res) => {
   const rideId = req.params.id;
   try {
     const query = `SELECT 
-  r.id AS ride_id,
-  r.from_location AS start_location,
-  r.to_location AS destination,
-  r.ride_date ,
-  r.ride_time ,
-  r.seats_available,
-  r.pickup_description,
+      r.id AS ride_id,
+      r.from_location AS start_location,
+      r.to_location AS destination,
+      r.ride_date,
+      r.ride_time,
+      r.seats_available,
+      r.pickup_description,
+      u.id AS driver_id,
+      u.first_name AS driver_first_name,
+      u.last_name AS driver_last_name,
+      u.phone AS driver_phone,
+      COALESCE(AVG(rt.rating), 0) AS driver_rating,
+      COUNT(rt.id) AS review_count
+    FROM rides r
+    JOIN users u ON r.creator_id = u.id
+    LEFT JOIN ratings rt ON rt.ratee_id = u.id
+    WHERE r.id = ?
+    GROUP BY r.id, u.id;
+    `;
+
+    const fareQuery = `SELECT 
+      rf.fare_amount
+    FROM ride_fares rf
+    WHERE rf.ride_id = ?;
+    `;
+    const driverQuery = `SELECT 
   u.id AS driver_id,
-  u.first_name AS driver_first_name,
-  u.last_name AS driver_last_name,
-  u.phone AS driver_phone,
-  COALESCE(AVG(rt.rating), 0) AS driver_rating,
-  COUNT(rt.id) AS review_count
-FROM 
-  rides r
-JOIN 
-  users u ON r.creator_id = u.id
-LEFT JOIN
-  ratings rt ON rt.ratee_id = u.id
-WHERE 
-  r.id = 1
-  
-GROUP BY 
-  r.id, u.id;
+  u.first_name,
+  u.last_name,
+  u.email,
+  u.phone,
+  v.license_plate,
+  v.make,
+  v.model,
+  v.seats,
+  v.fuel_type,
+  v.last_maintenance
+FROM rides r
+JOIN users u ON r.creator_id = u.id
+LEFT JOIN vehicles v ON u.id = v.driver_id
+WHERE r.id = ?;
+
+
 `;
-    const [rows] = await db.query(query, [rideId]);
-    if (rows.length === 0) {
+
+    const [ride] = await db.query(query, [rideId]);
+    if (!ride || ride.length === 0) {
       return res.status(404).json({ error: "Ride not found" });
     }
-    res.json(rows[0]);
+
+    const [fare] = await db.query(fareQuery, [rideId]);
+    const [driverVehicle] = await db.query(driverQuery, [rideId]);
+
+    res.json({
+      ride: ride[0],
+      fare: fare.length > 0 ? fare[0].fare_amount : null,
+      driverVehicle: driverVehicle[0],
+    });
   } catch (err) {
+    console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   }
 };
 
-// controllers/rideController.js
 const getDriverRides = async (req, res) => {
   const driverId = req.params.id; // /api/rides/driver/:id
 

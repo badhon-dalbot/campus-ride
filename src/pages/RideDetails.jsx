@@ -42,13 +42,39 @@ const RideDetails = () => {
 
     // Fetch driver details
     // if (driverId) {
-    //   axios.get(`http://localhost:3000/api/driver/${driverId}/profile`)
-    //     .then(res => {
+    //   axios
+    //     .get(`http://localhost:3000/api/driver/${driverId}/profile`)
+    //     .then((res) => {
     //       setDriver(res.data);
     //     })
-    //     .catch(err => console.error("Failed to fetch driver data", err));
+    //     .catch((err) => console.error("Failed to fetch driver data", err));
     // }
   }, []);
+
+  function formatDateLabel(dateString) {
+    const inputDate = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    // Reset times for accurate date comparison
+    inputDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    if (inputDate.getTime() === today.getTime()) {
+      return "Today";
+    } else if (inputDate.getTime() === tomorrow.getTime()) {
+      return "Tomorrow";
+    } else {
+      // return formatted date, e.g. 'Jun 29, 2025'
+      return inputDate.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+  }
 
   const handleBookRide = () => {
     navigate("/bookride");
@@ -96,30 +122,30 @@ const RideDetails = () => {
                   <MapPin className="mt-1" size={16} />
                   <div>
                     <p className="font-semibold">Pickup</p>
-                    {ride.start_location}
+                    {ride?.ride?.start_location}
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <MapPin className="mt-1" size={16} />
                   <div>
                     <p className="font-semibold">Dropoff</p>
-                    {ride.destination}
+                    {ride?.ride?.destination}
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <Calendar className="mt-1" size={16} />
                   <div>
                     <p className="font-semibold">Date</p>
-                    <p>Today</p>
+                    <p>{formatDateLabel(ride?.ride?.ride_date)}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <Clock className="mt-1" size={16} />
                   <div>
                     <p className="font-semibold">Time</p>
-                    {ride.ride_time &&
+                    {ride?.ride?.ride_time &&
                       new Date(
-                        `1970-01-01T${ride.ride_time}`
+                        `1970-01-01T${ride?.ride?.ride_time}`
                       ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -158,7 +184,7 @@ const RideDetails = () => {
                   <Users className="mb-1 text-gray-500" />
                   <p className="text-gray-600 mb-1">Available Seats</p>
                   <p className="font-semibold text-lg">
-                    {ride.seats_available}
+                    {ride?.ride?.seats_available}
                   </p>
                 </div>
               )}
@@ -181,7 +207,7 @@ const RideDetails = () => {
             </div>
 
             {/* Vehicle Information */}
-            {driver && (
+            {ride?.driverVehicle && (
               <div className="bg-white p-4 rounded-lg flex items-center gap-4 mt-6">
                 <div className="w-12 h-12 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
                   <CarFront />
@@ -192,10 +218,11 @@ const RideDetails = () => {
                   </h4>
                   <p className="text-sm text-gray-700">
                     {/* Toyota Prius (Blue 2020) */}
-                    {driver.make} {driver.model} ({driver.color})
+                    {ride.driverVehicle.make} {ride.driverVehicle.model} (
+                    {ride.driverVehicle.color})
                   </p>
                   <p className="text-sm text-gray-500">
-                    License: {driver.license_no}
+                    License: {ride.driverVehicle.license_plate}
                   </p>
                 </div>
               </div>
@@ -205,15 +232,20 @@ const RideDetails = () => {
           {/* Right Sidebar Cards */}
           <div className="space-y-8">
             {/* Driver Card */}
-            {driver && (
+            {ride?.driverVehicle && (
               <div className="bg-[#eaf4f5] p-6 rounded-xl shadow-md space-y-4">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-semibold flex items-center gap-1">
                       <UserCheck size={16} />
-                      {driver.firstName} {driver.lastName}
+                      {ride.driverVehicle.first_name}{" "}
+                      {ride.driverVehicle.last_name}
                     </p>
-                    <span className="text-green-600 text-xs">✔️ Verified</span>
+                    <span className="text-green-600 text-xs">
+                      {ride.driverVehicle.driver_verified
+                        ? "✔️ verified"
+                        : "❌ not verified"}
+                    </span>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-xs text-white">
                     IMG
@@ -234,19 +266,20 @@ const RideDetails = () => {
                 <span className="flex items-center gap-1">
                   <DollarSign size={14} /> Ride fare
                 </span>
-                <span>$5.00</span>
+                {console.log("Ride fare:", ride?.fare)}
+                <span>{ride?.fare}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="flex items-center gap-1">
                   <DollarSign size={14} /> Service fee
                 </span>
-                <span>$0.50</span>
+                <span>${parseFloat(ride?.fare * .10)}</span>
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold text-sm">
                 <span className="flex items-center gap-1">
                   <CreditCard size={14} /> Total
                 </span>
-                <span>$5.50</span>
+                <span>{parseFloat(ride?.fare) + parseFloat(ride?.fare * .10)}</span>
               </div>
               <button
                 onClick={handleBookRide}
