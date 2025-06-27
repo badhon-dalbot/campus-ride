@@ -86,13 +86,56 @@ const updateDriverBio = async (req, res) => {
   }
 };
 
+const updateVehicleInfo = async (req, res) => {
+  const driverId = req.params.id;
+  const { make, model, color, licensePlate, seats, fuelType, lastMaintenance } = req.body;
+
+  try {
+    // Check if vehicle record exists for this driver
+    const [existingVehicle] = await db.query(
+      "SELECT vehicle_id FROM vehicle WHERE driver_id = ?",
+      [driverId]
+    );
+
+    if (existingVehicle.length > 0) {
+      // Update existing vehicle record
+      await db.query(
+        `UPDATE vehicle SET 
+         make = ?, 
+         model = ?, 
+         color = ?, 
+         license_no = ?, 
+         seats = ?, 
+         fuel_type = ?, 
+         last_maintenance = ? 
+         WHERE driver_id = ?`,
+        [make, model, color, licensePlate, seats, fuelType, lastMaintenance, driverId]
+      );
+    } else {
+      // Insert new vehicle record
+      await db.query(
+        `INSERT INTO vehicle 
+         (driver_id, make, model, color, license_no, seats, fuel_type, last_maintenance) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [driverId, make, model, color, licensePlate, seats, fuelType, lastMaintenance]
+      );
+    }
+
+    res.status(200).json({ message: "Vehicle information updated successfully" });
+  } catch (error) {
+    console.error("Error updating vehicle info:", error);
+    res.status(500).json({ error: "Failed to update vehicle information" });
+  }
+};
+
 const getDriverDashboard = async (req, res) => {
   const driverId = +req.params.id;
-  if (!driverId) return res.status(400).json({ error: 'Invalid driver ID' });
+  if (!driverId) return res.status(400).json({ error: "Invalid driver ID" });
 
   try {
     // 1. Summary
-    const [summaryRows] = await db.query(`
+    const [summaryRows] = await db.query(
+      `
       SELECT
         COALESCE(SUM(p.amount), 0) AS total_earnings,
         d.rating,
@@ -103,91 +146,107 @@ const getDriverDashboard = async (req, res) => {
       JOIN rides r ON b.ride_id = r.id
       JOIN driver d ON r.driver_id = d.driver_id
       WHERE r.driver_id = ? AND b.status IN ('accepted', 'confirmed');
-    `, [driverId, driverId, driverId]);
+    `,
+      [driverId, driverId, driverId]
+    );
 
     // Vehicle info
     const [vehicleRows] = await db.query(
-      `SELECT * FROM vehicle WHERE driver_id = ? LIMIT 1`, [driverId]
+      `SELECT * FROM vehicle WHERE driver_id = ? LIMIT 1`,
+      [driverId]
     );
 
     // 2. Upcoming rides
-    const [upcomingRides] = await db.query(`
-      SELECT
-        CONCAT(u.firstname, ' ', u.lastname) AS passenger_name,
-        r.start_location AS pickup_point,
-        r.destination,
-        r.ride_time AS time,
-        r.ride_date AS date,
-        b.status AS booking_status,
-        p.amount AS ride_fare
-      FROM booking b
-      JOIN rides r ON b.ride_id = r.id
-      JOIN users u ON b.user_id = u.id
-      LEFT JOIN payment p ON p.booking_id = b.id
-      WHERE r.driver_id = ? AND r.ride_date >= CURDATE() AND b.status IN ('accepted', 'confirmed')
-      ORDER BY r.ride_date, r.ride_time;
-    `, [driverId]);
+    const [upcomingRides] = await db.query(
+      `
+      SELECT 
+    r.id AS ride_id,
+    r.from_location,
+    r.to_location,
+    r.ride_date,
+    r.ride_time,
+    r.seats_available,
+    r.price_per_seat,
+    r.notes
+FROM rides r
+WHERE r.driver_id = ?
+  AND r.ride_date >= CURDATE()
+ORDER BY r.ride_date, r.ride_time;
+
+    `,
+      [driverId]
+    );
 
     // 3. Pending requests
-    const [pendingRequests] = await db.query(`
-      SELECT
-        r.start_location AS from_location,
-        r.destination AS to_location,
-        r.ride_date AS date,
-        r.ride_time AS time,
-        CONCAT(u.firstname, ' ', u.lastname) AS passenger,
-        b.seats AS seats,
-        p.amount AS fare,
-        CASE WHEN b.seats > 0 THEN ROUND(p.amount / b.seats, 2) ELSE 0 END AS fare_per_seat,
-        d.rating AS passenger_rating
-      FROM booking b
-      JOIN rides r ON b.ride_id = r.id
-      JOIN users u ON b.user_id = u.id
-      LEFT JOIN payment p ON p.booking_id = b.id
-      LEFT JOIN driver d ON u.id = d.driver_id
-      WHERE r.driver_id = ? AND b.status = 'pending'
-      ORDER BY r.ride_date, r.ride_time;
-    `, [driverId]);
+    const [pendingRequests] = await db.query(
+      `
+     SELECT 
+    b.id AS booking_id,
+    u.first_name AS rider_first_name,
+    u.last_name AS rider_last_name,
+    u.phone AS rider_phone,
+    r.from_location,
+    r.to_location,
+    r.ride_date,
+    r.ride_time,
+    b.seats_booked,
+    b.status,
+    b.booked_at
+FROM bookings b
+JOIN rides r ON b.ride_id = r.id
+JOIN users u ON b.rider_id = u.id
+WHERE r.driver_id = ?  -- Replace with current driver ID
+  AND b.status = 'pending'
+ORDER BY b.booked_at DESC;
+
+    `,
+      [driverId]
+    );
 
     // 4. Accepted requests
-    const [acceptedRequests] = await db.query(`
-      SELECT
-        r.start_location AS from_location,
-        r.destination AS to_location,
-        r.ride_date AS date,
-        r.ride_time AS time,
-        CONCAT(u.firstname, ' ', u.lastname) AS passenger,
-        b.seats AS seats,
-        p.amount AS fare,
-        CASE WHEN b.seats > 0 THEN ROUND(p.amount / b.seats, 2) ELSE 0 END AS fare_per_seat,
-        d.rating AS passenger_rating
-      FROM booking b
-      JOIN rides r ON b.ride_id = r.id
-      JOIN users u ON b.user_id = u.id
-      LEFT JOIN payment p ON p.booking_id = b.id
-      LEFT JOIN driver d ON u.id = d.driver_id
-      WHERE r.driver_id = ? AND b.status = 'accepted'
-      ORDER BY r.ride_date, r.ride_time;
-    `, [driverId]);
+    const [acceptedRequests] = await db.query(
+      `
+      SELECT 
+    b.id AS booking_id,
+    u.first_name AS rider_first_name,
+    u.last_name AS rider_last_name,
+    u.phone AS rider_phone,
+    r.from_location,
+    r.to_location,
+    r.ride_date,
+    r.ride_time,
+    b.seats_booked,
+    b.status,
+    b.booked_at,
+    b.fare
+FROM bookings b
+JOIN rides r ON b.ride_id = r.id
+JOIN users u ON b.rider_id = u.id
+WHERE r.driver_id = ? -- replace with actual driver_id
+  AND b.status = 'accepted'
+ORDER BY b.booked_at DESC;
+
+    `,
+      [driverId]
+    );
 
     res.json({
       summary: summaryRows[0],
       vehicle: vehicleRows[0] || null,
       upcomingRides,
       pendingRequests,
-      acceptedRequests
+      acceptedRequests,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: "Server error" });
   }
 };
-
-
 
 export {
   getDriverDashboard,
   getDriverProfile,
   updateDriverBio,
   updatePreferences,
+  updateVehicleInfo,
 };

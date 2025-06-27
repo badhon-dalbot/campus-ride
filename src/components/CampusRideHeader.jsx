@@ -41,7 +41,7 @@ export default function CampusRideHeader() {
   // Get profile path based on user role from context
   let profilePath = "/studentprofile";
   try {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user?.role === "driver") profilePath = "/driverProfile";
     else if (user?.role === "rider") profilePath = "/riderProfile";
     else if (user?.role === "admin") profilePath = "/admindash"; // or your admin profile route

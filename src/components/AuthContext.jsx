@@ -5,8 +5,8 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true); // <-- loading state
 
-  // Check login status on app load using cookie
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -23,13 +23,27 @@ const AuthProvider = ({ children }) => {
       } catch (err) {
         setIsLoggedIn(false);
       }
+      setLoading(false); // <-- done loading regardless of result
     };
 
     checkAuth();
   }, []);
 
   const login = () => setIsLoggedIn(true);
-  const logout = () => setIsLoggedIn(false);
+  const logout = async () => {
+    await axios.post(
+      "http://localhost:3000/api/auth/logout",
+      {},
+      { withCredentials: true }
+    );
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+  };
+
+  // While checking auth, render loading or null to avoid flicker
+  if (loading) {
+    return <div>Loading...</div>; // or null, or spinner
+  }
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, login, logout }}>

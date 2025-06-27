@@ -27,7 +27,9 @@ const createRide = async (req, res) => {
 
 const getRides = async (req, res) => {
   try {
-    const [rides] = await db.query("SELECT * FROM rides");
+    const [rides] = await db.query(
+      "SELECT * FROM rides WHERE ride_date >= CURDATE()"
+    );
 
     if (rides.length === 0) {
       return res.status(404).json({ message: "No rides found" });
@@ -43,37 +45,42 @@ const getRides = async (req, res) => {
 // get all available rides with driver info
 const getAvailableRides = async (req, res) => {
   const query = `
+  
   SELECT 
-    r.id AS ride_id,
-    r.start_location,
-    r.destination,
-    r.ride_date,
-    r.ride_time,
-    r.seats_available,
-    r.pickup_description,
-    u.id AS driver_id,
-    u.firstName AS driver_first_name,
-    u.lastName AS driver_last_name,
-    d.rating AS driver_rating,
-    d.review_count
-  FROM 
-    rides r
-  JOIN 
-    users u ON r.driver_id = u.id
-  JOIN 
-    driver d ON u.id = d.driver_id
-  WHERE 
-    u.role = 'driver'
-    AND r.seats_available > 0
-    AND (
-      r.ride_date > CURDATE() 
-      OR (
-        r.ride_date = CURDATE() 
-        AND r.ride_time > CURTIME()
-      )
+  r.id AS ride_id,
+  r.from_location AS start_location,
+  r.to_location AS destination,
+  r.ride_date,
+  r.ride_time,
+  r.seats_available,
+  r.pickup_description,
+  u.id AS driver_id,
+  u.first_name AS driver_first_name,
+  u.last_name AS driver_last_name,
+  COALESCE(AVG(rt.rating), 0) AS driver_rating,
+  COUNT(rt.id) AS review_count
+FROM 
+  rides r
+JOIN 
+  users u ON r.creator_id = u.id
+LEFT JOIN
+  ratings rt ON rt.ratee_id = u.id
+WHERE 
+  u.role = 'driver'
+  AND r.seats_available > 0
+  AND (
+    r.ride_date > CURDATE() 
+    OR (
+      r.ride_date = CURDATE() 
+      AND r.ride_time > CURTIME()
     )
-  ORDER BY 
-    r.ride_date ASC, r.ride_time ASC;
+  )
+GROUP BY
+  r.id, u.id
+ORDER BY 
+  r.ride_date ASC, r.ride_time ASC;
+
+
   `;
 
   try {
@@ -88,24 +95,77 @@ const getAvailableRides = async (req, res) => {
 const getRideById = async (req, res) => {
   const rideId = req.params.id;
   try {
-    const query = "SELECT * FROM rides WHERE id = ?";
-    const [rows] = await db.query(query, [rideId]);
-    if (rows.length === 0) {
+    const query = `SELECT 
+      r.id AS ride_id,
+      r.from_location AS start_location,
+      r.to_location AS destination,
+      r.ride_date,
+      r.ride_time,
+      r.seats_available,
+      r.pickup_description,
+      u.id AS driver_id,
+      u.first_name AS driver_first_name,
+      u.last_name AS driver_last_name,
+      u.phone AS driver_phone,
+      COALESCE(AVG(rt.rating), 0) AS driver_rating,
+      COUNT(rt.id) AS review_count
+    FROM rides r
+    JOIN users u ON r.creator_id = u.id
+    LEFT JOIN ratings rt ON rt.ratee_id = u.id
+    WHERE r.id = ?
+    GROUP BY r.id, u.id;
+    `;
+
+    const fareQuery = `SELECT 
+      rf.fare_amount
+    FROM ride_fares rf
+    WHERE rf.ride_id = ?;
+    `;
+    const driverQuery = `SELECT 
+  u.id AS driver_id,
+  u.first_name,
+  u.last_name,
+  u.email,
+  u.phone,
+  v.license_plate,
+  v.make,
+  v.model,
+  v.seats,
+  v.fuel_type,
+  v.last_maintenance
+FROM rides r
+JOIN users u ON r.creator_id = u.id
+LEFT JOIN vehicles v ON u.id = v.driver_id
+WHERE r.id = ?;
+
+
+`;
+
+    const [ride] = await db.query(query, [rideId]);
+    if (!ride || ride.length === 0) {
       return res.status(404).json({ error: "Ride not found" });
     }
-    res.json(rows[0]);
+
+    const [fare] = await db.query(fareQuery, [rideId]);
+    const [driverVehicle] = await db.query(driverQuery, [rideId]);
+
+    res.json({
+      ride: ride[0],
+      fare: fare.length > 0 ? fare[0].fare_amount : null,
+      driverVehicle: driverVehicle[0],
+    });
   } catch (err) {
+    console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   }
 };
 
-// controllers/rideController.js
 const getDriverRides = async (req, res) => {
   const driverId = req.params.id; // /api/rides/driver/:id
 
   try {
     const [rows] = await db.query(
-  `
+      `
   SELECT
       r.id                 AS ride_id,
       r.start_location,
@@ -135,9 +195,8 @@ const getDriverRides = async (req, res) => {
   WHERE r.driver_id = ?
   ORDER BY r.id, b.booking_time;
   `,
-  [driverId]
-);
-
+      [driverId]
+    );
 
     // group by ride
     const rides = {};

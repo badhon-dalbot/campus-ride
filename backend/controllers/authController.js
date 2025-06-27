@@ -47,44 +47,38 @@ const generateRefreshToken = async (user, userId, isAdmin = false) => {
 
 // Register a new User
 const register = async (req, res) => {
-  const { firstName, lastName, phone, email, password, confirmPassword, role } =
-    req.body;
-  const document = req.file;
-
-  if (
-    !firstName ||
-    !lastName ||
-    !phone ||
-    !email ||
-    !password ||
-    !confirmPassword ||
-    !role ||
-    !document
-  ) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-
-  if (!document) {
-    return res.status(400).json({ error: "File is required" });
-  }
-
-  if (password !== confirmPassword) {
-    return res.status(400).json({ error: "Passwords do not match" });
-  }
-
-  if (password.length < 6) {
-    return res
-      .status(400)
-      .json({ error: "Password must be at least 6 characters" });
-  }
-
-  if (!["ride", "driver"].includes(role)) {
-    return res
-      .status(400)
-      .json({ error: "Role must be either 'ride' or 'driver'" });
-  }
-
   try {
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
+    const {
+      firstName,
+      lastName,
+      phone,
+      email,
+      password,
+      confirmPassword,
+      role,
+    } = req.body;
+    const document = req.file;
+
+    if (
+      !firstName ||
+      !lastName ||
+      !phone ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !role ||
+      !document
+    ) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+
     const [existingUser] = await db.query(
       "SELECT * FROM users WHERE email = ?",
       [email]
@@ -92,13 +86,12 @@ const register = async (req, res) => {
     if (existingUser.length > 0) {
       return res.status(400).json({ error: "Email already exists" });
     }
-  } catch (error) {
-    return res.status(500).json({ error: "Error checking existing user" });
-  }
-  const hashedPassword = await bcrypt.hash(password, 10);
-  try {
-    const [rows] = await db.query(
-      "INSERT INTO users (firstName, lastName, phone, email, password, role, document) VALUES (?, ?, ?, ?, ?, ?, ?)",
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const [result] = await db.query(
+      `INSERT INTO users (first_name, last_name, phone, email, password, role, document_path)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         firstName,
         lastName,
@@ -111,20 +104,12 @@ const register = async (req, res) => {
     );
 
     res.status(201).json({
-      id: rows.insertId,
-      email,
-      role,
       message: "User registered successfully",
+      userId: result.insertId,
     });
-
-    if (role === "driver") {
-      await db.query(
-        "INSERT INTO driver (user_id, rating, review_count) VALUES (?, ?, ?)",
-        [rows.insertId, 0, 0]
-      );
-    }
   } catch (error) {
-    res.status(500).json({ error: "Error registering user" });
+    console.error("Registration error:", error); // This is important
+    res.status(500).json({ error: "Server error during registration" });
   }
 };
 
@@ -148,13 +133,18 @@ const login = async (req, res) => {
     if (!user) return res.status(400).json({ error: "User not found" });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return res.status(400).json({ error: "Invalid password" });
+    if (!isPasswordValid)
+      return res.status(400).json({ error: "Invalid password" });
 
     const role = isAdmin ? "admin" : user.role;
     const name = user.firstName || user.name || "Admin";
 
     const accessToken = generateAccessToken({ id: user.id, name, email, role });
-    const refreshToken = await generateRefreshToken({ id: user.id, name }, user.id, isAdmin);
+    const refreshToken = await generateRefreshToken(
+      { id: user.id, name, role },
+      user.id,
+      isAdmin
+    );
 
     res
       .cookie("refreshToken", refreshToken, {
@@ -166,12 +156,10 @@ const login = async (req, res) => {
         message: "Login Successful",
         user: { id: user.id, email: user.email, role },
       });
-
   } catch (error) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 // Refresh access token
 const refreshToken = async (req, res) => {
@@ -180,15 +168,21 @@ const refreshToken = async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      "SELECT * FROM refresh_tokens WHERE token = ?",
+      `SELECT rt.*, u.role
+   FROM refresh_tokens rt
+   JOIN users u ON rt.user_id = u.id
+   WHERE rt.token = ?;`,
       [refreshToken]
     );
+
     if (rows.length === 0) return res.sendStatus(403);
+    console.log("Rows:", [rows]);
 
     const user = jwt.verify(refreshToken, "myrefreshtoken");
     const newAccessToken = generateAccessToken({
       id: user.id,
       name: user.firstName,
+      role: rows[0].role,
     });
 
     res.json({ newAccessToken });
@@ -222,13 +216,16 @@ const checkToken = async (req, res) => {
   if (!token) return res.sendStatus(401);
 
   try {
-    const user = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken");
+    const user = jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN_SECRET || "myrefreshtoken"
+    );
+    console.log(user);
 
     return res.status(200).json({ message: "Token valid", user });
   } catch (error) {
     return res.sendStatus(403);
   }
 };
-
 
 export { checkToken, login, logout, refreshToken, register };

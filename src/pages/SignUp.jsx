@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Check, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import LoginFooter from "../components/LoginFooter.jsx";
@@ -53,7 +54,7 @@ export default function CampusRideSignup() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "file" && files && files[0]) {
+    if (name === "document" && files && files[0]) {
       setSelectedFile(files[0]);
       setFormData((prev) => ({
         ...prev,
@@ -67,7 +68,7 @@ export default function CampusRideSignup() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { firstName, lastName, phone, email, password, confirmPassword } =
       formData;
@@ -95,7 +96,30 @@ export default function CampusRideSignup() {
       alert("Password must be at least 6 characters.");
       return;
     }
-    console.log("Form submitted successfully:", formData);
+    const form = new FormData();
+    form.append("firstName", firstName);
+    form.append("lastName", lastName);
+    form.append("phone", phone);
+    form.append("email", email);
+    form.append("password", password);
+    form.append("confirmPassword", confirmPassword);
+    form.append("role", activeTab === "ride" ? "rider" : "driver");
+    form.append("document", selectedFile);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/api/auth/register",
+        form,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Form submitted successfully:", res.data);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   const handleLoginClick = () => {
@@ -228,7 +252,7 @@ export default function CampusRideSignup() {
                 Choose file
                 <input
                   type="file"
-                  name="file"
+                  name="document"
                   onChange={handleChange}
                   className="hidden"
                 />

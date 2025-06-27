@@ -92,9 +92,9 @@ const AppRoutes = () => (
     <Route
       path="/chatting"
       element={
-        <PrivateRoute>
+        // <PrivateRoute>
           <Chatting />
-        </PrivateRoute>
+        // </PrivateRoute>
       }
     />
 
