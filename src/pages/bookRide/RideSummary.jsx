@@ -1,8 +1,28 @@
-import { ArrowLeft, MapPin, Calendar, Clock, User } from "lucide-react";
-export default function RideSummary() {
+import { Calendar, Clock, MapPin, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getTotalTrips } from "../../services/driverAPI/tripsAPI.js";
+import { formatDateLabel } from "../../utilities/dateformate";
+export default function RideSummary({ ride }) {
+  const [totalTrips, setTotalTrips] = useState(null);
+  const driverId = ride?.ride?.driver_id;
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        const trips = await getTotalTrips(driverId);
+        setTotalTrips(trips);
+      } catch (err) {
+        console.error(err);
+        setError("Could not load total trips.");
+      }
+    };
+
+    if (driverId) fetchTrips();
+  }, [driverId]);
   return (
     <div className="bg-[#D4E4E4] rounded-lg p-5 border border-black shadow-lg">
-      <h2 className="text-base font-semibold mb-4 text-gray-800">Ride Summary</h2>
+      <h2 className="text-base font-semibold mb-4 text-gray-800">
+        Ride Summary
+      </h2>
 
       {/* Driver Info */}
       <div className="flex items-center justify-between mb-4">
@@ -11,13 +31,18 @@ export default function RideSummary() {
             <User className="w-4 h-4 text-white" />
           </div>
           <div>
-            <div className="font-medium text-gray-800 text-sm">John Doe</div>
+            <div className="font-medium text-gray-800 text-sm">
+              {ride?.ride?.driver_first_name +
+                " " +
+                ride?.ride?.driver_last_name}
+            </div>
             <div className="text-xs text-gray-600 flex items-center">
-              ⭐ 4.6 · 35 trips
+              ⭐ {parseFloat(ride?.ride?.driver_rating).toFixed(1)} ·{" "}
+              {totalTrips} trips
             </div>
           </div>
         </div>
-        <div className="text-base font-bold text-gray-800">৳150</div>
+        <div className="text-base font-bold text-gray-800">৳{ride?.fare}</div>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -46,7 +71,9 @@ export default function RideSummary() {
             <Calendar className="w-3 h-3 text-gray-600 mr-2 mt-0.5" />
             <div>
               <div className="text-xs font-medium text-gray-800">Date</div>
-              <div className="text-xs text-gray-600">Today</div>
+              <div className="text-xs text-gray-600">
+                {formatDateLabel(ride?.ride?.ride_date)}{" "}
+              </div>
             </div>
           </div>
 
@@ -54,7 +81,9 @@ export default function RideSummary() {
             <Clock className="w-3 h-3 text-gray-600 mr-2 mt-0.5" />
             <div>
               <div className="text-xs font-medium text-gray-800">Time</div>
-              <div className="text-xs text-gray-600">4:30 PM</div>
+              <div className="text-xs text-gray-600">
+                {ride?.ride?.ride_time}
+              </div>
             </div>
           </div>
         </div>

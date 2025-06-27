@@ -2,6 +2,7 @@ import express from "express";
 import {
   getDriverDashboard,
   getDriverProfile,
+  getTotalTrips,
   updateDriverBio,
   updatePreferences,
   updateVehicleInfo,
@@ -15,5 +16,5 @@ router.put("/:id/preferences", updatePreferences);
 router.put("/:id/bio", updateDriverBio);
 router.put("/:id/vehicle", updateVehicleInfo);
 router.get("/:id/dashboard", getDriverDashboard);
-
+router.get("/:id/trips", getTotalTrips)
 export default router;

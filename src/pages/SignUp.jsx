@@ -1,14 +1,15 @@
 import axios from "axios";
 import { Check, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LoginFooter from "../components/LoginFooter.jsx";
 import LoginHeader from "../components/LoginHeader.jsx";
-
 export default function CampusRideSignup() {
   const [activeTab, setActiveTab] = useState("ride");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -117,6 +118,7 @@ export default function CampusRideSignup() {
         }
       );
       console.log("Form submitted successfully:", res.data);
+      navigate("/login");
     } catch (error) {
       console.error("Error submitting form:", error);
     }
