@@ -38,7 +38,6 @@ export default function DriverProfilePage() {
   const [vehicleData, setVehicleData] = useState({
     make: '',
     model: '',
-    year: '',
     color: '',
     licensePlate: '',
     seats: '',
@@ -48,6 +47,7 @@ export default function DriverProfilePage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditingVehicle, setIsEditingVehicle] = useState(false);
 
   const tabs = ['Overview', 'Vehicle', 'Reviews', 'Earnings', 'Settings'];
 
@@ -135,6 +135,67 @@ export default function DriverProfilePage() {
     }));
   };
 
+  const handleEditVehicle = () => {
+    setIsEditingVehicle(true);
+  };
+
+  const handleSaveVehicle = () => {
+    // Convert frontend vehicle data to backend format
+    const backendVehicleData = {
+      make: vehicleData.make,
+      model: vehicleData.model,
+      color: vehicleData.color,
+      licensePlate: vehicleData.licensePlate,
+      seats: vehicleData.seats,
+      fuelType: vehicleData.fuelType,
+      lastMaintenance: vehicleData.lastMaintenance
+    };
+
+    fetch(`http://localhost:3000/api/driver/${user.id}/vehicle`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(backendVehicleData),
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to update vehicle information');
+        }
+        return res.json();
+      })
+      .then(data => {
+        setIsEditingVehicle(false);
+      })
+      .catch(err => {
+        alert('Failed to update vehicle information: ' + err.message);
+      });
+  };
+
+  const handleCancelVehicleEdit = () => {
+    setIsEditingVehicle(false);
+    // Reload original vehicle data from the database
+    fetch(`http://localhost:3000/api/driver/${user.id}/profile`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch profile data');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setVehicleData({
+          make: data.make || '',
+          model: data.model || '',
+          color: data.color || '',
+          licensePlate: data.license_no || '',
+          seats: data.seats || '',
+          fuelType: data.fuel_type || '',
+          lastMaintenance: data.last_maintenance || ''
+        });
+      })
+      .catch((err) => {
+        console.error('Error reloading vehicle data:', err);
+      });
+  };
+
   const reviews = [
     {
       id: 1,
@@ -211,7 +272,6 @@ export default function DriverProfilePage() {
         setVehicleData({
           make: data.make || '',
           model: data.model || '',
-          year: data.year || '',
           color: data.color || '',
           licensePlate: data.license_no || '',
           seats: data.seats || '',
@@ -376,7 +436,7 @@ export default function DriverProfilePage() {
                       <div className="flex items-center gap-3">
                         <Car className="w-5 h-5 text-gray-600" />
                         <div>
-                          <div className="font-medium text-gray-900">{vehicleData.year} {vehicleData.make} {vehicleData.model}</div>
+                          <div className="font-medium text-gray-900">{vehicleData.make} {vehicleData.model}</div>
                           <div className="text-sm text-gray-600">{vehicleData.color} • {vehicleData.seats} seats • {vehicleData.fuelType}</div>
                         </div>
                       </div>
@@ -563,37 +623,144 @@ export default function DriverProfilePage() {
                       <div className="rounded-lg border border-gray-200 p-6 shadow-sm" style={{ backgroundColor: '#D7E5E5' }}>
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="text-lg font-semibold text-gray-900">Vehicle Information</h3>
-                          <button className="text-gray-600 hover:text-gray-800 text-sm flex items-center gap-1">
-                            <Edit3 className="w-4 h-4" />
-                            Edit Vehicle
-                          </button>
+                          {!isEditingVehicle ? (
+                            <button 
+                              onClick={handleEditVehicle}
+                              className="text-gray-600 hover:text-gray-800 text-sm flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                              Edit Vehicle
+                            </button>
+                          ) : (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleSaveVehicle}
+                                className="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                style={{ backgroundColor: '#17252A' }}
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={handleCancelVehicleEdit}
+                                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Make & Model</label>
-                            <div className="text-gray-900">{vehicleData.year} {vehicleData.make} {vehicleData.model}</div>
+                        
+                        {!isEditingVehicle ? (
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Make & Model</label>
+                              <div className="text-gray-900">{vehicleData.make} {vehicleData.model}</div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                              <div className="text-gray-900">{vehicleData.color}</div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
+                              <div className="text-gray-900">{vehicleData.licensePlate}</div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Seats</label>
+                              <div className="text-gray-900">{vehicleData.seats} seats</div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Fuel Type</label>
+                              <div className="text-gray-900">{vehicleData.fuelType}</div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Last Maintenance</label>
+                              <div className="text-gray-900">{vehicleData.lastMaintenance ? new Date(vehicleData.lastMaintenance).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit'}) : ''}</div>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
-                            <div className="text-gray-900">{vehicleData.color}</div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Make</label>
+                              <input
+                                type="text"
+                                value={vehicleData.make}
+                                onChange={(e) => handleVehicleInputChange('make', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="e.g., Toyota"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Model</label>
+                              <input
+                                type="text"
+                                value={vehicleData.model}
+                                onChange={(e) => handleVehicleInputChange('model', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="e.g., Camry"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                              <input
+                                type="text"
+                                value={vehicleData.color}
+                                onChange={(e) => handleVehicleInputChange('color', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="e.g., White"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">License Plate</label>
+                              <input
+                                type="text"
+                                value={vehicleData.licensePlate}
+                                onChange={(e) => handleVehicleInputChange('licensePlate', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="e.g., ABC-1234"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Number of Seats</label>
+                              <select
+                                value={vehicleData.seats}
+                                onChange={(e) => handleVehicleInputChange('seats', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              >
+                                <option value="">Select seats</option>
+                                <option value="1">1 seats</option>
+                                <option value="2">2 seats</option>
+                                <option value="4">4 seats</option>
+                                <option value="5">5 seats</option>
+                                <option value="7">7 seats</option>
+                                <option value="8">8 seats</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
+                              <select
+                                value={vehicleData.fuelType}
+                                onChange={(e) => handleVehicleInputChange('fuelType', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              >
+                                <option value="">Select fuel type</option>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="Electric">Electric</option>
+                                <option value="CNG">CNG</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Last Maintenance Date</label>
+                              <input
+                                type="date"
+                                value={vehicleData.lastMaintenance ? vehicleData.lastMaintenance.split('T')[0] : ''}
+                                onChange={(e) => handleVehicleInputChange('lastMaintenance', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              />
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
-                            <div className="text-gray-900">{vehicleData.licensePlate}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Seats</label>
-                            <div className="text-gray-900">{vehicleData.seats} seats</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Fuel Type</label>
-                            <div className="text-gray-900">{vehicleData.fuelType}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Last Maintenance</label>
-                            <div className="text-gray-900">{vehicleData.lastMaintenance ? new Date(vehicleData.lastMaintenance).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit'}) : ''}</div>
-                          </div>
-                        </div>
+                        )}
                       </div>
 
                       {/* Vehicle Photos */}
