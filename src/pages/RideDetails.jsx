@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import CampusRideFooter from "../components/CampusRideFooter.jsx";
 import CampusRideHeader from "../components/CampusRideHeader.jsx";
 
@@ -31,27 +31,28 @@ const RideDetails = () => {
 
     // Fetch ride details
     if (rideId) {
-      axios.get(`http://localhost:3000/api/rides/${rideId}`)
-        .then(res => {
+      axios
+        .get(`http://localhost:3000/api/rides/${rideId}`)
+        .then((res) => {
           setRide(res.data);
           console.log("Ride data fetched:", res.data);
         })
-        .catch(err => console.error("Failed to fetch ride data", err));
+        .catch((err) => console.error("Failed to fetch ride data", err));
     }
 
     // Fetch driver details
-    if (driverId) {
-      axios.get(`http://localhost:3000/api/driver/${driverId}/profile`)
-        .then(res => {
-          setDriver(res.data);
-        })
-        .catch(err => console.error("Failed to fetch driver data", err));
-    }
+    // if (driverId) {
+    //   axios.get(`http://localhost:3000/api/driver/${driverId}/profile`)
+    //     .then(res => {
+    //       setDriver(res.data);
+    //     })
+    //     .catch(err => console.error("Failed to fetch driver data", err));
+    // }
   }, []);
 
   const handleBookRide = () => {
-    navigate('/bookride');
-  }
+    navigate("/bookride");
+  };
 
   return (
     <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
@@ -64,7 +65,14 @@ const RideDetails = () => {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4"
         >
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <path d="M15 18l-6-6 6-6" />
           </svg>
           <span className="font-medium">Back</span>
@@ -110,12 +118,13 @@ const RideDetails = () => {
                   <div>
                     <p className="font-semibold">Time</p>
                     {ride.ride_time &&
-                      new Date(`1970-01-01T${ride.ride_time}`).toLocaleTimeString([], {
+                      new Date(
+                        `1970-01-01T${ride.ride_time}`
+                      ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: true,
-                      })
-                    }
+                      })}
                   </div>
                 </div>
               </div>
@@ -148,7 +157,9 @@ const RideDetails = () => {
                 <div className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-center items-center">
                   <Users className="mb-1 text-gray-500" />
                   <p className="text-gray-600 mb-1">Available Seats</p>
-                  <p className="font-semibold text-lg">{ride.seats_available}</p>
+                  <p className="font-semibold text-lg">
+                    {ride.seats_available}
+                  </p>
                 </div>
               )}
             </div>
@@ -183,7 +194,9 @@ const RideDetails = () => {
                     {/* Toyota Prius (Blue 2020) */}
                     {driver.make} {driver.model} ({driver.color})
                   </p>
-                  <p className="text-sm text-gray-500">License: {driver.license_no}</p>
+                  <p className="text-sm text-gray-500">
+                    License: {driver.license_no}
+                  </p>
                 </div>
               </div>
             )}
@@ -235,7 +248,10 @@ const RideDetails = () => {
                 </span>
                 <span>$5.50</span>
               </div>
-              <button onClick={handleBookRide} className="w-full bg-[#1f2b38] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition">
+              <button
+                onClick={handleBookRide}
+                className="w-full bg-[#1f2b38] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition"
+              >
                 Book Ride
               </button>
             </div>
