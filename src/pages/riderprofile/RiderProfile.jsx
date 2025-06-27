@@ -27,8 +27,7 @@ export default function StudentProfilePage() {
     flexibleTiming: true,
   });
   const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
     phone: "",
     university: "",
@@ -52,8 +51,8 @@ export default function StudentProfilePage() {
     };
     setPreferences(updated);
 
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    fetch(`http://localhost:3000/api/rider/${user.id}/preferences`, {
+ 
+    fetch(`http://localhost:3000/api/rider/${user?.user?.id}/preferences`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -137,17 +136,17 @@ export default function StudentProfilePage() {
     },
   ];
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
-  console.log(user?.id);
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log(user?.user?.id);
 
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (!user?.id) return;
+    
+    if (!user?.user?.id) return;
 
     setLoading(true);
 
     // Fetch profile
-    fetch(`http://localhost:3000/api/rider/${user.id}/profile`)
+    fetch(`http://localhost:3000/api/rider/${user?.user?.id}/profile`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch rider profile");
         return res.json();
@@ -160,7 +159,7 @@ export default function StudentProfilePage() {
           email: data.email,
           phone: data.phone,
           since: data.created_at,
-          status: data.account_status,
+          status: data.status,
           about: data.about || '',
           university: data.university || '',
           studentId: data.studentId || '',

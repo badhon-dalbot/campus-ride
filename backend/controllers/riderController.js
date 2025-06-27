@@ -1,4 +1,4 @@
-import db from '../config/db.js';
+import db from "../config/db.js";
 
 const getRiderProfile = async (req, res) => {
   const riderId = req.params.id;
@@ -7,13 +7,13 @@ const getRiderProfile = async (req, res) => {
     const [rows] = await db.query(
       `SELECT 
         id AS riderId,
-        firstName,
-        lastName,
+        first_name AS firstName,
+        last_name AS lastName,
         email,
         phone,
-        document,
+        document_path,
         about,
-        account_status,
+        account_status AS status,
         created_at
       FROM users
       WHERE id = ? AND role = 'rider'`,
@@ -21,13 +21,13 @@ const getRiderProfile = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'Rider not found' });
+      return res.status(404).json({ message: "Rider not found" });
     }
 
     res.status(200).json(rows[0]);
   } catch (error) {
-    console.error('Error fetching rider profile:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error fetching rider profile:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -35,19 +35,19 @@ const updateRiderBio = async (req, res) => {
   const riderId = req.params.id;
   const { about } = req.body;
   if (!about) {
-    return res.status(400).json({ error: 'Bio (about) is required' });
+    return res.status(400).json({ error: "Bio (about) is required" });
   }
   try {
-    const [result] = await db.query(
-      'UPDATE users SET about = ? WHERE id = ?',
-      [about, riderId]
-    );
+    const [result] = await db.query("UPDATE users SET about = ? WHERE id = ?", [
+      about,
+      riderId,
+    ]);
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Rider not found' });
+      return res.status(404).json({ error: "Rider not found" });
     }
-    res.status(200).json({ message: 'Bio updated successfully' });
+    res.status(200).json({ message: "Bio updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update bio' });
+    res.status(500).json({ error: "Failed to update bio" });
   }
 };
 
@@ -56,47 +56,61 @@ const getRiderPreferences = async (req, res) => {
   const riderId = req.params.id;
   try {
     const [rows] = await db.query(
-      `SELECT music, quietRide, conversation, early_pickup, flexible_timing
+      `SELECT*
        FROM rider WHERE rider_id = ?`,
       [riderId]
     );
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'Rider not found' });
+      return res.status(404).json({ error: "Rider not found" });
     }
     const prefs = rows[0];
     res.status(200).json({
-      musicAllowed: prefs.music === 'Yes',
-      quietRides: prefs.quietRide === 'Yes',
-      friendlyChat: prefs.conversation === 'Yes',
-      earlyPickup: prefs.early_pickup === 'Yes',
-      flexibleTiming: prefs.flexible_timing === 'Yes',
+      musicAllowed: prefs.allow_music === "Yes",
+      gender: prefs.gender,
+      friendlyChat: prefs.allow_talk === "Yes",
+      smoking: prefs.allow_smoking === "Yes",
+      seatPref: prefs.seat,
+      flexibleTiming: prefs.flexible_timing === "Yes",
+      quietRides: prefs.quiet_rides === "Yes",
+      earlyPickup: prefs.early_pickup === "Yes",
     });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch preferences' });
+    res.status(500).json({ error: "Failed to fetch preferences" });
   }
 };
 
 // Update rider preferences
 const updateRiderPreferences = async (req, res) => {
   const riderId = req.params.id;
-  const { musicAllowed, quietRides, friendlyChat, earlyPickup, flexibleTiming } = req.body;
+  const {
+    musicAllowed,
+    quietRides,
+    friendlyChat,
+    earlyPickup,
+    flexibleTiming,
+  } = req.body;
   try {
     await db.query(
-      `UPDATE rider SET music = ?, quietRide = ?, conversation = ?, early_pickup = ?, flexible_timing = ?
+      `UPDATE rider SET music = ?, quiet_rides = ?, allow_talk = ?, early_pickup = ?, flexible_timing = ?
        WHERE rider_id = ?`,
       [
-        musicAllowed ? 'Yes' : 'No',
-        quietRides ? 'Yes' : 'No',
-        friendlyChat ? 'Yes' : 'No',
-        earlyPickup ? 'Yes' : 'No',
-        flexibleTiming ? 'Yes' : 'No',
-        riderId
+        musicAllowed ? "Yes" : "No",
+        quietRides ? "Yes" : "No",
+        friendlyChat ? "Yes" : "No",
+        earlyPickup ? "Yes" : "No",
+        flexibleTiming ? "Yes" : "No",
+        riderId,
       ]
     );
-    res.status(200).json({ message: 'Preferences updated successfully' });
+    res.status(200).json({ message: "Preferences updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update preferences' });
+    res.status(500).json({ error: "Failed to update preferences" });
   }
 };
 
-export { getRiderProfile, updateRiderBio, getRiderPreferences, updateRiderPreferences };
+export {
+  getRiderPreferences,
+  getRiderProfile,
+  updateRiderBio,
+  updateRiderPreferences,
+};
