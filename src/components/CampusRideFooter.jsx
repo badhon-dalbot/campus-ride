@@ -31,34 +31,34 @@ export default function CampusRideFooter() {
           <h3 className="font-medium mb-4">Company</h3>
           <ul className="space-y-3 text-sm text-white">
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/aboutus" className="hover:text-teal-400">
                 About us
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/offerings" className="hover:text-teal-400">
                 Our offerings
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/newsroom" className="hover:text-teal-400">
                 Newsroom
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/investors" className="hover:text-teal-400">
                 Investors
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/blog" className="hover:text-teal-400">
                 Blog
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/careers" className="hover:text-teal-400">
                 Careers
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -68,19 +68,19 @@ export default function CampusRideFooter() {
           <h3 className="font-medium mb-4">Products</h3>
           <ul className="space-y-3 text-sm text-[#FEFFFF]">
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/findride" className="hover:text-teal-400">
                 Ride
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/signup" className="hover:text-teal-400">
                 Drive
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/shareride" className="hover:text-teal-400">
                 Share your Ride
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -90,29 +90,29 @@ export default function CampusRideFooter() {
           <h3 className="font-medium mb-4">Travel</h3>
           <ul className="space-y-3 text-sm text-[#FEFFFF]">
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/reserve" className="hover:text-teal-400">
                 Reserve
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/airports" className="hover:text-teal-400">
                 Airports
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/cities" className="hover:text-teal-400">
                 Cities
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/universities" className="hover:text-teal-400">
                 Universities
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-400">
+              <Link to="/college" className="hover:text-teal-400">
                 Colleges
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
