@@ -198,65 +198,10 @@ ORDER BY r.ride_date, r.ride_time;
       [driverId]
     );
 
-    // 3. Pending requests
-    const [pendingRequests] = await db.query(
-      `
-     SELECT 
-    b.id AS booking_id,
-    u.first_name AS rider_first_name,
-    u.last_name AS rider_last_name,
-    u.phone AS rider_phone,
-    r.from_location,
-    r.to_location,
-    r.ride_date,
-    r.ride_time,
-    b.seats_booked,
-    b.status,
-    b.booked_at
-FROM bookings b
-JOIN rides r ON b.ride_id = r.id
-JOIN users u ON b.rider_id = u.id
-WHERE r.driver_id = ?  -- Replace with current driver ID
-  AND b.status = 'pending'
-ORDER BY b.booked_at DESC;
-
-    `,
-      [driverId]
-    );
-
-    // 4. Accepted requests
-    const [acceptedRequests] = await db.query(
-      `
-      SELECT 
-    b.id AS booking_id,
-    u.first_name AS rider_first_name,
-    u.last_name AS rider_last_name,
-    u.phone AS rider_phone,
-    r.from_location,
-    r.to_location,
-    r.ride_date,
-    r.ride_time,
-    b.seats_booked,
-    b.status,
-    b.booked_at,
-    b.fare
-FROM bookings b
-JOIN rides r ON b.ride_id = r.id
-JOIN users u ON b.rider_id = u.id
-WHERE r.driver_id = ? -- replace with actual driver_id
-  AND b.status = 'accepted'
-ORDER BY b.booked_at DESC;
-
-    `,
-      [driverId]
-    );
-
     res.json({
       summary: summaryRows[0],
       vehicle: vehicleRows[0] || null,
       upcomingRides,
-      pendingRequests,
-      acceptedRequests,
     });
   } catch (err) {
     console.error(err);
@@ -281,11 +226,86 @@ const getTotalTrips = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+const getRideRequests = async (req, res) => {
+  const driverId = req.params.driverId;
+
+  const [rows] = await db.query(
+    `
+    SELECT rr.id AS request_id,
+           rr.status,
+           rr.requested_at,
+           r.id AS ride_id,
+           r.from_location,
+           r.to_location,
+           r.ride_date,
+           r.ride_time,
+           u.id AS rider_id,
+           CONCAT(u.first_name, ' ', u.last_name) AS rider_name,
+           u.email,
+           u.phone
+    FROM ride_requests rr
+    JOIN rides r ON rr.ride_id = r.id
+    JOIN users u ON rr.rider_id = u.id
+    WHERE r.creator_id = ? AND rr.status = 'pending'
+    ORDER BY rr.requested_at DESC
+  `,
+    [driverId]
+  );
+
+  res.json(rows);
+};
+
+const getAcceptedRides = async (req, res) => {
+  const driverId = req.params.driverId;
+
+  const [rows] = await db.query(
+    `
+    SELECT rr.id AS request_id,
+           rr.requested_at,
+           r.id AS ride_id,
+           r.from_location,
+           r.to_location,
+           r.ride_date,
+           r.ride_time,
+           u.id AS rider_id,
+           CONCAT(u.first_name, ' ', u.last_name) AS rider_name,
+           u.email,
+           u.phone
+    FROM ride_requests rr
+    JOIN rides r ON rr.ride_id = r.id
+    JOIN users u ON rr.rider_id = u.id
+    WHERE r.creator_id = ? AND rr.status = 'accepted'
+    ORDER BY r.ride_date ASC, r.ride_time ASC
+  `,
+    [driverId]
+  );
+
+  res.json(rows);
+};
+
+// PATCH /api/ride-request/:id
+const updateRideRequest =   async (req, res) => {
+  const { status } = req.body; // 'accepted' or 'rejected'
+  const requestId = req.params.id;
+
+  await db.query(
+    `UPDATE ride_requests SET status = ? WHERE id = ?`,
+    [status, requestId]
+  );
+
+  res.json({ message: `Ride request ${status}` });
+};
+
+
 export {
+  getAcceptedRides,
   getDriverDashboard,
   getDriverProfile,
+  getRideRequests,
   getTotalTrips,
   updateDriverBio,
   updatePreferences,
   updateVehicleInfo,
+  updateRideRequest,
 };
