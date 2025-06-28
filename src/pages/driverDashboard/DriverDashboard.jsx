@@ -1,6 +1,7 @@
 import { Car, Clock, DollarSign, Star, Users } from "lucide-react";
 import { useState } from "react";
 import CampusRideHeader from "../../components/CampusRideHeader";
+import OfferRideModal from "./OfferRide";
 import QuickAction from "./QuickAction";
 import Rides from "./Ride";
 import SectionCard from "./SectionCard";
@@ -66,18 +67,42 @@ export default function DriverDashboard() {
     },
     responseTime: "2 min",
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [driverData, setDriverData] = useState(null);
+
+  useEffect(() => {
+    const fetchDriverData = async () => {
+      try {
+        const response = await axios.get("/api/driver/profile"); // Replace with your actual endpoint
+        setDriverData(response.data);
+      } catch (error) {
+        console.error("Failed to fetch driver data:", error);
+      }
+    };
+
+    fetchDriverData();
+  }, []);
+
+  console.log("Driver Data:", driverData);
 
   return (
     <>
-      {" "}
       <CampusRideHeader />
-      <div className="bg-ice-blue min-h-screen p-6">
+      <div
+        className={`bg-ice-blue min-h-screen p-6 transition duration-300 ${
+          isModalOpen === true ? "blur-sm" : ""
+        }`}
+      >
         <header className="flex justify-between items-center mb-12 w-container mx-auto">
           <h1 className="text-2xl font-bold">
             Welcome back, {driverData.name}!
           </h1>
           <div className="space-x-2">
-            <button className="bg-night-ink text-white px-4 py-2 rounded">
+            <button
+              className="bg-night-ink text-white px-4 py-2 rounded"
+              onClick={() => setIsModalOpen(true)}
+            >
               Offer New Ride
             </button>
           </div>
@@ -207,6 +232,12 @@ export default function DriverDashboard() {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <OfferRideModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </>
   );
 }

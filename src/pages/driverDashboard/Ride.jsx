@@ -1,23 +1,10 @@
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
+
+import MessageBox from "./MessageBox";
+
 export default function Rides({ ride }) {
   const [activeMessageRideId, setActiveMessageRideId] = useState(null);
-  const renderMessageBox = (ride) => (
-    <div className="mt-4 bg-white border border-night-ink-50 p-3 rounded">
-      <p className="text-sm font-medium mb-2">Message {ride.passenger}</p>
-      <textarea
-        className="w-full border border-gray-300 rounded p-2 text-sm"
-        rows="3"
-        placeholder="Type your message..."
-      ></textarea>
-      <div className="flex justify-end mt-2">
-        <button className="bg-night-ink text-white px-3 py-1 text-sm rounded">
-          Send
-        </button>
-      </div>
-    </div>
-  );
-
   return (
     <div
       key={ride.id}
@@ -56,7 +43,7 @@ export default function Rides({ ride }) {
         </div>
       </div>
 
-      {activeMessageRideId === ride.id && renderMessageBox(ride)}
+      {activeMessageRideId === ride.id && <MessageBox ride={ride} />}
     </div>
   );
 }

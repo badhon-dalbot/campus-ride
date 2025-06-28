@@ -11,6 +11,7 @@ import Cities from "../pages/Cities.jsx";
 import College from "../pages/College.jsx";
 import ConfirmBooking from "../pages/ConfirmBooking.jsx";
 import DriverDashboard from "../pages/driverDashboard/DriverDashboard.jsx";
+import RideRequests from "../pages/driverDashboard/RideRequests.jsx";
 import DriverProfile from "../pages/driverprofile/DriverProfile.jsx";
 import FindRide from "../pages/findRides/FindRide.jsx";
 import HelpPage from "../pages/HelpCenter.jsx";
@@ -25,7 +26,6 @@ import RiderProfile from "../pages/riderprofile/RiderProfile.jsx";
 import ShareRide from "../pages/ShareRide.jsx";
 import SignUp from "../pages/SignUp.jsx";
 import Universities from "../pages/Universities.jsx";
-
 const AppRoutes = () => (
   <Routes>
     {/* Temporary home page to test routing */}
@@ -119,13 +119,22 @@ const AppRoutes = () => (
     />
 
     <Route
-      path="/driverdash"
+      path="/driver/dashboard"
       element={
         // <PrivateRoute>
         <DriverDashboard />
         // {/* </PrivateRoute> */}
       }
     />
+    <Route
+      path="/driver/dashboard/:id/ride-requests"
+      element={
+        // <PrivateRoute>
+        <RideRequests />
+        // </PrivateRoute>
+      }
+    />
+
     <Route
       path="/admindash"
       element={
