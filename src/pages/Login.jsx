@@ -94,7 +94,7 @@ export default function CampusRideLogin() {
       const data = await res.json();
 
       if (res.status === 200) {
-        login({email, password});
+        login(data); // Pass the complete response data to login
         sessionStorage.setItem("user", JSON.stringify(data.user));
         const userRole = data.user.role;
 

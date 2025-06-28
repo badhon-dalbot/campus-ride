@@ -6,7 +6,7 @@ import logo from "../assets/images/logo.png";
 import { useAuth } from "../components/AuthContext";
 
 export default function CampusRideHeader() {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, user, logout } = useAuth(); // Get user from context
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const dropdownRef = React.useRef(null);
   const navigate = useNavigate();
@@ -40,12 +40,23 @@ export default function CampusRideHeader() {
 
   // Get profile path based on user role from context
   let profilePath = "/riderProfile";
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user?.user?.role === "driver") profilePath = "/driverProfile";
-    else if (user?.user?.role === "rider") profilePath = "/riderProfile";
-    else if (user?.user?.role === "admin") profilePath = "/admindash"; // or your admin profile route
-  } catch {}
+  let userRole = null;
+  
+  // Debug: Print user information from context
+  console.log("Header - User from context:", user);
+  
+  // Use user data from context instead of localStorage
+  if (user?.user?.role) {
+    userRole = user.user.role;
+  } else if (user?.role) {
+    userRole = user.role;
+  }
+  
+  console.log("Header - User role:", userRole);
+  
+  if (userRole === "driver") profilePath = "/driverProfile";
+  else if (userRole === "rider") profilePath = "/riderProfile";
+  else if (userRole === "admin") profilePath = "/admindash";
 
   return (
     <header className="bg-[#17252A] text-white  py-2 shadow-md">
@@ -65,18 +76,24 @@ export default function CampusRideHeader() {
           >
             Home
           </Link>
-          <Link
-            to="/findride"
-            className="hover:text-gray-300 transition-colors font-medium"
-          >
-            Ride
-          </Link>
-          <Link
-            to="/driverdash"
-            className="hover:text-gray-300 transition-colors font-medium"
-          >
-            Drive
-          </Link>
+          {/* Show Ride button only if user is not a driver or not logged in */}
+          {(!isLoggedIn || userRole !== "driver") && (
+            <Link
+              to="/findride"
+              className="hover:text-gray-300 transition-colors font-medium"
+            >
+              Ride
+            </Link>
+          )}
+          {/* Show Drive button only if user is not a rider or not logged in */}
+          {(!isLoggedIn || userRole !== "rider") && (
+            <Link
+              to="/driverdash"
+              className="hover:text-gray-300 transition-colors font-medium"
+            >
+              Drive
+            </Link>
+          )}
           <Link
             to="/aboutus"
             className="hover:text-gray-300 transition-colors font-medium"
