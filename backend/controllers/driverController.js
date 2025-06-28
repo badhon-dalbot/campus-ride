@@ -84,39 +84,96 @@ const getDriverProfile = async (req, res) => {
   }
 };
 
-// const updatePreferences = async (req, res) => {
-//   const driverId = req.params.id;
-//   const {
-//     musicAllowed,
-//     friendlyChat,
-//     flexibleTiming,
-//     quietRides,
-//     earlyPickup,
-//   } = req.body;
-//   try {
-//     await db.query(
-//       `
-//       UPDATE user_preferences
-//       SET
-//         allow_music = ?, allow_talk = ?,
-//         flexible_timing = ?, quiet_rides = ?, early_pickup = ?
-//       WHERE user_id = ?
-//     `,
-//       [
-//         musicAllowed,
-//         friendlyChat,
-//         flexibleTiming,
-//         quietRides,
-//         earlyPickup,
-//         driverId,
-//       ]
-//     );
+// GET /api/driver/:id/preferences
+const getDriverPreferences = async (req, res) => {
+  const userId = req.params.id;
 
-//     res.status(200).json({ message: "Preferences updated successfully" });
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to update preferences" });
-//   }
-// };
+  try {
+    const [rows] = await db.query(
+      `SELECT allow_music, allow_pets, allow_smoking, quiet_rides, max_passengers
+       FROM user_preferences WHERE user_id = ?`,
+      [userId]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Preferences not found" });
+    }
+
+    res.json({
+      musicAllowed: !!rows[0].allow_music,
+      petsAllowed: !!rows[0].allow_pets,
+      smokingAllowed: !!rows[0].allow_smoking,
+      quietRides: !!rows[0].quiet_rides,
+      maxPassengers: rows[0].max_passengers,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// PUT /api/driver/:id/preferences
+const updateDriverPreferences = async (req, res) => {
+  const userId = req.params.id;
+  const {
+    musicAllowed,
+    petsAllowed,
+    smokingAllowed,
+    quietRides,
+    maxPassengers,
+  } = req.body;
+
+  try {
+    // Check if preferences exist for user
+    const [rows] = await db.query(
+      `SELECT * FROM user_preferences WHERE user_id = ?`,
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      // Insert new preferences row
+      await db.query(
+        `INSERT INTO user_preferences
+         (user_id, allow_music, allow_pets, allow_smoking, quiet_rides, max_passengers)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          userId,
+          musicAllowed ? 1 : 0,
+          petsAllowed ? 1 : 0,
+          smokingAllowed ? 1 : 0,
+          quietRides ? 1 : 0,
+          maxPassengers || 4, // Default to 4 if not set
+        ]
+      );
+    } else {
+      // Update existing preferences row
+      await db.query(
+        `UPDATE user_preferences SET
+          allow_music = ?,
+          allow_pets = ?,
+          allow_smoking = ?,
+          quiet_rides = ?,
+          max_passengers = ?
+         WHERE user_id = ?`,
+        [
+          musicAllowed ? 1 : 0,
+          petsAllowed ? 1 : 0,
+          smokingAllowed ? 1 : 0,
+          quietRides ? 1 : 0,
+          maxPassengers || 4, // Default to 4 if not set
+          userId,
+        ]
+      );
+    }
+
+    // Return updated preferences
+    res.json({
+      message: "Preferences updated successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const updateDriverBio = async (req, res) => {
   const driverId = req.params.id;
@@ -352,10 +409,12 @@ const updateRideRequest = async (req, res) => {
 export {
   getAcceptedRides,
   getDriverDashboard,
+  getDriverPreferences,
   getDriverProfile,
   getRideRequests,
   getTotalTrips,
   updateDriverBio,
+  updateDriverPreferences,
   updateRideRequest,
   updateVehicleInfo,
 };

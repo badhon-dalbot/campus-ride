@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   Award,
   Calendar,
@@ -38,7 +39,8 @@ export default function DriverProfilePage() {
     musicAllowed: true,
     petsAllowed: false,
     smokingAllowed: false,
-    quietRides: false,
+    quietRides: true,
+    maxPassengers: 4,
   });
   const [profileData, setProfileData] = useState(null);
 
@@ -58,34 +60,64 @@ export default function DriverProfilePage() {
 
   const tabs = ["Overview", "Vehicle", "Reviews", "Earnings", "Settings"];
 
-  const togglePreference = (key) => {
+  const togglePreference = async (key) => {
     const updated = {
       ...preferences,
       [key]: !preferences[key],
     };
+
     setPreferences(updated);
 
-    // Convert to backend format
-    const backendPrefs = {
-      music: updated.musicAllowed ? "Yes" : "No",
-      pet: updated.petsAllowed ? "Yes" : "No",
-      smoking: updated.smokingAllowed ? "No Smoking" : "Allowed",
-      quietRide: updated.quietRides ? "Yes" : "No",
+    const numericPrefs = {
+      allow_music: updated.musicAllowed ? 1 : 0,
+      allow_pets: updated.petsAllowed ? 1 : 0,
+      allow_smoking: updated.smokingAllowed ? 1 : 0,
+      quiet_rides: updated.quietRides ? 1 : 0,
+      max_passengers: updated.maxPassengers || 4, // Default to 4 if not set
     };
 
-    fetch(`http://localhost:3000/api/driver/${user.id}/preferences`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(backendPrefs),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to update preferences");
-      })
-      .catch((err) => {
-        setPreferences(preferences);
-        alert("Failed to update preferences");
-      });
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/driver/${user?.id}/preferences`,
+        numericPrefs,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("Preferences updated successfully");
+      // Optionally: show a toast or success message
+    } catch (error) {
+      console.error("Failed to update preferences:", error);
+      // Optionally: rollback UI update or show error message
+    }
   };
+  const loadPreferences = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/driver/${user?.id}/preferences`,
+        {
+          withCredentials: true, // Include cookies if your backend uses them
+        }
+      );
+
+      const prefs = res.data;
+
+      console.log(prefs);
+
+      setPreferences(prefs);
+    } catch (err) {
+      console.error("Failed to fetch preferences:", err);
+      // Optionally handle error (e.g., show a toast)
+    }
+  };
+  useEffect(() => {
+    loadPreferences();
+  }, []);
+  console.log("Preferences:", preferences);
 
   const handleEditBio = () => {
     setIsEditingBio(true);
@@ -204,36 +236,6 @@ export default function DriverProfilePage() {
         console.error("Error reloading vehicle data:", err);
       });
   };
-
-  const reviews = [
-    {
-      id: 1,
-      reviewer: "Sarah Chen",
-      rating: 5,
-      comment:
-        "Alex is an amazing driver! Very safe, punctual, and the car is always clean. Great conversation too!",
-      date: "2 days ago",
-      route: "Campus to Downtown",
-    },
-    {
-      id: 2,
-      reviewer: "Mike Johnson",
-      rating: 5,
-      comment:
-        "Reliable and professional. Alex helped me get to my internship on time every day for a month!",
-      date: "1 week ago",
-      route: "Dorms to Tech Park",
-    },
-    {
-      id: 3,
-      reviewer: "Emma Davis",
-      rating: 4,
-      comment:
-        "Good driver, safe ride. Car was comfortable and Alex was very accommodating with pickup times.",
-      date: "2 weeks ago",
-      route: "Campus to Airport",
-    },
-  ];
 
   const earnings = [
     { month: "December 2024", rides: 28, earnings: 420.5, tips: 45.0 },
@@ -591,6 +593,7 @@ export default function DriverProfilePage() {
                             <span className="text-gray-700">
                               🎵 Music allowed
                             </span>
+                            {console.log(preferences)}
                             <button
                               onClick={() => togglePreference("musicAllowed")}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
