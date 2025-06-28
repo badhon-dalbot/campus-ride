@@ -57,22 +57,20 @@ const getRiderPreferences = async (req, res) => {
   try {
     const [rows] = await db.query(
       `SELECT*
-       FROM rider WHERE rider_id = ?`,
+       FROM user_preferences WHERE user_id = ?`,
       [riderId]
     );
     if (rows.length === 0) {
       return res.status(404).json({ error: "Rider not found" });
     }
     const prefs = rows[0];
+    console.log(prefs);
     res.status(200).json({
-      musicAllowed: prefs.allow_music === "Yes",
-      gender: prefs.gender,
-      friendlyChat: prefs.allow_talk === "Yes",
-      smoking: prefs.allow_smoking === "Yes",
-      seatPref: prefs.seat,
-      flexibleTiming: prefs.flexible_timing === "Yes",
-      quietRides: prefs.quiet_rides === "Yes",
-      earlyPickup: prefs.early_pickup === "Yes",
+      musicAllowed: !!prefs.allow_music,
+      friendlyChat: !!prefs.allow_talk,
+      flexibleTiming: !!prefs.flexible_timing,
+      quietRides: !!prefs.quiet_rides,
+      earlyPickup: !!prefs.early_pickup,
     });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch preferences" });
@@ -82,29 +80,28 @@ const getRiderPreferences = async (req, res) => {
 // Update rider preferences
 const updateRiderPreferences = async (req, res) => {
   const riderId = req.params.id;
-  const {
-    musicAllowed,
-    quietRides,
-    friendlyChat,
-    earlyPickup,
-    flexibleTiming,
-  } = req.body;
+  const prefs = req.body;
+  console.log(prefs);
+  console.log("rider", riderId);
   try {
     await db.query(
-      `UPDATE rider SET music = ?, quiet_rides = ?, allow_talk = ?, early_pickup = ?, flexible_timing = ?
-       WHERE rider_id = ?`,
+      `UPDATE user_preferences SET allow_music = ?,allow_talk = ?,flexible_timing = ?, quiet_rides = ?,  early_pickup = ? 
+       WHERE user_id = ?`,
       [
-        musicAllowed ? "Yes" : "No",
-        quietRides ? "Yes" : "No",
-        friendlyChat ? "Yes" : "No",
-        earlyPickup ? "Yes" : "No",
-        flexibleTiming ? "Yes" : "No",
+        prefs.musicAllowed ? 1 : 0,
+        prefs.friendlyChat ? 1 : 0,
+        prefs.quietRides ? 1 : 0,
+
+        prefs.earlyPickup ? 1 : 0,
+        prefs.flexibleTiming ? 1 : 0,
         riderId,
       ]
     );
     res.status(200).json({ message: "Preferences updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: "Failed to update preferences" });
+    res
+      .status(500)
+      .json({ error: "Failed to update preferences", message: err.message });
   }
 };
 

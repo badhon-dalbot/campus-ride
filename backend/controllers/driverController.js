@@ -53,11 +53,30 @@ const getDriverProfile = async (req, res) => {
 
 const updatePreferences = async (req, res) => {
   const driverId = req.params.id;
-  const { music, pet, smoking, quietRide } = req.body;
+  const {
+    musicAllowed,
+    friendlyChat,
+    flexibleTiming,
+    quietRides,
+    earlyPickup,
+  } = req.body;
   try {
     await db.query(
-      "UPDATE driver SET music = ?, pet = ?, smoking = ?, quietRide = ? WHERE driver_id = ?",
-      [music, pet, smoking, quietRide, driverId]
+      `
+      UPDATE user_preferences
+      SET 
+        allow_music = ?, allow_talk = ?,
+        flexible_timing = ?, quiet_rides = ?, early_pickup = ?
+      WHERE user_id = ?
+    `,
+      [
+        musicAllowed,
+        friendlyChat,
+        flexibleTiming,
+        quietRides,
+        earlyPickup,
+        driverId,
+      ]
     );
 
     res.status(200).json({ message: "Preferences updated successfully" });
@@ -285,18 +304,17 @@ const getAcceptedRides = async (req, res) => {
 };
 
 // PATCH /api/ride-request/:id
-const updateRideRequest =   async (req, res) => {
+const updateRideRequest = async (req, res) => {
   const { status } = req.body; // 'accepted' or 'rejected'
   const requestId = req.params.id;
 
-  await db.query(
-    `UPDATE ride_requests SET status = ? WHERE id = ?`,
-    [status, requestId]
-  );
+  await db.query(`UPDATE ride_requests SET status = ? WHERE id = ?`, [
+    status,
+    requestId,
+  ]);
 
   res.json({ message: `Ride request ${status}` });
 };
-
 
 export {
   getAcceptedRides,
@@ -306,6 +324,6 @@ export {
   getTotalTrips,
   updateDriverBio,
   updatePreferences,
-  updateVehicleInfo,
   updateRideRequest,
+  updateVehicleInfo,
 };

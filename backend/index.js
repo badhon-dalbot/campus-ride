@@ -8,11 +8,11 @@ import { Server } from "socket.io";
 import authRoutes from "./routes/authRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import driverRoutes from "./routes/driverRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import riderRoutes from "./routes/riderRoutes.js";
 import ridesRoutes from "./routes/ridesRoutes.js";
 import chatSocket from "./sockets/chatSocket.js";
-import driverRoutes from "./routes/driverRoutes.js";
-import riderRoutes from "./routes/riderRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -33,7 +33,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   })
 );
 
