@@ -32,9 +32,16 @@ const LandingPage = () => {
   const [mapSelectionStep, setMapSelectionStep] = useState("pickup"); // 'pickup' or 'dropoff'
   const [distance, setDistance] = useState(null);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [scheduleType, setScheduleType] = useState("now"); // 'now' or 'future'
+  const [scheduleType, setScheduleType] = useState("now");
   const [futureDate, setFutureDate] = useState("");
   const [futureTime, setFutureTime] = useState("");
+  const [neededSeats, setNeededSeats] = useState(1);
+  const [shareRide, setShareRide] = useState("yes");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [pickupError, setPickupError] = useState("");
+  const [dropoffError, setDropoffError] = useState("");
 
   const getCurrentLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
@@ -285,12 +292,36 @@ const LandingPage = () => {
   };
 
   // Handlers for input fields
-  const handlePickupChange = (e) => setPickupInput(e.target.value);
-  const handleDropoffChange = (e) => setDropoffInput(e.target.value);
+  const handlePickupChange = (e) => {
+    setPickupInput(e.target.value);
+    if (pickupError) setPickupError("");
+  };
+  const handleDropoffChange = (e) => {
+    setDropoffInput(e.target.value);
+    if (dropoffError) setDropoffError("");
+  };
 
   // Ride button click: open map modal
   const handleRideClick = (e) => {
     e.preventDefault();
+    let hasError = false;
+
+    if (!pickupInput.trim()) {
+      setPickupError("Please enter your pick-up location.");
+      hasError = true;
+    } else {
+      setPickupError("");
+    }
+
+    if (!dropoffInput.trim()) {
+      setDropoffError("Please enter your drop-off location.");
+      hasError = true;
+    } else {
+      setDropoffError("");
+    }
+
+    if (hasError) return;
+
     setShowMapModal(true);
     setPickupCoord(null);
     setDropoffCoord(null);
@@ -328,10 +359,56 @@ const LandingPage = () => {
   };
 
   // Schedule modal next/submit
-  const handleScheduleSubmit = () => {
-    // Here you can send pickupCoord, dropoffCoord, distance, and schedule info to backend or next step
-    setShowScheduleModal(false);
-    // Reset or show confirmation as needed
+  const handleScheduleSubmit = async () => {
+    // Check if user is logged in
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.user || !user.user.id) {
+      setSubmitError("Please log in to create a ride request");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      const rideData = {
+        pickupLocation: pickupCoord,
+        dropoffLocation: dropoffCoord,
+        distance,
+        scheduleType,
+        futureDate,
+        futureTime,
+        neededSeats,
+        shareRide,
+        userId: user.user.id
+      };
+
+      const response = await createRideRequest(rideData);
+      console.log("Ride request created:", response);
+
+      setSubmitSuccess(true);
+      setShowScheduleModal(false);
+      
+      // Reset form data
+      setPickupCoord(null);
+      setDropoffCoord(null);
+      setDistance(null);
+      setScheduleType("now");
+      setFutureDate("");
+      setFutureTime("");
+      setNeededSeats(1);
+      setShareRide("yes");
+      
+      // Show success message (you can add a toast notification here)
+      alert("Ride request submitted successfully! We'll notify you when a driver accepts your request.");
+      
+    } catch (error) {
+      console.error("Error submitting ride request:", error);
+      setSubmitError(error.response?.data?.error || "An error occurred. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -360,6 +437,7 @@ const LandingPage = () => {
                 value={pickupInput}
                 onChange={handlePickupChange}
               />
+              {pickupError && <p className="text-red-500 text-xs mt-1">{pickupError}</p>}
               <input
                 type="text"
                 placeholder="Drop-off Location"
@@ -367,6 +445,7 @@ const LandingPage = () => {
                 value={dropoffInput}
                 onChange={handleDropoffChange}
               />
+              {dropoffError && <p className="text-red-500 text-xs mt-1">{dropoffError}</p>}
               <div className="flex justify-between items-center pt-2">
                 <button
                   className="bg-[#17252A] text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition"
@@ -823,6 +902,49 @@ const LandingPage = () => {
                     </div>
                   )}
 
+                  {/* Needed Seats */}
+                  <div className="mb-6 flex flex-col md:flex-row gap-9 mr-4">
+                    <div className="flex-1">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🪑 Needed Seats</label>
+                      <input
+                        type="number"
+                        min={1}
+                        className="w-full p-1 px-3 border-2 border-gray-200 rounded-xl focus:border-black focus:outline-none transition-colors"
+                        value={neededSeats}
+                        onChange={e => setNeededSeats(Math.max(1, Number(e.target.value)))}
+                      />
+                    </div>
+                    
+                    {/* Share Ride */}
+                    <div className="flex-1">
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">🤝 Share your ride?</label>
+                      <div className="flex items-center space-x-8">
+                        <label className="flex items-center space-x-2 ml-2">
+                          <input
+                            type="radio"
+                            name="shareRide"
+                            value="yes"
+                            checked={shareRide === "yes"}
+                            onChange={() => setShareRide("yes")}
+                            className="form-radio"
+                          />
+                          <span>Yes</span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="shareRide"
+                            value="no"
+                            checked={shareRide === "no"}
+                            onChange={() => setShareRide("no")}
+                            className="form-radio"
+                          />
+                          <span>No</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Ride Summary */}
                   <div className="bg-gray-50 rounded-xl p-4 mb-6">
                     <h3 className="font-semibold text-gray-800 mb-2">📍 Ride Summary</h3>
@@ -851,27 +973,46 @@ const LandingPage = () => {
                           {scheduleType === "now" ? "Immediate" : `${futureDate} at ${futureTime}`}
                         </span>
                       </div>
+                      <div className="flex justify-between">
+                        <span>Needed Seats:</span>
+                        <span className="font-medium text-black">{neededSeats}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Share Ride:</span>
+                        <span className="font-medium text-black">{shareRide === "yes" ? "Yes" : "No"}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer - Fixed at bottom */}
                 <div className="p-6 flex-shrink-0 border-t border-gray-100">
+                  {submitError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600">{submitError}</p>
+                    </div>
+                  )}
                   <button
                     className={`w-full py-4 rounded-xl text-sm font-semibold transition-colors shadow-lg ${
-                      scheduleType === "future" && (!futureDate || !futureTime)
+                      isSubmitting || (scheduleType === "future" && (!futureDate || !futureTime))
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : "bg-black text-white hover:bg-gray-800"
                     }`}
                     onClick={handleScheduleSubmit}
-                    disabled={scheduleType === "future" && (!futureDate || !futureTime)}
+                    disabled={isSubmitting || (scheduleType === "future" && (!futureDate || !futureTime))}
                   >
-                    {scheduleType === "future" && (!futureDate || !futureTime)
-                      ? "Please select date and time"
-                      : "Confirm Ride Request"
-                    }
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Submitting...
+                      </div>
+                    ) : scheduleType === "future" && (!futureDate || !futureTime) ? (
+                      "Please select date and time"
+                    ) : (
+                      "Confirm Ride Request"
+                    )}
                   </button>
-                  {scheduleType === "future" && (!futureDate || !futureTime) && (
+                  {scheduleType === "future" && (!futureDate || !futureTime) && !isSubmitting && (
                     <p className="text-xs text-red-500 mt-2 text-center">
                       Please select both date and time to continue
                     </p>
