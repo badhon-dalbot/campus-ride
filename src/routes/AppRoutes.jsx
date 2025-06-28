@@ -2,29 +2,29 @@ import { Route, Routes } from "react-router-dom";
 import PrivateRoute from "../components/PrivateRoute.jsx";
 import AboutUs from "../pages/AboutUs.jsx";
 import AdminDashboard from "../pages/AdminDashboard.jsx";
+import Airports from "../pages/Airports.jsx";
+import Blog from "../pages/Blog.jsx";
 import BookRide from "../pages/bookRide/BookRide.jsx";
+import Careers from "../pages/Careers.jsx";
 import Chatting from "../pages/chat/chatting.jsx";
+import Cities from "../pages/Cities.jsx";
+import College from "../pages/College.jsx";
 import ConfirmBooking from "../pages/ConfirmBooking.jsx";
-import DriverDashboard from "../pages/DriverDashboard.jsx";
+import DriverDashboard from "../pages/driverDashboard/DriverDashboard.jsx";
 import DriverProfile from "../pages/driverprofile/DriverProfile.jsx";
 import FindRide from "../pages/findRides/FindRide.jsx";
 import HelpPage from "../pages/HelpCenter.jsx";
 import Home from "../pages/Home.jsx";
+import Investors from "../pages/Investors.jsx";
 import Login from "../pages/Login.jsx";
+import Newsroom from "../pages/Newsroom.jsx";
+import Offerings from "../pages/Offerings.jsx";
 import Payment from "../pages/payment/payment.jsx";
 import RideDetails from "../pages/RideDetails.jsx";
 import RiderProfile from "../pages/riderprofile/RiderProfile.jsx";
 import ShareRide from "../pages/ShareRide.jsx";
 import SignUp from "../pages/SignUp.jsx";
-import Offerings from "../pages/Offerings.jsx";
-import Newsroom from "../pages/Newsroom.jsx";
-import Investors from "../pages/Investors.jsx";
-import Blog from "../pages/Blog.jsx";
-import Careers from "../pages/Careers.jsx";
-import Airports from "../pages/Airports.jsx";
 import Universities from "../pages/Universities.jsx";
-import College from "../pages/College.jsx";
-import Cities from "../pages/Cities.jsx";
 
 const AppRoutes = () => (
   <Routes>
@@ -43,7 +43,7 @@ const AppRoutes = () => (
     <Route path="/universities" element={<Universities />} />
     <Route path="/college" element={<College />} />
     <Route path="/cities" element={<Cities />} />
-    
+
     {/* Private Routes */}
     <Route
       path="/findride"
@@ -121,16 +121,16 @@ const AppRoutes = () => (
     <Route
       path="/driverdash"
       element={
-        <PrivateRoute>
-          <DriverDashboard />
-        </PrivateRoute>
+        // <PrivateRoute>
+        <DriverDashboard />
+        // {/* </PrivateRoute> */}
       }
     />
     <Route
       path="/admindash"
       element={
         // <PrivateRoute>
-          <AdminDashboard />
+        <AdminDashboard />
         // </PrivateRoute>
       }
     />

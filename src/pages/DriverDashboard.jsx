@@ -1,19 +1,17 @@
-import React from 'react';
-
-import CampusRideFooter from '../components/CampusRideFooter.jsx';
-import CampusRideHeader from '../components/CampusRideHeader.jsx';
+import CampusRideFooter from "../components/CampusRideFooter.jsx";
+import CampusRideHeader from "../components/CampusRideHeader.jsx";
 
 import {
   Car,
-  Star,
-  Wallet,
-  UserCheck,
+  Clock,
+  FileText,
   MapPin,
   Route,
+  Star,
   User,
-  Clock,
-  FileText
-} from 'lucide-react';
+  UserCheck,
+  Wallet,
+} from "lucide-react";
 
 const DriverDashboard = () => {
   return (
@@ -60,17 +58,36 @@ const DriverDashboard = () => {
 
         {/* Incoming Ride Request Box */}
         <div className="bg-white border border-gray-300 rounded-xl shadow-md p-6 w-full max-w-xl transform transition duration-300 hover:scale-[1.015] hover:shadow-lg">
-          <h2 className="text-lg font-semibold mb-4 text-center">Incoming Ride Request</h2>
+          <h2 className="text-lg font-semibold mb-4 text-center">
+            Incoming Ride Request
+          </h2>
           <div className="bg-[#eaf4f5] rounded-lg p-6 space-y-4 text-center">
             <div className="space-y-1">
-              <p><MapPin className="inline w-4 h-4 mr-1" /><span className="font-semibold">Pickup :</span> CSE Department</p>
-              <p><Route className="inline w-4 h-4 mr-1" /><span className="font-semibold">Drop Off :</span> Female Dormitory</p>
-              <p><User className="inline w-4 h-4 mr-1" /><span className="font-semibold">Passenger :</span> Nashita A.</p>
-              <p><Clock className="inline w-4 h-4 mr-1" /><span className="font-semibold">Estimated :</span> 12 km</p>
+              <p>
+                <MapPin className="inline w-4 h-4 mr-1" />
+                <span className="font-semibold">Pickup :</span> CSE Department
+              </p>
+              <p>
+                <Route className="inline w-4 h-4 mr-1" />
+                <span className="font-semibold">Drop Off :</span> Female
+                Dormitory
+              </p>
+              <p>
+                <User className="inline w-4 h-4 mr-1" />
+                <span className="font-semibold">Passenger :</span> Nashita A.
+              </p>
+              <p>
+                <Clock className="inline w-4 h-4 mr-1" />
+                <span className="font-semibold">Estimated :</span> 12 km
+              </p>
             </div>
             <div className="flex justify-center gap-6 pt-3">
-              <button className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition">Accept</button>
-              <button className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">Decline</button>
+              <button className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition">
+                Accept
+              </button>
+              <button className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">
+                Decline
+              </button>
             </div>
           </div>
         </div>
@@ -80,8 +97,13 @@ const DriverDashboard = () => {
           <p className="font-semibold text-lg flex items-center justify-center gap-2">
             <Car className="w-5 h-5" /> Vehicle: Toyota Aqua
           </p>
-          <p><span className="font-medium">Plate No. :</span> DK 20-XXXX</p>
-          <p><span className="font-medium">Verification :</span> <span className="text-green-600 text-sm">✔️ Verified</span></p>
+          <p>
+            <span className="font-medium">Plate No. :</span> DK 20-XXXX
+          </p>
+          <p>
+            <span className="font-medium">Verification :</span>{" "}
+            <span className="text-green-600 text-sm">✔️ Verified</span>
+          </p>
         </div>
 
         {/* Ride History */}
@@ -120,7 +142,7 @@ const DriverDashboard = () => {
       </main>
 
       {/* Footer */}
-     <CampusRideFooter />
+      <CampusRideFooter />
     </div>
   );
 };
