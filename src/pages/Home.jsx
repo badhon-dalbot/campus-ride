@@ -11,6 +11,7 @@ import homeActivity from "../assets/images/home_activity.png";
 import CampusRideFooter from "../components/CampusRideFooter";
 import CampusRideHeader from "../components/CampusRideHeader";
 import { format } from "date-fns";
+import { createRideRequest } from "../services/rideAPI";
 
 const LandingPage = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -408,16 +409,33 @@ const LandingPage = () => {
     setSubmitSuccess(false);
 
     try {
+      // Calculate ride date and time
+      let rideDate, rideTime;
+      
+      if (scheduleType === "now") {
+        // For immediate rides, add 10 minutes to current time
+        const now = new Date();
+        const rideDateTime = new Date(now.getTime() + 10 * 60 * 1000); // Add 10 minutes
+        
+        rideDate = rideDateTime.toISOString().split('T')[0]; // YYYY-MM-DD format
+        rideTime = rideDateTime.toTimeString().split(' ')[0]; // HH:MM:SS format
+      } else {
+        // For future rides, use selected date and time
+        rideDate = futureDate;
+        rideTime = futureTime + ":00"; // Add seconds to make it HH:MM:SS format
+      }
+
       const rideData = {
-        pickupLocation: pickupCoord,
-        dropoffLocation: dropoffCoord,
-        distance,
-        scheduleType,
-        futureDate,
-        futureTime,
-        neededSeats,
-        shareRide,
-        userId: user.user.id
+        creator_id: user.user.id,
+        creator_role: "rider", // Assuming the user creating the ride is a rider
+        from_location: pickupInput,
+        to_location: dropoffInput,
+        ride_date: rideDate,
+        ride_time: rideTime,
+        pickup_coordinate: pickupCoord ? `${pickupCoord.lat},${pickupCoord.lng}` : null,
+        dropoff_coordinate: dropoffCoord ? `${dropoffCoord.lat},${dropoffCoord.lng}` : null,
+        distance: distance, // Add distance to the database
+        seats_needed: neededSeats // Add seats needed to the database
       };
 
       const response = await createRideRequest(rideData);
@@ -427,6 +445,8 @@ const LandingPage = () => {
       setShowScheduleModal(false);
       
       // Reset form data
+      setPickupInput("");
+      setDropoffInput("");
       setPickupCoord(null);
       setDropoffCoord(null);
       setDistance(null);
@@ -988,15 +1008,27 @@ const LandingPage = () => {
                       <div className="flex justify-between">
                         <span>Pick-up:</span>
                         <span className="font-medium text-black">
-                          {pickupCoord ? `${pickupCoord.lat.toFixed(4)}, ${pickupCoord.lng.toFixed(4)}` : 'Not selected'}
+                          {pickupInput || 'Not specified'}
                         </span>
                       </div>
+                      {pickupCoord && (
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Coordinates:</span>
+                          <span>{pickupCoord.lat.toFixed(4)}, {pickupCoord.lng.toFixed(4)}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span>Drop-off:</span>
                         <span className="font-medium text-black">
-                          {dropoffCoord ? `${dropoffCoord.lat.toFixed(4)}, ${dropoffCoord.lng.toFixed(4)}` : 'Not selected'}
+                          {dropoffInput || 'Not specified'}
                         </span>
                       </div>
+                      {dropoffCoord && (
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Coordinates:</span>
+                          <span>{dropoffCoord.lat.toFixed(4)}, {dropoffCoord.lng.toFixed(4)}</span>
+                        </div>
+                      )}
                       {distance && (
                         <div className="flex justify-between">
                           <span>Distance:</span>

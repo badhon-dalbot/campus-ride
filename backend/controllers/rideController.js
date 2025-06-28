@@ -2,25 +2,35 @@ import db from "../config/db.js";
 
 // create ride from driver
 const createRide = async (req, res) => {
-  const { startLocation, endLocation, date, availableSeats } = req.body;
-  const driverId = req.user.id;
+  const { 
+    creator_id, 
+    creator_role, 
+    from_location, 
+    to_location, 
+    ride_date, 
+    ride_time, 
+    pickup_coordinate, 
+    dropoff_coordinate,
+    distance,
+    seats_needed
+  } = req.body;
 
-  if (!driverId || !startLocation || !endLocation || !date || !availableSeats) {
-    return res.status(400).json({ error: "All fields are required" });
+  if (!creator_id || !creator_role || !from_location || !to_location || !ride_date || !ride_time) {
+    return res.status(400).json({ error: "All required fields are missing" });
   }
 
   try {
     const result = await db.query(
-      "INSERT INTO rides (user_id, start_location, end_location, date, time, price) VALUES (?, ?, ?, ?, ?, ?)",
-      [driverId, startLocation, endLocation, date, availableSeats]
+      "INSERT INTO rides (creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed]
     );
 
     res.status(201).json({
-      message: "Ride created successfully",
-      rideId: result.insertId,
+      message: "Ride request created successfully",
+      rideId: result[0].insertId,
     });
   } catch (error) {
-    console.error("Error creating ride:", error);
+    console.error("Error creating ride request:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 };

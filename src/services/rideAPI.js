@@ -6,3 +6,8 @@ export const getRideById = async (rideId) => {
   const res = await axios.get(`${API_BASE}/rides/${rideId}`);
   return res.data;
 };
+
+export const createRideRequest = async (rideData) => {
+  const res = await axios.post(`${API_BASE}/rides`, rideData);
+  return res.data;
+};
