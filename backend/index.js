@@ -12,6 +12,7 @@ import driverRoutes from "./routes/driverRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import riderRoutes from "./routes/riderRoutes.js";
 import ridesRoutes from "./routes/ridesRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import chatSocket from "./sockets/chatSocket.js";
 
 dotenv.config();
@@ -63,6 +64,9 @@ app.use("/api/driver", driverRoutes);
 
 // Routes for rider management
 app.use("/api/rider", riderRoutes);
+
+// Routes for admin management
+app.use("/api/admin", adminRoutes);
 
 chatSocket(io);
 
