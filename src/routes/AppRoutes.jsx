@@ -123,7 +123,7 @@ const AppRoutes = () => (
       element={
         // <PrivateRoute>
         <DriverDashboard />
-        // {/* </PrivateRoute> */}
+        // </PrivateRoute>
       }
     />
     <Route

@@ -259,7 +259,7 @@ const updateVehicleInfo = async (req, res) => {
 };
 
 const getDriverDashboard = async (req, res) => {
-  const driverId = +req.params.id;
+  const driverId = req.params.id;
   if (!driverId) return res.status(400).json({ error: "Invalid driver ID" });
 
   try {
@@ -267,22 +267,43 @@ const getDriverDashboard = async (req, res) => {
     const [summaryRows] = await db.query(
       `
       SELECT
-        COALESCE(SUM(p.amount), 0) AS total_earnings,
-        d.rating,
-        (SELECT COUNT(*) FROM rides WHERE driver_id = ?) AS total_trips,
-        (SELECT COUNT(*) FROM booking b JOIN rides r ON b.ride_id = r.id WHERE r.driver_id = ?) AS total_ride_requests
-      FROM payment p
-      JOIN booking b ON p.booking_id = b.id
-      JOIN rides r ON b.ride_id = r.id
-      JOIN driver d ON r.driver_id = d.driver_id
-      WHERE r.driver_id = ? AND b.status IN ('accepted', 'confirmed');
+  u.id AS driver_id,
+  CONCAT(u.first_name, ' ', u.last_name) AS driver_name,
+  
+  COALESCE(SUM(p.amount), 0) AS total_earnings,
+  COALESCE(AVG(rt.rating), 0) AS average_rating,
+  
+  (SELECT COUNT(*) FROM rides WHERE creator_id = u.id) AS total_trips,
+  
+  (SELECT COUNT(*)
+   FROM bookings b
+   JOIN rides r ON b.ride_id = r.id
+   WHERE r.creator_id = u.id) AS total_ride_requests,
+  
+  (SELECT COUNT(*)
+   FROM bookings b
+   JOIN rides r ON b.ride_id = r.id
+   WHERE r.creator_id = u.id AND b.status IN ('accepted', 'confirmed')) AS active_ride_requests,
+  
+  (SELECT COUNT(*)
+   FROM bookings b
+   JOIN rides r ON b.ride_id = r.id
+   WHERE r.creator_id = u.id AND b.status = 'pending') AS pending_ride_requests
+
+FROM users u
+LEFT JOIN rides r ON r.creator_id = u.id
+LEFT JOIN bookings b ON b.ride_id = r.id
+LEFT JOIN payments p ON p.booking_id = b.id
+LEFT JOIN ratings rt ON rt.ratee_id = u.id
+WHERE u.id = ?
+GROUP BY u.id;
     `,
-      [driverId, driverId, driverId]
+      [driverId]
     );
 
     // Vehicle info
     const [vehicleRows] = await db.query(
-      `SELECT * FROM vehicle WHERE driver_id = ? LIMIT 1`,
+      `SELECT * FROM vehicles WHERE driver_id = ? LIMIT 1;`,
       [driverId]
     );
 
@@ -299,7 +320,7 @@ const getDriverDashboard = async (req, res) => {
     r.price_per_seat,
     r.notes
 FROM rides r
-WHERE r.driver_id = ?
+WHERE r.creator_id = ?
   AND r.ride_date >= CURDATE()
 ORDER BY r.ride_date, r.ride_time;
 

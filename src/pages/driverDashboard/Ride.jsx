@@ -7,17 +7,17 @@ export default function Rides({ ride }) {
   const [activeMessageRideId, setActiveMessageRideId] = useState(null);
   return (
     <div
-      key={ride.id}
+      key={ride.ride_id}
       className="flex flex-col border border-night-ink p-3 rounded"
     >
       <div className="flex justify-between items-center">
         <div>
           <p className="font-semibold">{ride.passenger}</p>
           <p className="text-sm text-gray-500">
-            {ride.from} → {ride.to}
+            {ride.from_location} → {ride.to_location}
           </p>
           <p className="text-sm text-gray-500">
-            {ride.date} at {ride.time}
+            {ride.ride_date} at {ride.ride_time}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -30,7 +30,7 @@ export default function Rides({ ride }) {
           >
             {ride.status}
           </span>
-          <span className="font-medium">${ride.price}</span>
+          <span className="font-medium">${ride.price_per_seat}</span>
           <button
             onClick={() =>
               setActiveMessageRideId(
@@ -43,7 +43,7 @@ export default function Rides({ ride }) {
         </div>
       </div>
 
-      {activeMessageRideId === ride.id && <MessageBox ride={ride} />}
+      {activeMessageRideId === ride.ride_id && <MessageBox ride={ride} />}
     </div>
   );
 }

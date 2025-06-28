@@ -102,7 +102,7 @@ export default function CampusRideLogin() {
         if (userRole === "admin") {
           redirectPath = "/admindash";
         } else if (userRole === "driver") {
-          redirectPath = "/driverdash";
+          redirectPath = "/driver/dashboard";
         } else if (userRole === "rider") {
           redirectPath = "/findride";
         } else {

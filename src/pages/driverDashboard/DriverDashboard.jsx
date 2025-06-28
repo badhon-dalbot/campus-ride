@@ -1,5 +1,6 @@
+import axios from "axios";
 import { Car, Clock, DollarSign, Star, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CampusRideHeader from "../../components/CampusRideHeader";
 import OfferRideModal from "./OfferRide";
 import QuickAction from "./QuickAction";
@@ -7,74 +8,21 @@ import Rides from "./Ride";
 import SectionCard from "./SectionCard";
 import StatCard from "./StatCard";
 export default function DriverDashboard() {
-  const [driverData] = useState({
-    name: "Alex Johnson",
-    rating: 4.8,
-    totalTrips: 127,
-    recentEarnings: [
-      { date: "Today", amount: 23.5, rides: 4 },
-      { date: "Yesterday", amount: 31.25, rides: 5 },
-      { date: "Dec 22", amount: 28.75, rides: 4 },
-      { date: "Dec 21", amount: 35.0, rides: 6 },
-      { date: "Dec 20", amount: 42.25, rides: 7 },
-    ],
-    upcomingRides: [
-      {
-        id: 1,
-        passenger: "Emily Parker",
-        from: "Downtown",
-        to: "North Campus",
-        time: "8:00 AM",
-        date: "Today",
-        price: 5,
-        status: "confirmed",
-      },
-      {
-        id: 2,
-        passenger: "Jason Wong",
-        from: "South Apartments",
-        to: "Engineering Building",
-        time: "9:30 AM",
-        date: "Today",
-        price: 4,
-        status: "confirmed",
-      },
-      {
-        id: 3,
-        passenger: "Maria Garcia",
-        from: "Library",
-        to: "Student Center",
-        time: "2:15 PM",
-        date: "Tomorrow",
-        price: 3.5,
-        status: "pending",
-      },
-    ],
-    pendingRequests: 3,
-    weeklyStats: {
-      totalEarnings: 245.75,
-      totalRides: 26,
-      totalDistance: 156,
-      avgRating: 4.8,
-    },
-    vehicle: {
-      make: "Toyota",
-      model: "Prius",
-      year: 2020,
-      color: "Blue",
-      licensePlate: "ABC-1234",
-      fuelEfficiency: "52 MPG",
-    },
-    responseTime: "2 min",
-  });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [driverData, setDriverData] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user")).user;
+
+  console.log("User:", user);
 
   useEffect(() => {
     const fetchDriverData = async () => {
       try {
-        const response = await axios.get("/api/driver/profile"); // Replace with your actual endpoint
+        console.log("Fetching dashboard for user ID:", user.id);
+        const response = await axios.get(
+          `http://localhost:3000/api/driver/${user.id}/dashboard`
+        );
+        console.log("Fetched driver data:", response.data);
         setDriverData(response.data);
       } catch (error) {
         console.error("Failed to fetch driver data:", error);
@@ -86,6 +34,18 @@ export default function DriverDashboard() {
 
   console.log("Driver Data:", driverData);
 
+  if (!driverData) {
+    return (
+      <>
+        <CampusRideHeader />
+        <div className="bg-ice-blue min-h-screen p-6">
+          <h1 className="text-xl text-center">Loading driver dashboard...</h1>
+        </div>
+      </>
+    );
+  }
+  const { summary, vehicle, upcomingRides } = driverData;
+
   return (
     <>
       <CampusRideHeader />
@@ -96,7 +56,7 @@ export default function DriverDashboard() {
       >
         <header className="flex justify-between items-center mb-12 w-container mx-auto">
           <h1 className="text-2xl font-bold">
-            Welcome back, {driverData.name}!
+            Welcome back, {driverData?.driver_name}!
           </h1>
           <div className="space-x-2">
             <button
@@ -111,15 +71,15 @@ export default function DriverDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 w-container mx-auto">
           <StatCard
             label="Today's Earnings"
-            value={`$${driverData.recentEarnings[0].amount}`}
+            value={1}
             icon={<DollarSign />}
-            subtext={`+${driverData.recentEarnings[0].rides} rides completed`}
+            subtext={`+${summary?.total_earnings} rides completed`}
           />
           <StatCard
             label="Driver Rating"
-            value={driverData.rating}
+            value={summary?.average_rating}
             icon={<Star />}
-            subtext={`${driverData.totalTrips} total trips`}
+            subtext={`${summary?.total_trips} total trips`}
           />
           <StatCard
             label="Completion Rate"
@@ -133,7 +93,7 @@ export default function DriverDashboard() {
           />
           <StatCard
             label="Response Time"
-            value={driverData.responseTime}
+            value={driverData.responseTime || 15}
             icon={<Clock />}
             subtext="Average response"
           />
@@ -143,12 +103,12 @@ export default function DriverDashboard() {
           <div className="lg:col-span-2 space-y-6">
             <SectionCard title="Upcoming Rides">
               {driverData.upcomingRides.map((ride) => (
-                <Rides key={ride.id} ride={ride} />
+                <Rides key={ride.ride_id} ride={ride} />
               ))}
             </SectionCard>
 
             <SectionCard title="Recent Earnings">
-              {driverData.recentEarnings.map((e, i) => (
+              {/* {summary.earng.map((e, i) => (
                 <div
                   key={i}
                   className="flex justify-between items-center w-container mx-auto"
@@ -167,7 +127,7 @@ export default function DriverDashboard() {
                     </div>
                   </div>
                 </div>
-              ))}
+              ))} */}
             </SectionCard>
           </div>
 
@@ -185,47 +145,37 @@ export default function DriverDashboard() {
             <SectionCard title="Your Vehicle">
               <div className="mb-2">
                 <p className="font-medium">
-                  {driverData.vehicle.make} {driverData.vehicle.model}
+                  {vehicle.make} {vehicle.model}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {driverData.vehicle.year} • {driverData.vehicle.color}
+                  {vehicle.fuel_type} • {vehicle.color}
                 </p>
               </div>
               <div className="text-sm text-gray-500">
-                License Plate:{" "}
+                License Plate:
                 <span className="font-medium text-black ml-1">
-                  {driverData.vehicle.licensePlate}
-                </span>
-              </div>
-              <div className="text-sm text-gray-500">
-                Fuel Efficiency:{" "}
-                <span className="font-medium text-black ml-1">
-                  {driverData.vehicle.fuelEfficiency}
+                  {vehicle.license_plate}
                 </span>
               </div>
             </SectionCard>
 
             <SectionCard title="This Week">
               <p className="text-xl font-bold text-green-600 text-center">
-                ${driverData.weeklyStats.totalEarnings}
+                ${summary?.total_earnings}
               </p>
               <div className="grid grid-cols-2 text-center text-sm mt-2">
                 <div>
-                  <p className="font-semibold">
-                    {driverData.weeklyStats.totalRides}
-                  </p>
+                  <p className="font-semibold">{summary?.total_rides}</p>
                   <p className="text-gray-500">Rides</p>
                 </div>
                 <div>
-                  <p className="font-semibold">
-                    {driverData.weeklyStats.totalDistance}
-                  </p>
+                  <p className="font-semibold">{summary?.total_distance}</p>
                   <p className="text-gray-500">Miles</p>
                 </div>
               </div>
               <div className="flex justify-center items-center gap-1 mt-2 text-sm">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                <span>{driverData.weeklyStats.avgRating}</span>
+                <span>{summary?.average_rating}</span>
                 <span className="text-gray-500">avg rating</span>
               </div>
             </SectionCard>
