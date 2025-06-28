@@ -6,16 +6,16 @@ import {
   getRideRequests,
   getTotalTrips,
   updateDriverBio,
-  updatePreferences,
   updateRideRequest,
   updateVehicleInfo,
 } from "../controllers/driverController.js";
 import { getDriverRides } from "../controllers/rideController.js";
+import { updateRiderPreferences } from "../controllers/riderController.js";
 const router = express.Router();
 
 router.get("/:id/profile", getDriverProfile);
 router.get("/:id/active-rides", getDriverRides);
-router.patch("/:id/preferences", updatePreferences);
+router.patch("/:id/preferences", updateRiderPreferences);
 router.put("/:id/bio", updateDriverBio);
 router.put("/:id/vehicle", updateVehicleInfo);
 router.get("/:id/dashboard", getDriverDashboard);

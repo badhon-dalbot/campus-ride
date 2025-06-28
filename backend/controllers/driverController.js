@@ -5,39 +5,52 @@ const getDriverProfile = async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      `SELECT 
-        u.id AS driverId,
-        u.firstName,
-        u.lastName,
-        u.email,
-        u.phone,
-        u.document,
-        u.created_at,
-        u.about,
-        u.account_status,
-        d.rating,
-        d.review_count,
-        d.one_star,
-        d.two_star,
-        d.three_star,
-        d.four_star,
-        d.five_star,
-        d.music,
-        d.pet,
-        d.smoking,
-        d.quietRide,
-        v.make,
-        v.model,
-        v.license_no,
-        v.fuel_type,
-        v.color,
-        v.seats,
-        v.last_maintenance
-      FROM users u
-      JOIN driver d ON u.id = d.driver_id
-      LEFT JOIN vehicle v ON d.driver_id = v.driver_id
-      WHERE u.id = ?`,
-      [driverId]
+      `
+   SELECT 
+    u.id AS driverId,
+    u.first_name AS firstName,
+    u.last_name AS lastName,
+    u.email,
+    u.phone,
+    u.document_path,
+    u.created_at AS since,
+    u.about,
+    u.account_status,
+
+    -- ✅ Subquery to get actual review count (comments)
+    (
+      SELECT COUNT(*) 
+      FROM ratings 
+      WHERE ratee_id = u.id 
+        AND comment IS NOT NULL 
+        AND TRIM(comment) <> ''
+    ) AS reviewCount,
+
+    AVG(r.rating) AS averageRating,
+    SUM(r.rating = 1) AS one_star,
+    SUM(r.rating = 2) AS two_star,
+    SUM(r.rating = 3) AS three_star,
+    SUM(r.rating = 4) AS four_star,
+    SUM(r.rating = 5) AS five_star,
+
+    v.make,
+    v.model,
+    v.license_plate,
+    v.fuel_type,
+    v.color,
+    v.seats,
+    v.last_maintenance
+
+  FROM users u
+
+  LEFT JOIN ratings r ON u.id = r.ratee_id   
+  LEFT JOIN vehicles v ON u.id = v.driver_id
+
+  WHERE u.id = ?
+
+  GROUP BY u.id;
+  `,
+      [driverId, driverId]
     );
 
     if (rows.length === 0) {
@@ -51,39 +64,39 @@ const getDriverProfile = async (req, res) => {
   }
 };
 
-const updatePreferences = async (req, res) => {
-  const driverId = req.params.id;
-  const {
-    musicAllowed,
-    friendlyChat,
-    flexibleTiming,
-    quietRides,
-    earlyPickup,
-  } = req.body;
-  try {
-    await db.query(
-      `
-      UPDATE user_preferences
-      SET 
-        allow_music = ?, allow_talk = ?,
-        flexible_timing = ?, quiet_rides = ?, early_pickup = ?
-      WHERE user_id = ?
-    `,
-      [
-        musicAllowed,
-        friendlyChat,
-        flexibleTiming,
-        quietRides,
-        earlyPickup,
-        driverId,
-      ]
-    );
+// const updatePreferences = async (req, res) => {
+//   const driverId = req.params.id;
+//   const {
+//     musicAllowed,
+//     friendlyChat,
+//     flexibleTiming,
+//     quietRides,
+//     earlyPickup,
+//   } = req.body;
+//   try {
+//     await db.query(
+//       `
+//       UPDATE user_preferences
+//       SET
+//         allow_music = ?, allow_talk = ?,
+//         flexible_timing = ?, quiet_rides = ?, early_pickup = ?
+//       WHERE user_id = ?
+//     `,
+//       [
+//         musicAllowed,
+//         friendlyChat,
+//         flexibleTiming,
+//         quietRides,
+//         earlyPickup,
+//         driverId,
+//       ]
+//     );
 
-    res.status(200).json({ message: "Preferences updated successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update preferences" });
-  }
-};
+//     res.status(200).json({ message: "Preferences updated successfully" });
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to update preferences" });
+//   }
+// };
 
 const updateDriverBio = async (req, res) => {
   const driverId = req.params.id;
@@ -323,7 +336,6 @@ export {
   getRideRequests,
   getTotalTrips,
   updateDriverBio,
-  updatePreferences,
   updateRideRequest,
   updateVehicleInfo,
 };

@@ -42,9 +42,9 @@ export default function CampusRideHeader() {
   let profilePath = "/riderProfile";
   try {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user?.role === "driver") profilePath = "/driverProfile";
-    else if (user?.role === "rider") profilePath = "/riderProfile";
-    else if (user?.role === "admin") profilePath = "/admindash"; // or your admin profile route
+    if (user?.user?.role === "driver") profilePath = "/driverProfile";
+    else if (user?.user?.role === "rider") profilePath = "/riderProfile";
+    else if (user?.user?.role === "admin") profilePath = "/admindash"; // or your admin profile route
   } catch {}
 
   return (
