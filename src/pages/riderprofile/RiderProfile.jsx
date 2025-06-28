@@ -3,6 +3,7 @@ import axios from "axios";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../components/AuthContext";
 import CampusRideFooter from "../../components/CampusRideFooter";
 import CampusRideHeader from "../../components/CampusRideHeader";
 import OverviewTab from "./OverviewTab";
@@ -15,6 +16,7 @@ import TabNavigation from "./TabNavigation";
 
 export default function StudentProfilePage() {
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get user from context instead of localStorage
   const [activeTab, setActiveTab] = useState("Overview");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [bio, setBio] = useState(
@@ -42,8 +44,6 @@ export default function StudentProfilePage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const user = JSON.parse(localStorage.getItem("user"));
 
   const tabs = ["Overview", "Ride History", "Payments", "Settings"];
 
@@ -153,8 +153,12 @@ export default function StudentProfilePage() {
   console.log(user?.user?.id);
 
   useEffect(() => {
-    if (!user?.user?.id) return;
+    if (!user?.user?.id) {
+      console.log("No user ID found in context:", user);
+      return;
+    }
 
+    console.log("Loading profile for user:", user?.user?.id);
     setLoading(true);
 
     // Fetch profile
@@ -189,9 +193,14 @@ export default function StudentProfilePage() {
       });
 
     // Fetch preferences
-  }, []);
+  }, [user]); // Add user as dependency
 
   const loadPreferences = async () => {
+    if (!user?.user?.id) {
+      console.log("No user ID for preferences:", user);
+      return;
+    }
+    
     try {
       const res = await axios.get(
         `http://localhost:3000/api/rider/${user?.user?.id}/preferences`,
@@ -216,15 +225,20 @@ export default function StudentProfilePage() {
       // Optionally handle error (e.g., show a toast)
     }
   };
+  
   useEffect(() => {
     loadPreferences();
-  }, []);
+  }, [user]); // Add user as dependency
 
   const handleSaveBio = async (newBio) => {
+    if (!user?.user?.id) {
+      alert("User not found. Please try logging in again.");
+      return;
+    }
+    
     try {
-      const user = JSON.parse(sessionStorage.getItem("user"));
       const res = await fetch(
-        `http://localhost:3000/api/rider/${user.id}/bio`,
+        `http://localhost:3000/api/rider/${user.user.id}/bio`,
         {
           method: "PUT",
           headers: {
@@ -244,6 +258,11 @@ export default function StudentProfilePage() {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+  
+  // Show loading if user data is not available yet
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

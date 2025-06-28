@@ -21,6 +21,7 @@ const LandingPage = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
+  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
   const locationInitialized = useRef(false);
   const fallbackTimeoutRef = useRef(null);
   // Ride creation states
@@ -42,6 +43,26 @@ const LandingPage = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [pickupError, setPickupError] = useState("");
   const [dropoffError, setDropoffError] = useState("");
+
+  // Separate function for location initialization when Google Maps is already loaded
+  const initializeLocationOnly = async () => {
+    try {
+      console.log("Starting location detection (Maps already loaded)...");
+      const location = await getCurrentLocation();
+      setUserLocation(location);
+      setLocationAccuracy(location.accuracy);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setLocationError("Failed to get location. Please try again.");
+      
+      // Fallback to default location (Dhaka, Bangladesh)
+      const defaultLocation = { lat: 23.7937, lng: 90.4066, accuracy: null };
+      setUserLocation(defaultLocation);
+      setIsLoading(false);
+      setShowFallback(true);
+    }
+  };
 
   const getCurrentLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
@@ -77,6 +98,20 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
+    // Check if Google Maps is already loaded globally
+    if (window.google && window.google.maps) {
+      console.log("Google Maps already loaded globally");
+      setGoogleMapsLoaded(true);
+      setMapLoaded(true);
+      
+      // If location wasn't initialized yet, initialize it
+      if (!locationInitialized.current) {
+        locationInitialized.current = true;
+        initializeLocationOnly();
+      }
+      return;
+    }
+
     if (locationInitialized.current) return;
     locationInitialized.current = true;
 
@@ -209,6 +244,7 @@ const LandingPage = () => {
     setMapLoaded(true);
     setMapError(false);
     setShowFallback(false);
+    setGoogleMapsLoaded(true);
 
     // Clear the fallback timeout since map loaded successfully
     if (fallbackTimeoutRef.current) {
@@ -411,23 +447,23 @@ const LandingPage = () => {
     }
   };
 
-  return (
-    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-      <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
-        {/* Header */}
-        <CampusRideHeader />
+  // Render the maps content
+  const renderMapsContent = () => (
+    <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
+      {/* Header */}
+      <CampusRideHeader />
 
-        {/* Hero Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 px-10 py-14 items-center gap-12 bg-[#eaf4f5]">
-          <div>
-            <h1 className="text-5xl font-bold leading-tight mb-6">
-              Go anywhere with{" "}
-              <span className="inline-block relative highlight-banner px-4 py-1">
-                <span className="relative z-10 text-white font-bold">
-                  CampusRide
-                </span>
+      {/* Hero Section */}
+      <section className="grid grid-cols-1 md:grid-cols-2 px-10 py-14 items-center gap-12 bg-[#eaf4f5]">
+        <div>
+          <h1 className="text-5xl font-bold leading-tight mb-6">
+            Go anywhere with{" "}
+            <span className="inline-block relative highlight-banner px-4 py-1">
+              <span className="relative z-10 text-white font-bold">
+                CampusRide
               </span>
-            </h1>
+            </span>
+          </h1>
 
             <div className="bg-white p-6 rounded-2xl shadow-lg space-y-4">
               <input
@@ -1024,6 +1060,22 @@ const LandingPage = () => {
         )}
         {/* --- End Ride Creation Modals --- */}
       </div>
+    );
+  
+  // Main return statement with conditional LoadScript
+  return googleMapsLoaded ? (
+    renderMapsContent()
+  ) : (
+    <LoadScript 
+      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      onLoad={() => setGoogleMapsLoaded(true)}
+      onError={(error) => {
+        console.error("LoadScript error:", error);
+        setMapError(true);
+        setShowFallback(true);
+      }}
+    >
+      {renderMapsContent()}
     </LoadScript>
   );
 };
