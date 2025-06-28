@@ -4,9 +4,9 @@ const getDriverProfile = async (req, res) => {
   const driverId = req.params.id;
 
   try {
-    const [rows] = await db.query(
+    const [profile] = await db.query(
       `
-   SELECT 
+  SELECT 
     u.id AS driverId,
     u.first_name AS firstName,
     u.last_name AS lastName,
@@ -17,7 +17,6 @@ const getDriverProfile = async (req, res) => {
     u.about,
     u.account_status,
 
-    -- ✅ Subquery to get actual review count (comments)
     (
       SELECT COUNT(*) 
       FROM ratings 
@@ -42,61 +41,139 @@ const getDriverProfile = async (req, res) => {
     v.last_maintenance
 
   FROM users u
-
-  LEFT JOIN ratings r ON u.id = r.ratee_id   
+  LEFT JOIN ratings r ON u.id = r.ratee_id
   LEFT JOIN vehicles v ON u.id = v.driver_id
-
   WHERE u.id = ?
-
   GROUP BY u.id;
   `,
-      [driverId, driverId]
+      [driverId]
     );
 
-    if (rows.length === 0) {
+    const [comments] = await db.query(
+      `
+  SELECT 
+    r.id AS ratingId,
+    r.rater_id AS reviewerId,
+    CONCAT(ru.first_name, ' ', ru.last_name) AS reviewerName,
+    ru.email AS reviewerEmail,
+    ru.document_path AS reviewerAvatar,
+    r.rating,
+    r.comment,
+    r.created_at
+  FROM ratings r
+  JOIN users ru ON r.rater_id = ru.id
+  WHERE r.ratee_id = ?
+    AND r.comment IS NOT NULL 
+    AND TRIM(r.comment) <> ''
+  ORDER BY r.created_at DESC;
+  `,
+      [driverId]
+    );
+
+    if (profile.length === 0) {
       return res.status(404).json({ message: "Driver not found" });
     }
 
-    res.status(200).json(rows[0]);
+    res.status(200).json({
+      ...profile[0],
+      reviews: comments,
+    });
   } catch (error) {
     console.error("Error fetching driver profile:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// const updatePreferences = async (req, res) => {
-//   const driverId = req.params.id;
-//   const {
-//     musicAllowed,
-//     friendlyChat,
-//     flexibleTiming,
-//     quietRides,
-//     earlyPickup,
-//   } = req.body;
-//   try {
-//     await db.query(
-//       `
-//       UPDATE user_preferences
-//       SET
-//         allow_music = ?, allow_talk = ?,
-//         flexible_timing = ?, quiet_rides = ?, early_pickup = ?
-//       WHERE user_id = ?
-//     `,
-//       [
-//         musicAllowed,
-//         friendlyChat,
-//         flexibleTiming,
-//         quietRides,
-//         earlyPickup,
-//         driverId,
-//       ]
-//     );
+// GET /api/driver/:id/preferences
+const getDriverPreferences = async (req, res) => {
+  const userId = req.params.id;
 
-//     res.status(200).json({ message: "Preferences updated successfully" });
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to update preferences" });
-//   }
-// };
+  try {
+    const [rows] = await db.query(
+      `SELECT allow_music, allow_pets, allow_smoking, quiet_rides, max_passengers
+       FROM user_preferences WHERE user_id = ?`,
+      [userId]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Preferences not found" });
+    }
+
+    res.json({
+      musicAllowed: !!rows[0].allow_music,
+      petsAllowed: !!rows[0].allow_pets,
+      smokingAllowed: !!rows[0].allow_smoking,
+      quietRides: !!rows[0].quiet_rides,
+      maxPassengers: rows[0].max_passengers,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// PUT /api/driver/:id/preferences
+const updateDriverPreferences = async (req, res) => {
+  const userId = req.params.id;
+  const {
+    musicAllowed,
+    petsAllowed,
+    smokingAllowed,
+    quietRides,
+    maxPassengers,
+  } = req.body;
+
+  try {
+    // Check if preferences exist for user
+    const [rows] = await db.query(
+      `SELECT * FROM user_preferences WHERE user_id = ?`,
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      // Insert new preferences row
+      await db.query(
+        `INSERT INTO user_preferences
+         (user_id, allow_music, allow_pets, allow_smoking, quiet_rides, max_passengers)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          userId,
+          musicAllowed ? 1 : 0,
+          petsAllowed ? 1 : 0,
+          smokingAllowed ? 1 : 0,
+          quietRides ? 1 : 0,
+          maxPassengers || 4, // Default to 4 if not set
+        ]
+      );
+    } else {
+      // Update existing preferences row
+      await db.query(
+        `UPDATE user_preferences SET
+          allow_music = ?,
+          allow_pets = ?,
+          allow_smoking = ?,
+          quiet_rides = ?,
+          max_passengers = ?
+         WHERE user_id = ?`,
+        [
+          musicAllowed ? 1 : 0,
+          petsAllowed ? 1 : 0,
+          smokingAllowed ? 1 : 0,
+          quietRides ? 1 : 0,
+          maxPassengers || 4, // Default to 4 if not set
+          userId,
+        ]
+      );
+    }
+
+    // Return updated preferences
+    res.json({
+      message: "Preferences updated successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const updateDriverBio = async (req, res) => {
   const driverId = req.params.id;
@@ -126,18 +203,18 @@ const updateVehicleInfo = async (req, res) => {
   try {
     // Check if vehicle record exists for this driver
     const [existingVehicle] = await db.query(
-      "SELECT vehicle_id FROM vehicle WHERE driver_id = ?",
+      "SELECT id FROM vehicles WHERE driver_id = ?",
       [driverId]
     );
 
     if (existingVehicle.length > 0) {
       // Update existing vehicle record
       await db.query(
-        `UPDATE vehicle SET 
+        `UPDATE vehicles SET 
          make = ?, 
          model = ?, 
          color = ?, 
-         license_no = ?, 
+         license_plate = ?, 
          seats = ?, 
          fuel_type = ?, 
          last_maintenance = ? 
@@ -156,8 +233,8 @@ const updateVehicleInfo = async (req, res) => {
     } else {
       // Insert new vehicle record
       await db.query(
-        `INSERT INTO vehicle 
-         (driver_id, make, model, color, license_no, seats, fuel_type, last_maintenance) 
+        `INSERT INTO vehicles
+         (driver_id, make, model, color, license_plate, seats, fuel_type, last_maintenance) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           driverId,
@@ -332,10 +409,12 @@ const updateRideRequest = async (req, res) => {
 export {
   getAcceptedRides,
   getDriverDashboard,
+  getDriverPreferences,
   getDriverProfile,
   getRideRequests,
   getTotalTrips,
   updateDriverBio,
+  updateDriverPreferences,
   updateRideRequest,
   updateVehicleInfo,
 };

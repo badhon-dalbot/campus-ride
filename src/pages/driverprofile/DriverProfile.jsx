@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   Award,
   Calendar,
@@ -16,6 +17,7 @@ import {
   Phone,
   Shield,
   Star,
+  UserRound,
   Users,
   Wrench,
 } from "lucide-react";
@@ -25,6 +27,7 @@ import CampusRideFooter from "../../components/CampusRideFooter";
 import CampusRideHeader from "../../components/CampusRideHeader";
 
 export default function DriverProfilePage() {
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Overview");
   const [isEditingBio, setIsEditingBio] = useState(false);
@@ -36,26 +39,10 @@ export default function DriverProfilePage() {
     musicAllowed: true,
     petsAllowed: false,
     smokingAllowed: false,
-    quietRides: false,
+    quietRides: true,
+    maxPassengers: 4,
   });
-  const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    university: "",
-    studentId: "",
-    since: "--",
-    emergencyContact: "",
-    emergencyName: "",
-    licenseNumber: "",
-    licenseExpiry: "",
-    insuranceProvider: "",
-    insurancePolicy: "",
-    insuranceExpiry: "",
-    rating: 0,
-    review_count: 0,
-  });
+  const [profileData, setProfileData] = useState(null);
 
   const [vehicleData, setVehicleData] = useState({
     make: "",
@@ -73,34 +60,64 @@ export default function DriverProfilePage() {
 
   const tabs = ["Overview", "Vehicle", "Reviews", "Earnings", "Settings"];
 
-  const togglePreference = (key) => {
+  const togglePreference = async (key) => {
     const updated = {
       ...preferences,
       [key]: !preferences[key],
     };
+
     setPreferences(updated);
 
-    // Convert to backend format
-    const backendPrefs = {
-      music: updated.musicAllowed ? "Yes" : "No",
-      pet: updated.petsAllowed ? "Yes" : "No",
-      smoking: updated.smokingAllowed ? "No Smoking" : "Allowed",
-      quietRide: updated.quietRides ? "Yes" : "No",
+    const numericPrefs = {
+      allow_music: updated.musicAllowed ? 1 : 0,
+      allow_pets: updated.petsAllowed ? 1 : 0,
+      allow_smoking: updated.smokingAllowed ? 1 : 0,
+      quiet_rides: updated.quietRides ? 1 : 0,
+      max_passengers: updated.maxPassengers || 4, // Default to 4 if not set
     };
 
-    fetch(`http://localhost:3000/api/driver/${user.id}/preferences`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(backendPrefs),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to update preferences");
-      })
-      .catch((err) => {
-        setPreferences(preferences);
-        alert("Failed to update preferences");
-      });
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/driver/${user?.id}/preferences`,
+        numericPrefs,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("Preferences updated successfully");
+      // Optionally: show a toast or success message
+    } catch (error) {
+      console.error("Failed to update preferences:", error);
+      // Optionally: rollback UI update or show error message
+    }
   };
+  const loadPreferences = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/driver/${user?.id}/preferences`,
+        {
+          withCredentials: true, // Include cookies if your backend uses them
+        }
+      );
+
+      const prefs = res.data;
+
+      console.log(prefs);
+
+      setPreferences(prefs);
+    } catch (err) {
+      console.error("Failed to fetch preferences:", err);
+      // Optionally handle error (e.g., show a toast)
+    }
+  };
+  useEffect(() => {
+    loadPreferences();
+  }, []);
+  console.log("Preferences:", preferences);
 
   const handleEditBio = () => {
     setIsEditingBio(true);
@@ -220,36 +237,6 @@ export default function DriverProfilePage() {
       });
   };
 
-  const reviews = [
-    {
-      id: 1,
-      reviewer: "Sarah Chen",
-      rating: 5,
-      comment:
-        "Alex is an amazing driver! Very safe, punctual, and the car is always clean. Great conversation too!",
-      date: "2 days ago",
-      route: "Campus to Downtown",
-    },
-    {
-      id: 2,
-      reviewer: "Mike Johnson",
-      rating: 5,
-      comment:
-        "Reliable and professional. Alex helped me get to my internship on time every day for a month!",
-      date: "1 week ago",
-      route: "Dorms to Tech Park",
-    },
-    {
-      id: 3,
-      reviewer: "Emma Davis",
-      rating: 4,
-      comment:
-        "Good driver, safe ride. Car was comfortable and Alex was very accommodating with pickup times.",
-      date: "2 weeks ago",
-      route: "Campus to Airport",
-    },
-  ];
-
   const earnings = [
     { month: "December 2024", rides: 28, earnings: 420.5, tips: 45.0 },
     { month: "November 2024", rides: 32, earnings: 485.75, tips: 52.25 },
@@ -257,13 +244,13 @@ export default function DriverProfilePage() {
     { month: "September 2024", rides: 30, earnings: 450.25, tips: 41.75 },
   ];
   // Assuming user data is stored in sessionStorage
-  const user = JSON.parse(sessionStorage.getItem("user"));
+
   console.log(user?.id);
 
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
-    fetch(`http://localhost:3000/api/driver/${user?.user?.id}/profile`)
+    fetch(`http://localhost:3000/api/driver/${user?.id}/profile`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch driver profile");
         return res.json();
@@ -271,31 +258,7 @@ export default function DriverProfilePage() {
       .then((data) => {
         console.log("Driver profile data from backend:", data);
         // Set your profileData and vehicleData here based on API response
-        setProfileData({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          since: data.created_at,
-          university: data.university || "",
-          studentId: data.studentId || "",
-          emergencyContact: data.emergencyContact || "",
-          emergencyName: data.emergencyName || "",
-          licenseNumber: data.license_no || "",
-          licenseExpiry: data.license_expiry || "",
-          insuranceProvider: data.insurance_provider || "",
-          insurancePolicy: data.insurance_policy || "",
-          insuranceExpiry: data.insurance_expiry || "",
-          rating: data.rating || 0,
-          review_count: data.review_count || 0,
-          about: data.about || "",
-          status: data.account_status,
-          one_star: data.one_star,
-          two_star: data.two_star,
-          three_star: data.three_star,
-          four_star: data.four_star,
-          five_star: data.five_star,
-        });
+        setProfileData(data);
         setVehicleData({
           make: data.make || "",
           model: data.model || "",
@@ -400,7 +363,8 @@ export default function DriverProfilePage() {
                       <div className="flex items-center justify-center gap-1 mb-2">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
                         <span className="font-semibold">
-                          {profileData.rating ?? "N/A"}
+                          {parseFloat(profileData.averageRating).toFixed(1) ??
+                            "N/A"}
                         </span>
                         <span className="text-gray-500 text-sm">
                           ({profileData.reviewCount})
@@ -518,7 +482,7 @@ export default function DriverProfilePage() {
                         </div>
                       </div>
                       <div className="text-sm text-gray-600">
-                        <div>License Plate: {vehicleData.licensePlate}</div>
+                        <div>License Plate: {profileData.license_plate}</div>
                         <div>
                           Last Maintenance:{" "}
                           {vehicleData.lastMaintenance
@@ -629,6 +593,7 @@ export default function DriverProfilePage() {
                             <span className="text-gray-700">
                               🎵 Music allowed
                             </span>
+                            {console.log(preferences)}
                             <button
                               onClick={() => togglePreference("musicAllowed")}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
@@ -820,7 +785,7 @@ export default function DriverProfilePage() {
                                 Make & Model
                               </label>
                               <div className="text-gray-900">
-                                {vehicleData.make} {vehicleData.model}
+                                {profileData.make} {profileData.model}
                               </div>
                             </div>
                             <div>
@@ -828,7 +793,7 @@ export default function DriverProfilePage() {
                                 Color
                               </label>
                               <div className="text-gray-900">
-                                {vehicleData.color}
+                                {profileData.color}
                               </div>
                             </div>
                             <div>
@@ -836,7 +801,7 @@ export default function DriverProfilePage() {
                                 License Plate
                               </label>
                               <div className="text-gray-900">
-                                {vehicleData.licensePlate}
+                                {profileData.license_plate}
                               </div>
                             </div>
                             <div>
@@ -844,7 +809,7 @@ export default function DriverProfilePage() {
                                 Seats
                               </label>
                               <div className="text-gray-900">
-                                {vehicleData.seats} seats
+                                {profileData.seats} seats
                               </div>
                             </div>
                             <div>
@@ -852,7 +817,7 @@ export default function DriverProfilePage() {
                                 Fuel Type
                               </label>
                               <div className="text-gray-900">
-                                {vehicleData.fuelType}
+                                {profileData.fuel_type}
                               </div>
                             </div>
                             <div>
@@ -860,9 +825,9 @@ export default function DriverProfilePage() {
                                 Last Maintenance
                               </label>
                               <div className="text-gray-900">
-                                {vehicleData.lastMaintenance
+                                {profileData.last_maintenance
                                   ? new Date(
-                                      vehicleData.lastMaintenance
+                                      profileData.last_maintenance
                                     ).toLocaleDateString("en-US", {
                                       year: "numeric",
                                       month: "long",
@@ -880,7 +845,7 @@ export default function DriverProfilePage() {
                               </label>
                               <input
                                 type="text"
-                                value={vehicleData.make}
+                                value={profileData.make}
                                 onChange={(e) =>
                                   handleVehicleInputChange(
                                     "make",
@@ -897,7 +862,7 @@ export default function DriverProfilePage() {
                               </label>
                               <input
                                 type="text"
-                                value={vehicleData.model}
+                                value={profileData.model}
                                 onChange={(e) =>
                                   handleVehicleInputChange(
                                     "model",
@@ -914,7 +879,7 @@ export default function DriverProfilePage() {
                               </label>
                               <input
                                 type="text"
-                                value={vehicleData.color}
+                                value={profileData.color}
                                 onChange={(e) =>
                                   handleVehicleInputChange(
                                     "color",
@@ -931,7 +896,7 @@ export default function DriverProfilePage() {
                               </label>
                               <input
                                 type="text"
-                                value={vehicleData.licensePlate}
+                                value={profileData.license_plate}
                                 onChange={(e) =>
                                   handleVehicleInputChange(
                                     "licensePlate",
@@ -947,7 +912,7 @@ export default function DriverProfilePage() {
                                 Number of Seats
                               </label>
                               <select
-                                value={vehicleData.seats}
+                                value={profileData.seats}
                                 onChange={(e) =>
                                   handleVehicleInputChange(
                                     "seats",
@@ -970,7 +935,7 @@ export default function DriverProfilePage() {
                                 Fuel Type
                               </label>
                               <select
-                                value={vehicleData.fuelType}
+                                value={profileData.fuel_type}
                                 onChange={(e) =>
                                   handleVehicleInputChange(
                                     "fuelType",
@@ -1164,7 +1129,7 @@ export default function DriverProfilePage() {
                               })}
                             </div>
                             <div className="text-sm text-gray-500 mt-1">
-                              {profileData.review_count} reviews
+                              {profileData.reviewCount} reviews
                             </div>
                           </div>
                           <div className="flex-1">
@@ -1200,21 +1165,21 @@ export default function DriverProfilePage() {
                         </div>
                       </div>
                       <div className="space-y-4">
-                        {reviews.map((review) => (
+                        {profileData.reviews.map((review) => (
                           <div
-                            key={review.id}
+                            key={review.ratingId}
                             className="border-b border-gray-300 pb-4 last:border-b-0"
                           >
                             <div className="flex items-start gap-3">
                               <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                                 <span className="text-sm font-medium">
-                                  {review.reviewer.charAt(0)}
+                                  <UserRound />
                                 </span>
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="font-medium text-gray-900">
-                                    {review.reviewer}
+                                    {review.reviewerName}
                                   </span>
                                   <div className="flex">
                                     {[1, 2, 3, 4, 5].map((i) => (
