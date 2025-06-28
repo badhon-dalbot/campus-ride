@@ -1,126 +1,226 @@
-import CampusRideFooter from "../components/CampusRideFooter.jsx";
-import CampusRideHeader from "../components/CampusRideHeader.jsx";
+import React, { useState } from "react";
+import CampusRideFooter from '../components/CampusRideFooter.jsx';
+import CampusRideHeader from '../components/CampusRideHeader.jsx';
 
-import { BarChart2, DollarSign, MapPin, UserCheck, Users } from "lucide-react";
+import {
+  Users,
+  UserCheck,
+  CalendarCheck,
+  UserPlus,
+  Eye,
+  Pencil,
+  Trash2,
+  X
+} from "lucide-react";
 
 const AdminDashboard = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [users, setUsers] = useState([
+    {
+      name: "Alice Kim",
+      id: "USR-1001",
+      status: "Driver",
+      email: "alice.kim@example.com",
+      rides: 95,
+      joined: "2023-02-10",
+      activity: "Today, 09:00 AM",
+      avatar: "https://i.pravatar.cc/150?img=10",
+    },
+    {
+      name: "David Lee",
+      id: "USR-1002",
+      status: "Rider",
+      email: "david.lee@example.com",
+      rides: 30,
+      joined: "2023-03-22",
+      activity: "Yesterday, 05:22 PM",
+      avatar: "https://i.pravatar.cc/150?img=12",
+    },
+    {
+      name: "Sophia Turner",
+      id: "USR-1003",
+      status: "Rider",
+      email: "sophia.turner@example.com",
+      rides: 42,
+      joined: "2023-05-16",
+      activity: "Today, 11:45 AM",
+      avatar: "https://i.pravatar.cc/150?img=32",
+    },
+    {
+      name: "Michael Chen",
+      id: "USR-1004",
+      status: "Driver",
+      email: "michael.chen@example.com",
+      rides: 130,
+      joined: "2022-12-01",
+      activity: "Today, 07:30 AM",
+      avatar: "https://i.pravatar.cc/150?img=14",
+    },
+    {
+      name: "Nina Patel",
+      id: "USR-1005",
+      status: "Rider",
+      email: "nina.patel@example.com",
+      rides: 18,
+      joined: "2023-08-08",
+      activity: "Yesterday, 06:10 PM",
+      avatar: "https://i.pravatar.cc/150?img=45",
+    }
+  ]);
+
+  const handleView = (user) => {
+    setEditMode(false);
+    setSelectedUser(user);
+  };
+
+  const handleEdit = (user) => {
+    setEditMode(true);
+    setSelectedUser(user);
+  };
+
+  const handleDelete = (userId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      setUsers(users.filter((u) => u.id !== userId));
+    }
+  };
+
+  const handleApprove = () => {
+    alert("User Approved!");
+    setSelectedUser(null);
+    setEditMode(false);
+  };
+
+  const handleBan = () => {
+    alert("User Banned!");
+    setSelectedUser(null);
+    setEditMode(false);
+  };
+
   return (
-    <div className="min-h-screen bg-[#edf7f8] p-6 font-sans">
-      {/* Header Section */}
+    <div className="bg-[#f4f8f9] text-[#1f2b38] font-sans min-h-screen">
       <CampusRideHeader />
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
 
-      {/* Metrics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-500">Total Rides</p>
-            <h2 className="text-xl font-bold">1,234</h2>
-            <p className="text-xs text-blue-500">↑ 12.5% Since Last Month</p>
-          </div>
-          <BarChart2 className="text-yellow-500 w-8 h-8" />
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-500">Revenue</p>
-            <h2 className="text-xl font-bold">৳12,345</h2>
-            <p className="text-xs text-blue-500">↑ 12.5% Since Last Month</p>
-          </div>
-          <DollarSign className="text-orange-500 w-8 h-8" />
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-500">Active Drivers</p>
-            <h2 className="text-xl font-bold">123</h2>
-            <p className="text-xs text-red-500">↓ 2.5% Since Last Month</p>
-          </div>
-          <UserCheck className="text-blue-500 w-8 h-8" />
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-500">New Users</p>
-            <h2 className="text-xl font-bold">234</h2>
-            <p className="text-xs text-blue-500">↑ 12.5% Since Last Month</p>
-          </div>
-          <Users className="text-red-400 w-8 h-8" />
-        </div>
-      </div>
+      <div className="px-10 py-10">
+        <h1 className="text-4xl font-bold mb-10">Admin Dashboard</h1>
 
-      {/* Active Ride Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-lg shadow p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Active Ride</h2>
-            <button className="text-sm bg-[#edf7f8] px-3 py-1 rounded-md border border-gray-300">
-              Today
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500">
-                  <th className="py-2">Ride ID</th>
-                  <th>Driver</th>
-                  <th>User</th>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Status</th>
-                  <th>Action</th>
+        {/* Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {[
+            { title: "Total Users", value: "2,845", icon: <Users />, bg: "from-cyan-200 to-blue-300" },
+            { title: "Active Today", value: "486", icon: <UserCheck />, bg: "from-pink-200 to-red-300" },
+            { title: "Total Bookings", value: "12,456", icon: <CalendarCheck />, bg: "from-purple-200 to-indigo-300" },
+            { title: "New Users", value: "385", icon: <UserPlus />, bg: "from-green-200 to-emerald-300" },
+          ].map((card, i) => (
+            <div
+              key={i}
+              className={`rounded-xl p-6 shadow-md bg-gradient-to-br ${card.bg} text-[#1f2b38] flex items-center gap-4`}
+            >
+              <div className="bg-white p-3 rounded-full shadow-md">{card.icon}</div>
+              <div>
+                <p className="text-sm">{card.title}</p>
+                <h2 className="text-2xl font-bold">{card.value}</h2>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div className="flex justify-end mb-4">
+          <input
+            type="text"
+            placeholder="Search users..."
+            className="w-full md:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+          />
+        </div>
+
+        {/* Table */}
+        <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+          <table className="w-full text-sm text-left text-gray-700">
+            <thead className="text-xs uppercase bg-[#eaf4f5] text-gray-600">
+              <tr>
+                <th className="px-6 py-3">User</th>
+                <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Rides</th>
+                <th className="px-6 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="border-b group relative">
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full" />
+                    <div>
+                      <p className="font-semibold group-hover:underline cursor-pointer">{user.name}</p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                      user.status === "Driver"
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-teal-100 text-teal-700"
+                    }`}>
+                      {user.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{user.email}</td>
+                  <td className="px-6 py-4">{user.rides}</td>
+                  <td className="px-6 py-4 space-x-2">
+                    <button className="text-blue-600 hover:text-blue-800" onClick={() => handleView(user)}><Eye size={16} /></button>
+                    <button className="text-indigo-600 hover:text-indigo-800" onClick={() => handleEdit(user)}><Pencil size={16} /></button>
+                    <button className="text-red-600 hover:text-red-800" onClick={() => handleDelete(user.id)}><Trash2 size={16} /></button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {[
-                  "In Progress",
-                  "Cancel",
-                  "Picking Up",
-                  "Scheduled",
-                  "In Progress",
-                  "Picking Up",
-                ].map((status, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="py-2">#RD7829</td>
-                    <td>John Smith</td>
-                    <td>Michel Brown</td>
-                    <td>Downtown</td>
-                    <td>Airport</td>
-                    <td>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${
-                          status === "In Progress"
-                            ? "bg-green-100 text-green-700"
-                            : status === "Cancel"
-                            ? "bg-red-100 text-red-700"
-                            : status === "Picking Up"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-orange-100 text-orange-700"
-                        }`}
-                      >
-                        {status}
-                      </span>
-                    </td>
-                    <td>
-                      <button className="bg-[#007bff] text-white px-3 py-1 rounded text-xs hover:bg-blue-600">
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Ride Map Section */}
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
-          <MapPin className="w-12 h-12 text-gray-400 mb-4" />
-          <h3 className="font-semibold text-lg">Live Tracking Map</h3>
-          <p className="text-sm text-gray-500 text-center mt-2">
-            Real-time vehicle location tracking will be displayed here
-          </p>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Modal */}
+      {selectedUser && editMode && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-[90%] max-w-md relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600"
+              onClick={() => setSelectedUser(null)}
+            >
+              <X />
+            </button>
+            <h2 className="text-xl font-bold mb-4">User Verification</h2>
+
+            <div className="text-center mb-4">
+              <span className="inline-block bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full">
+                Pending
+              </span>
+            </div>
+
+            <div className="space-y-2 text-sm text-gray-800">
+              <p><strong>Name:</strong> {selectedUser.name}</p>
+              <p><strong>Email:</strong> {selectedUser.email}</p>
+              <p><strong>Role:</strong> {selectedUser.status}</p>
+              <p><strong>Total Rides:</strong> {selectedUser.rides}</p>
+            </div>
+
+            <div className="mt-6 flex justify-between gap-4">
+              <button
+                className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+                onClick={handleApprove}
+              >
+                Approve
+              </button>
+              <button
+                className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
+                onClick={handleBan}
+              >
+                Ban
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CampusRideFooter />
     </div>
   );
