@@ -12,7 +12,7 @@ export default function chatSocket(io) {
       const { booking_id, sender_id, receiver_id, message } = data;
       try {
         const [result] = await db.query(
-          `INSERT INTO chat (booking_id, sender_id, receiver_id, message) VALUES (?, ?, ?, ?)`,
+          `INSERT INTO messages (ride_id, sender_id, receiver_id, message_text) VALUES (?, ?, ?, ?)`,
           [booking_id, sender_id, receiver_id, message]
         );
 

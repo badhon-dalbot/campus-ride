@@ -121,29 +121,18 @@ const login = async (req, res) => {
     // First: try users table
     let [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
     let user = rows[0];
-    let isAdmin = false;
-
-    // If not found: try admin table
-    if (!user) {
-      [rows] = await db.query("SELECT * FROM admin WHERE email = ?", [email]);
-      user = rows[0];
-      isAdmin = true;
-    }
-
-    if (!user) return res.status(400).json({ error: "User not found" });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
       return res.status(400).json({ error: "Invalid password" });
 
-    const role = isAdmin ? "admin" : user.role;
-    const name = user.firstName || user.name || "Admin";
+    const role = user.role;
+    const name = user.first_name + " " + user.last_name;
 
     const accessToken = generateAccessToken({ id: user.id, name, email, role });
     const refreshToken = await generateRefreshToken(
       { id: user.id, name, role },
-      user.id,
-      isAdmin
+      user.id
     );
 
     res

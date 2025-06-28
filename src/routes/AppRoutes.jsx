@@ -16,6 +16,15 @@ import RideDetails from "../pages/RideDetails.jsx";
 import RiderProfile from "../pages/riderprofile/RiderProfile.jsx";
 import ShareRide from "../pages/ShareRide.jsx";
 import SignUp from "../pages/SignUp.jsx";
+import Offerings from "../pages/Offerings.jsx";
+import Newsroom from "../pages/Newsroom.jsx";
+import Investors from "../pages/Investors.jsx";
+import Blog from "../pages/Blog.jsx";
+import Careers from "../pages/Careers.jsx";
+import Airports from "../pages/Airports.jsx";
+import Universities from "../pages/Universities.jsx";
+import College from "../pages/College.jsx";
+import Cities from "../pages/Cities.jsx";
 
 const AppRoutes = () => (
   <Routes>
@@ -25,6 +34,17 @@ const AppRoutes = () => (
     <Route path="/signup" element={<SignUp />} />
     <Route path="/aboutus" element={<AboutUs />} />
     <Route path="/help" element={<HelpPage />} />
+    <Route path="/offerings" element={<Offerings />} />
+    <Route path="/newsroom" element={<Newsroom />} />
+    <Route path="/investors" element={<Investors />} />
+    <Route path="/blog" element={<Blog />} />
+    <Route path="/careers" element={<Careers />} />
+    <Route path="/airports" element={<Airports />} />
+    <Route path="/universities" element={<Universities />} />
+    <Route path="/college" element={<College />} />
+    <Route path="/cities" element={<Cities />} />
+    
+    {/* Private Routes */}
     <Route
       path="/findride"
       element={
@@ -42,7 +62,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/bookride"
+      path="/bookride/:rideId"
       element={
         <PrivateRoute>
           <BookRide />
@@ -93,7 +113,7 @@ const AppRoutes = () => (
       path="/chatting"
       element={
         // <PrivateRoute>
-          <Chatting />
+        <Chatting />
         // </PrivateRoute>
       }
     />

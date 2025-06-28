@@ -18,15 +18,15 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
+import { formatDateLabel } from "../utilities/dateformate.js";
 
 const RideDetails = () => {
   const navigate = useNavigate();
   const [ride, setRide] = useState(null);
   const [driver, setDriver] = useState(null);
   const location = useLocation();
-
+  const rideId = localStorage.getItem("selectedRideId");
   useEffect(() => {
-    const rideId = localStorage.getItem("selectedRideId");
     const driverId = localStorage.getItem("selectedDriverId");
 
     // Fetch ride details
@@ -51,33 +51,10 @@ const RideDetails = () => {
     // }
   }, []);
 
-  function formatDateLabel(dateString) {
-    const inputDate = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-
-    // Reset times for accurate date comparison
-    inputDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-    tomorrow.setHours(0, 0, 0, 0);
-
-    if (inputDate.getTime() === today.getTime()) {
-      return "Today";
-    } else if (inputDate.getTime() === tomorrow.getTime()) {
-      return "Tomorrow";
-    } else {
-      // return formatted date, e.g. 'Jun 29, 2025'
-      return inputDate.toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    }
-  }
+  
 
   const handleBookRide = () => {
-    navigate("/bookride");
+    navigate(`/bookride/${rideId}`);
   };
 
   return (
@@ -273,13 +250,15 @@ const RideDetails = () => {
                 <span className="flex items-center gap-1">
                   <DollarSign size={14} /> Service fee
                 </span>
-                <span>${parseFloat(ride?.fare * .10)}</span>
+                <span>${parseFloat(ride?.fare * 0.1)}</span>
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold text-sm">
                 <span className="flex items-center gap-1">
                   <CreditCard size={14} /> Total
                 </span>
-                <span>{parseFloat(ride?.fare) + parseFloat(ride?.fare * .10)}</span>
+                <span>
+                  {parseFloat(ride?.fare) + parseFloat(ride?.fare * 0.1)}
+                </span>
               </div>
               <button
                 onClick={handleBookRide}

@@ -16,13 +16,13 @@ import db from "../config/db.js";
 //   }
 // };
 const getChat = async (req, res) => {
-  const { bookingId } = req.params;
+  const { rideId } = req.params;
   try {
     const [messages] = await db.query(
-      `SELECT * FROM chat 
-       WHERE booking_id = ?
-       ORDER BY timestamp ASC`,
-      [bookingId]
+      `SELECT * FROM messages 
+       WHERE ride_id = ?
+       ORDER BY sent_at ASC`,
+      [rideId]
     );
     res.json(messages);
   } catch (e) {

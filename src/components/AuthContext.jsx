@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null); // Add user state
   const [loading, setLoading] = useState(true); // <-- loading state
 
   useEffect(() => {
@@ -16,11 +17,14 @@ const AuthProvider = ({ children }) => {
         console.log("Auth check response:", res);
         if (res.status === 200) {
           localStorage.setItem("user", JSON.stringify(res.data));
+          setUser(res.data); // Update user state
           setIsLoggedIn(true);
         } else {
+          setUser(null);
           setIsLoggedIn(false);
         }
       } catch (err) {
+        setUser(null);
         setIsLoggedIn(false);
       }
       setLoading(false); // <-- done loading regardless of result
@@ -29,7 +33,12 @@ const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = () => setIsLoggedIn(true);
+  const login = (userData) => {
+    console.log("Login called with userData:", userData);
+    setUser(userData); // Set user data when logging in
+    setIsLoggedIn(true);
+  };
+  
   const logout = async () => {
     await axios.post(
       "http://localhost:3000/api/auth/logout",
@@ -37,6 +46,7 @@ const AuthProvider = ({ children }) => {
       { withCredentials: true }
     );
     localStorage.removeItem("user");
+    setUser(null); // Clear user data
     setIsLoggedIn(false);
   };
 
@@ -46,7 +56,7 @@ const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
