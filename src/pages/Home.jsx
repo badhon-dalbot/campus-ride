@@ -435,7 +435,8 @@ const LandingPage = () => {
         pickup_coordinate: pickupCoord ? `${pickupCoord.lat},${pickupCoord.lng}` : null,
         dropoff_coordinate: dropoffCoord ? `${dropoffCoord.lat},${dropoffCoord.lng}` : null,
         distance: distance, // Add distance to the database
-        seats_needed: neededSeats // Add seats needed to the database
+        seats_needed: neededSeats, // Add seats needed to the database
+        is_shared: shareRide // Store "yes" or "no" directly
       };
 
       const response = await createRideRequest(rideData);
@@ -455,9 +456,6 @@ const LandingPage = () => {
       setFutureTime("");
       setNeededSeats(1);
       setShareRide("yes");
-      
-      // Show success message (you can add a toast notification here)
-      alert("Ride request submitted successfully! We'll notify you when a driver accepts your request.");
       
     } catch (error) {
       console.error("Error submitting ride request:", error);

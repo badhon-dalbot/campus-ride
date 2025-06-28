@@ -12,7 +12,8 @@ const createRide = async (req, res) => {
     pickup_coordinate, 
     dropoff_coordinate,
     distance,
-    seats_needed
+    seats_needed,
+    is_shared
   } = req.body;
 
   if (!creator_id || !creator_role || !from_location || !to_location || !ride_date || !ride_time) {
@@ -21,8 +22,8 @@ const createRide = async (req, res) => {
 
   try {
     const result = await db.query(
-      "INSERT INTO rides (creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed]
+      "INSERT INTO rides (creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed, is_shared) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed, is_shared]
     );
 
     res.status(201).json({
