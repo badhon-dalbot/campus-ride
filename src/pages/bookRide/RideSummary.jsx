@@ -4,7 +4,9 @@ import { getTotalTrips } from "../../services/driverAPI/tripsAPI.js";
 import { formatDateLabel } from "../../utilities/dateformate";
 export default function RideSummary({ ride }) {
   const [totalTrips, setTotalTrips] = useState(null);
+  const [error, setError] = useState(null);
   const driverId = ride?.ride?.driver_id;
+
   useEffect(() => {
     const fetchTrips = async () => {
       try {

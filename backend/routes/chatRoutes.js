@@ -5,5 +5,5 @@ const router = express.Router();
 
 // router.get("/:user1/:user2", message);
 // router.post("/", sendMessage);
- router.get("/:bookingId", getChat);
+router.get("/:rideId/:userId", getChat);
 export default router;

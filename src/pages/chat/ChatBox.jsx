@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { getChat } from "../../services/chatAPI";
 import socket from "../../services/socket";
 
-const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
+const ChatBox = ({ ride }) => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const messagesEndRef = useRef(null);
+  const currentUser = JSON.parse(localStorage.getItem("user")).user;
+  console.log("Current User:", currentUser);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -13,12 +15,12 @@ const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
 
   useEffect(() => {
     socket.connect();
-    socket.emit("join_booking", bookingId);
+    socket.emit("join_booking", ride?.ride_id);
 
     const fetchMessages = async () => {
       try {
-        const data = await getChat(bookingId);
-        setMessages(data);
+        const data = await getChat(ride?.ride_id, currentUser.id);
+        setMessages(data || []);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -27,7 +29,7 @@ const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
     fetchMessages();
 
     socket.on("receive_message", (msg) => {
-      if (msg.booking_id === bookingId) {
+      if (msg.ride_id === ride?.ride_id) {
         setMessages((prev) => [...prev, msg]);
       }
     });
@@ -36,21 +38,21 @@ const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
       socket.off("receive_message");
       socket.disconnect();
     };
-  }, [bookingId]);
+  }, [ride?.ride_id, currentUser.id]);
 
   useEffect(() => {
     scrollToBottom();
+    console.log("Messages:", messages);
   }, [messages]);
 
   const sendMessage = () => {
     if (!text.trim()) return;
 
     const msg = {
-      chat_id: Date.now(), // Using timestamp as a unique ID for simplicity
-      booking_id: bookingId,
-      sender_id: currentUserId,
-      receiver_id: otherUserId,
-      message: text,
+      ride_id: ride?.ride_id,
+      sender_id: currentUser.id,
+      receiver_id: ride?.driver_id,
+      message_text: text,
       timestamp: new Date().toISOString(),
     };
 
@@ -67,19 +69,34 @@ const ChatBox = ({ bookingId, currentUserId, otherUserId }) => {
       <div className="h-64 overflow-y-auto px-2 py-1 space-y-2 custom-scrollbar">
         {messages.map((msg) => (
           <div
-            key={msg.chat_id}
+            key={msg.id}
             className={`flex ${
-              msg.sender_id === currentUserId ? "justify-end" : "justify-start"
+              msg.sender_id === currentUser.id ? "justify-end" : "justify-start"
             }`}
           >
-            <div
-              className={`px-4 py-2 rounded-2xl max-w-xs text-sm ${
-                msg.sender_id === currentUserId
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              {msg.message}
+            <div>
+              <div className="text-xs text-gray-500 mb-1 ml-1">
+                {msg.sender_id === currentUser.id
+                  ? currentUser.name || "You"
+                  : ride?.driver_first_name || "Driver"}
+              </div>
+              <div
+                className={`px-4 py-2 rounded-2xl max-w-xs text-sm ${
+                  msg.sender_id === currentUser.id
+                    ? "bg-night-ink text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                {msg.message || msg.message_text}
+              </div>
+              <div className="text-xs text-gray-400 mt-1 text-right">
+                {msg.sent_at
+                  ? new Date(msg.sent_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : ""}
+              </div>
             </div>
           </div>
         ))}

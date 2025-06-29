@@ -21,7 +21,7 @@ router.patch("/:id/preferences", updateDriverPreferences);
 router.put("/:id/bio", updateDriverBio);
 router.put("/:id/vehicle", updateVehicleInfo);
 router.get("/:id/dashboard", getDriverDashboard);
-router.get("/:id/trips", getTotalTrips);
+router.get("/:driverId/trips", getTotalTrips);
 router.get("/:driverId/accepted-rides", getAcceptedRides);
 router.get("/:driverId/ride-requests", getRideRequests);
 router.patch("/ride-request/:id", updateRideRequest);

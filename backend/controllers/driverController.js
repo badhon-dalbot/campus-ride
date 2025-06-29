@@ -388,8 +388,8 @@ const getDriverDashboard = async (req, res) => {
       [driverId]
     );
 
-    const responseTime = responseTimeResult[0]?.avg_response_time 
-      ? Math.round(responseTimeResult[0].avg_response_time) 
+    const responseTime = responseTimeResult[0]?.avg_response_time
+      ? Math.round(responseTimeResult[0].avg_response_time)
       : 15; // Default 15 minutes
 
     res.json({
@@ -403,13 +403,13 @@ const getDriverDashboard = async (req, res) => {
         active_ride_requests: 0,
         pending_ride_requests: 0,
         total_bookings: 0,
-        total_fares: 0
+        total_fares: 0,
       },
       vehicle: vehicleRows[0] || null,
       upcomingRides: upcomingRides || [],
       pendingRequests: pendingRequestsResult[0]?.pending_count || 0,
       recentEarnings: recentEarnings || [],
-      responseTime: responseTime
+      responseTime: responseTime,
     });
   } catch (err) {
     console.error("Error in getDriverDashboard:", err);
@@ -418,7 +418,8 @@ const getDriverDashboard = async (req, res) => {
 };
 
 const getTotalTrips = async (req, res) => {
-  const driverId = req.params.id;
+  const { driverId } = req.params;
+  console.log("Driver ID:", driverId);
 
   try {
     const [rows] = await db.query(
@@ -532,7 +533,7 @@ const createRideRequest = async (req, res) => {
 
     res.status(201).json({
       message: "Ride request created successfully",
-      requestId: result.insertId
+      requestId: result.insertId,
     });
   } catch (error) {
     console.error("Error creating ride request:", error);
@@ -579,16 +580,16 @@ const getRideRequestById = async (req, res) => {
 };
 
 export {
+  createRideRequest,
   getAcceptedRides,
   getDriverDashboard,
   getDriverPreferences,
   getDriverProfile,
+  getRideRequestById,
   getRideRequests,
   getTotalTrips,
   updateDriverBio,
   updateDriverPreferences,
   updateRideRequest,
   updateVehicleInfo,
-  createRideRequest,
-  getRideRequestById,
 };

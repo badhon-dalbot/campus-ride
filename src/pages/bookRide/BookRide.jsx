@@ -10,8 +10,6 @@ import PaymentMethod from "./PaymentMethod.jsx";
 import RideSummary from "./RideSummary.jsx";
 
 export default function RideBookingApp() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
   const { rideId } = useParams();
   const [ride, setRide] = useState(null);
   const [error, setError] = useState(null);
@@ -74,11 +72,7 @@ export default function RideBookingApp() {
               {/* Message to Driver */}
 
               {/* <MessageBox /> */}
-              <ChatBox
-                bookingId={ride?.ride?.ride_id}
-                currentUserId={user.user.id}
-                otherUserId={ride?.ride?.driver_id}
-              />
+              <ChatBox ride={ride?.ride} />
               {/* Payment Method */}
               <PaymentMethod />
             </div>

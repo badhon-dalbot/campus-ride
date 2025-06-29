@@ -16,17 +16,20 @@ import db from "../config/db.js";
 //   }
 // };
 const getChat = async (req, res) => {
-  const { rideId } = req.params;
+  const { rideId, userId } = req.params;
   try {
     const [messages] = await db.query(
       `SELECT * FROM messages 
-       WHERE ride_id = ?
+       WHERE ride_id = ? 
+         AND sender_id = ? 
        ORDER BY sent_at ASC`,
-      [rideId]
+      [rideId, userId]
     );
-    res.json(messages);
+
+    res.json(messages); // Always return as { messages: [...] }
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 };
+
 export { getChat };
