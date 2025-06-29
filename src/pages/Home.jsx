@@ -10,10 +10,14 @@ import Driver_image from "../assets/images/Driver_image.png";
 import homeActivity from "../assets/images/home_activity.png";
 import CampusRideFooter from "../components/CampusRideFooter";
 import CampusRideHeader from "../components/CampusRideHeader";
+import { useAuth } from "../components/AuthContext";
 import { format } from "date-fns";
 import { createRideRequest } from "../services/rideAPI";
 
 const LandingPage = () => {
+  // Get authentication state from context
+  const { isLoggedIn, user } = useAuth();
+  
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,6 +48,14 @@ const LandingPage = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [pickupError, setPickupError] = useState("");
   const [dropoffError, setDropoffError] = useState("");
+
+  // Helper function to describe location accuracy
+  const getAccuracyDescription = (accuracy) => {
+    if (accuracy <= 10) return "Very accurate";
+    if (accuracy <= 50) return "Good accuracy";
+    if (accuracy <= 100) return "Moderate accuracy";
+    return "Low accuracy";
+  };
 
   // Separate function for location initialization when Google Maps is already loaded
   const initializeLocationOnly = async () => {
@@ -397,9 +409,8 @@ const LandingPage = () => {
 
   // Schedule modal next/submit
   const handleScheduleSubmit = async () => {
-    // Check if user is logged in
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user.user || !user.user.id) {
+    // Check if user is logged in using AuthContext
+    if (!isLoggedIn || !user || !user.user || !user.user.id) {
       setSubmitError("Please log in to create a ride request");
       return;
     }
@@ -444,6 +455,11 @@ const LandingPage = () => {
 
       setSubmitSuccess(true);
       setShowScheduleModal(false);
+      
+      // Show success message
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000); // Hide success message after 5 seconds
       
       // Reset form data
       setPickupInput("");
@@ -756,6 +772,29 @@ const LandingPage = () => {
 
         {/* Footer */}
         <CampusRideFooter />
+
+        {/* Success Notification */}
+        {submitSuccess && (
+          <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold">Ride Request Created Successfully!</p>
+              <p className="text-sm opacity-90">Your ride request has been submitted and drivers will be notified.</p>
+            </div>
+            <button
+              onClick={() => setSubmitSuccess(false)}
+              className="flex-shrink-0 text-white hover:text-gray-200"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* --- Ride Creation Modals --- */}
         {/* Map Modal */}

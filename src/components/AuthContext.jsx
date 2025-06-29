@@ -35,6 +35,7 @@ const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     console.log("Login called with userData:", userData);
+    localStorage.setItem("user", JSON.stringify(userData)); // Update localStorage
     setUser(userData); // Set user data when logging in
     setIsLoggedIn(true);
   };

@@ -20,7 +20,6 @@ export default function DriverDashboard() {
   const fetchDriverData = async () => {
     // Check if user is available from AuthContext
     if (!user || !user.user || !user.user.id) {
-      console.log("No user data available from AuthContext:", user);
       setError("User data not found. Please login again.");
       setLoading(false);
       return;
@@ -28,11 +27,9 @@ export default function DriverDashboard() {
 
     try {
       setLoading(true);
-      console.log("Fetching dashboard for user ID:", user.user.id);
       const response = await axios.get(
         `http://localhost:3000/api/driver/${user.user.id}/dashboard`
       );
-      console.log("Fetched driver data:", response.data);
       setDriverData(response.data);
       setError(null);
     } catch (error) {
@@ -53,6 +50,7 @@ export default function DriverDashboard() {
     }
   }, [user, isLoggedIn, authLoading]);
 
+<<<<<<< HEAD
   console.log("AuthContext User:", user);
   console.log("Is Logged In:", isLoggedIn);
   console.log("Auth Loading:", authLoading);
@@ -62,6 +60,8 @@ export default function DriverDashboard() {
     JSON.stringify(driverData, null, 2)
   );
 
+=======
+>>>>>>> c994a616b077e0f1cbda8f92fa08f1e01f621afd
   // Show loading state while AuthContext is loading or driver data is being fetched
   if (authLoading || loading) {
     return (

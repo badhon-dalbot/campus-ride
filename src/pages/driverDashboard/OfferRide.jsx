@@ -2,12 +2,13 @@ import { Calendar, Clock, DollarSign, MapPin, Users, X, ArrowRight } from "lucid
 import { useState, useCallback } from "react";
 import {
   GoogleMap,
-  LoadScript,
   Marker,
 } from "@react-google-maps/api";
 import { createRide } from "../../services/driverAPI";
+import { useAuth } from "../../components/AuthContext";
 
 export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
+  const { user, isLoggedIn } = useAuth(); // Use AuthContext instead of localStorage
   const [currentStep, setCurrentStep] = useState("form"); // "form", "map", "details"
   const [form, setForm] = useState({
     from: "",
@@ -24,6 +25,8 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
   const [mapSelectionStep, setMapSelectionStep] = useState("pickup"); // "pickup" or "dropoff"
   const [distance, setDistance] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,8 +71,10 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
   // Handle form submission to move to map selection
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    setError(null);
+    
     if (!form.from.trim() || !form.to.trim()) {
-      alert("Please enter both pickup and dropoff locations");
+      setError("Please enter both pickup and dropoff locations");
       return;
     }
     setCurrentStep("map");
@@ -81,8 +86,10 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
 
   // Handle map next button
   const handleMapNext = () => {
+    setError(null);
+    
     if (!pickupCoord || !dropoffCoord) {
-      alert("Please select both pickup and dropoff locations on the map");
+      setError("Please select both pickup and dropoff locations on the map");
       return;
     }
     setCurrentStep("details");
@@ -91,11 +98,13 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
   // Handle final submission
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
     
-    // Check if user is logged in
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user.user || !user.user.id) {
-      alert("Please log in to offer a ride");
+    // Check if user is logged in using AuthContext
+    if (!isLoggedIn || !user || !user.user || !user.user.id) {
+      setError("Please log in to offer a ride");
+      setIsSubmitting(false);
       return;
     }
 
@@ -143,14 +152,17 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
       setDistance(null);
       setCurrentStep("form");
       setMapSelectionStep("pickup");
-      
-      alert("Ride offered successfully!");
+      setError(null);
       
       // Optionally refresh the dashboard data
-      onRideCreated(response);
+      if (onRideCreated) {
+        onRideCreated(response);
+      }
     } catch (error) {
       console.error("Error creating ride:", error);
-      alert("Failed to create ride. Please try again.");
+      setError(error.response?.data?.error || "Failed to create ride. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -170,6 +182,8 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
     setDropoffCoord(null);
     setDistance(null);
     setMapSelectionStep("pickup");
+    setError(null);
+    setIsSubmitting(false);
     onClose();
   };
 
@@ -218,6 +232,13 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
 
           {/* Content - Scrollable */}
           <div className="p-6 overflow-y-auto flex-1">
+            
+            {/* Error Display */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
             
             {/* Step 1: Basic Form */}
             {currentStep === "form" && (
@@ -360,12 +381,8 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
                   </div>
                 ) : (
                   <div className="w-full h-96 relative">
-                    <LoadScript 
-                      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-                      onError={(error) => {
-                        console.error("Google Maps LoadScript error:", error);
-                      }}
-                    >
+                    {/* Check if Google Maps is loaded globally */}
+                    {window.google && window.google.maps ? (
                       <GoogleMap
                         mapContainerStyle={{ width: "100%", height: "100%" }}
                         center={center}
@@ -420,7 +437,17 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
                           />
                         )}
                       </GoogleMap>
-                    </LoadScript>
+                    ) : (
+                      <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-700 mx-auto mb-2"></div>
+                          <p className="text-gray-600">Loading Google Maps...</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            If this takes too long, please refresh the page
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -548,15 +575,25 @@ export default function OfferRideModal({ isOpen, onClose, onRideCreated }) {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
                   Back
                 </button>
                 <button
+                  type="button"
                   onClick={handleFinalSubmit}
-                  className="flex-1 bg-night-ink text-white py-3 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-night-ink text-white py-3 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Post Ride
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Creating Ride...
+                    </>
+                  ) : (
+                    "Create Ride"
+                  )}
                 </button>
               </div>
             )}
