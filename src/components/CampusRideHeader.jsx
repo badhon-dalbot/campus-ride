@@ -41,19 +41,19 @@ export default function CampusRideHeader() {
   // Get profile path based on user role from context
   let profilePath = "/riderProfile";
   let userRole = null;
-  
+
   // Debug: Print user information from context
   console.log("Header - User from context:", user);
-  
+
   // Use user data from context instead of localStorage
   if (user?.user?.role) {
     userRole = user.user.role;
   } else if (user?.role) {
     userRole = user.role;
   }
-  
+
   console.log("Header - User role:", userRole);
-  
+
   if (userRole === "driver") profilePath = "/driverProfile";
   else if (userRole === "rider") profilePath = "/riderProfile";
   else if (userRole === "admin") profilePath = "/admindash";
@@ -135,10 +135,11 @@ export default function CampusRideHeader() {
               >
                 Log in
               </Link>
-
-              <button className="bg-white text-[#17252A] px-6 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors">
-                Sign up
-              </button>
+              <Link to="/signup">
+                <button className="bg-white text-[#17252A] px-6 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors">
+                  Sign up
+                </button>
+              </Link>
             </>
           )}
         </nav>

@@ -9,7 +9,7 @@ export default function CampusRideSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     firstName: "",
