@@ -88,7 +88,7 @@ export default function CampusRideHeader() {
           {/* Show Drive button only if user is not a rider or not logged in */}
           {(!isLoggedIn || userRole !== "rider") && (
             <Link
-              to="/driverdash"
+              to="/driver/dashboard"
               className="hover:text-gray-300 transition-colors font-medium"
             >
               Drive

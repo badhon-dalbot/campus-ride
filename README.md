@@ -28,14 +28,14 @@
 
 ## 🛠️ Tech Stack
 
-| Type         | Technology                    |
-|--------------|-------------------------------|
-| Frontend     | React                         |
-| Styling      | Tailwind CSS                  |
-| Backend      | Node.js + Express             |
-| Database     | MySQL                         |
-| Authentication | JWT                         |
-| Real-Time    | Socket.IO                     |
+| Type           | Technology                    |
+|----------------|-------------------------------|
+| Frontend       | React                         |
+| Styling        | Tailwind CSS                  |
+| Backend        | Node.js + Express             |
+| Database       | MySQL                         |
+| Authentication | JWT                           |
+| Real-Time      | Socket.IO                     |
 
 ---
 
@@ -138,3 +138,46 @@ This project is licensed under the MIT License. See [LICENSE](https://github.com
 
 ### ⭐ Show your support
 If you like the project, consider giving it a ⭐ on GitHub!
+
+## Features
+
+### Driver Features
+- **Driver Dashboard**: View earnings, ratings, upcoming rides, and vehicle information
+- **Offer Rides**: Create new rides with a 3-step process:
+  1. Basic ride details (from/to, date, time, seats, price)
+  2. Map selection for pickup and dropoff points using Google Maps
+  3. Review and confirmation
+- **Ride Management**: View and manage ride requests from riders
+- **Earnings Tracking**: Monitor daily and weekly earnings
+
+### Rider Features
+- **Find Rides**: Browse available rides with filters
+- **Book Rides**: Request rides from drivers
+- **Chat**: Communicate with drivers during rides
+- **Payment**: Manage payment methods and view payment history
+
+## API Endpoints
+
+### Ride Management
+- `POST /api/rides` - Create a new ride (drivers only)
+- `GET /api/rides` - Get all rides
+- `GET /api/rides/available` - Get available rides for booking
+- `GET /api/rides/:id` - Get specific ride details
+- `POST /api/rides/requests` - Create ride request (riders)
+- `GET /api/rides/requests/:id` - Get ride request details
+
+### Driver Dashboard
+- `GET /api/driver/:id/dashboard` - Get driver dashboard data
+- `GET /api/driver/:id/ride-requests` - Get pending ride requests
+- `GET /api/driver/:id/accepted-rides` - Get accepted rides
+- `PATCH /api/ride-request/:id` - Update ride request status
+
+## Database Schema
+
+The application uses the following main tables:
+- `users` - User accounts (drivers and riders)
+- `rides` - Ride offerings from drivers
+- `ride_requests` - Booking requests from riders
+- `ride_fares` - Calculated fares for rides
+- `vehicles` - Driver vehicle information
+- `ratings` - User ratings and reviews

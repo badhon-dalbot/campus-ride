@@ -263,41 +263,52 @@ const getDriverDashboard = async (req, res) => {
   if (!driverId) return res.status(400).json({ error: "Invalid driver ID" });
 
   try {
-    // 1. Summary
+    // 1. Summary - Fixed to work with actual database schema
     const [summaryRows] = await db.query(
       `
       SELECT
-  u.id AS driver_id,
-  CONCAT(u.first_name, ' ', u.last_name) AS driver_name,
-  
-  COALESCE(SUM(p.amount), 0) AS total_earnings,
-  COALESCE(AVG(rt.rating), 0) AS average_rating,
-  
-  (SELECT COUNT(*) FROM rides WHERE creator_id = u.id) AS total_trips,
-  
-  (SELECT COUNT(*)
-   FROM bookings b
-   JOIN rides r ON b.ride_id = r.id
-   WHERE r.creator_id = u.id) AS total_ride_requests,
-  
-  (SELECT COUNT(*)
-   FROM bookings b
-   JOIN rides r ON b.ride_id = r.id
-   WHERE r.creator_id = u.id AND b.status IN ('accepted', 'confirmed')) AS active_ride_requests,
-  
-  (SELECT COUNT(*)
-   FROM bookings b
-   JOIN rides r ON b.ride_id = r.id
-   WHERE r.creator_id = u.id AND b.status = 'pending') AS pending_ride_requests
+        u.id AS driver_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS driver_name,
+        
+        COALESCE(SUM(p.amount), 0) AS total_earnings,
+        COALESCE(AVG(rt.rating), 0) AS average_rating,
+        
+        (SELECT COUNT(*) FROM rides WHERE creator_id = u.id) AS total_trips,
+        
+        (SELECT COUNT(*)
+         FROM ride_requests rr
+         JOIN rides r ON rr.ride_id = r.id
+         WHERE r.creator_id = u.id) AS total_ride_requests,
+        
+        (SELECT COUNT(*)
+         FROM ride_requests rr
+         JOIN rides r ON rr.ride_id = r.id
+         WHERE r.creator_id = u.id AND rr.status = 'accepted') AS active_ride_requests,
+        
+        (SELECT COUNT(*)
+         FROM ride_requests rr
+         JOIN rides r ON rr.ride_id = r.id
+         WHERE r.creator_id = u.id AND rr.status = 'pending') AS pending_ride_requests,
+        
+        (SELECT COUNT(*)
+         FROM bookings b
+         JOIN rides r ON b.ride_id = r.id
+         WHERE r.creator_id = u.id) AS total_bookings,
+        
+        (SELECT COALESCE(SUM(rf.fare_amount), 0)
+         FROM ride_fares rf
+         JOIN rides r ON rf.ride_id = r.id
+         WHERE r.creator_id = u.id) AS total_fares
 
-FROM users u
-LEFT JOIN rides r ON r.creator_id = u.id
-LEFT JOIN bookings b ON b.ride_id = r.id
-LEFT JOIN payments p ON p.booking_id = b.id
-LEFT JOIN ratings rt ON rt.ratee_id = u.id
-WHERE u.id = ?
-GROUP BY u.id;
-    `,
+      FROM users u
+      LEFT JOIN rides r ON r.creator_id = u.id
+      LEFT JOIN ride_requests rr ON rr.ride_id = r.id
+      LEFT JOIN bookings b ON b.ride_id = r.id
+      LEFT JOIN payments p ON p.booking_id = b.id
+      LEFT JOIN ratings rt ON rt.ratee_id = u.id
+      WHERE u.id = ?
+      GROUP BY u.id;
+      `,
       [driverId]
     );
 
@@ -307,34 +318,101 @@ GROUP BY u.id;
       [driverId]
     );
 
-    // 2. Upcoming rides
+    // 2. Upcoming rides - Fixed to include all necessary fields
     const [upcomingRides] = await db.query(
       `
       SELECT 
-    r.id AS ride_id,
-    r.from_location,
-    r.to_location,
-    r.ride_date,
-    r.ride_time,
-    r.seats_available,
-    r.price_per_seat,
-    r.notes
-FROM rides r
-WHERE r.creator_id = ?
-  AND r.ride_date >= CURDATE()
-ORDER BY r.ride_date, r.ride_time;
-
-    `,
+        r.id AS ride_id,
+        r.from_location,
+        r.to_location,
+        r.ride_date,
+        r.ride_time,
+        r.seats_available,
+        r.price_per_seat,
+        r.notes,
+        r.pickup_description,
+        r.distance,
+        r.seats_needed,
+        r.is_shared,
+        COUNT(rr.id) AS pending_requests
+      FROM rides r
+      LEFT JOIN ride_requests rr ON rr.ride_id = r.id AND rr.status = 'pending'
+      WHERE r.creator_id = ?
+        AND r.ride_date >= CURDATE()
+      GROUP BY r.id
+      ORDER BY r.ride_date, r.ride_time;
+      `,
       [driverId]
     );
 
+    // 3. Get pending requests count for quick actions
+    const [pendingRequestsResult] = await db.query(
+      `
+      SELECT COUNT(*) AS pending_count
+      FROM ride_requests rr
+      JOIN rides r ON rr.ride_id = r.id
+      WHERE r.creator_id = ? AND rr.status = 'pending'
+      `,
+      [driverId]
+    );
+
+    // 4. Get recent earnings data for the chart
+    const [recentEarnings] = await db.query(
+      `
+      SELECT 
+        DATE(p.created_at) AS date,
+        COUNT(b.id) AS rides,
+        SUM(p.amount) AS amount
+      FROM payments p
+      JOIN bookings b ON p.booking_id = b.id
+      JOIN rides r ON b.ride_id = r.id
+      WHERE r.creator_id = ?
+        AND p.payment_status = 'completed'
+        AND p.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+      GROUP BY DATE(p.created_at)
+      ORDER BY date DESC
+      LIMIT 7
+      `,
+      [driverId]
+    );
+
+    // 5. Calculate response time (average time between ride creation and first booking)
+    const [responseTimeResult] = await db.query(
+      `
+      SELECT AVG(TIMESTAMPDIFF(MINUTE, r.created_at, b.created_at)) AS avg_response_time
+      FROM rides r
+      JOIN bookings b ON r.id = b.ride_id
+      WHERE r.creator_id = ?
+        AND b.created_at > r.created_at
+      `,
+      [driverId]
+    );
+
+    const responseTime = responseTimeResult[0]?.avg_response_time 
+      ? Math.round(responseTimeResult[0].avg_response_time) 
+      : 15; // Default 15 minutes
+
     res.json({
-      summary: summaryRows[0],
+      summary: summaryRows[0] || {
+        driver_id: driverId,
+        driver_name: "Driver",
+        total_earnings: 0,
+        average_rating: 0,
+        total_trips: 0,
+        total_ride_requests: 0,
+        active_ride_requests: 0,
+        pending_ride_requests: 0,
+        total_bookings: 0,
+        total_fares: 0
+      },
       vehicle: vehicleRows[0] || null,
-      upcomingRides,
+      upcomingRides: upcomingRides || [],
+      pendingRequests: pendingRequestsResult[0]?.pending_count || 0,
+      recentEarnings: recentEarnings || [],
+      responseTime: responseTime
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error in getDriverDashboard:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -346,7 +424,7 @@ const getTotalTrips = async (req, res) => {
     const [rows] = await db.query(
       `SELECT COUNT(*) AS total_trips
        FROM rides
-       WHERE driver_id = ? AND status = 'completed'`,
+       WHERE creator_id = ?`,
       [driverId]
     );
 
@@ -427,6 +505,79 @@ const updateRideRequest = async (req, res) => {
   res.json({ message: `Ride request ${status}` });
 };
 
+// Create a new ride request
+const createRideRequest = async (req, res) => {
+  const { ride_id, rider_id } = req.body;
+
+  if (!ride_id || !rider_id) {
+    return res.status(400).json({ error: "Ride ID and rider ID are required" });
+  }
+
+  try {
+    // Check if ride request already exists
+    const [existingRequest] = await db.query(
+      "SELECT * FROM ride_requests WHERE ride_id = ? AND rider_id = ?",
+      [ride_id, rider_id]
+    );
+
+    if (existingRequest.length > 0) {
+      return res.status(409).json({ error: "Ride request already exists" });
+    }
+
+    // Create new ride request
+    const [result] = await db.query(
+      "INSERT INTO ride_requests (ride_id, rider_id, status) VALUES (?, ?, 'pending')",
+      [ride_id, rider_id]
+    );
+
+    res.status(201).json({
+      message: "Ride request created successfully",
+      requestId: result.insertId
+    });
+  } catch (error) {
+    console.error("Error creating ride request:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Get ride request by ID
+const getRideRequestById = async (req, res) => {
+  const requestId = req.params.id;
+
+  try {
+    const [rows] = await db.query(
+      `
+      SELECT rr.id AS request_id,
+             rr.status,
+             rr.requested_at,
+             r.id AS ride_id,
+             r.from_location,
+             r.to_location,
+             r.ride_date,
+             r.ride_time,
+             u.id AS rider_id,
+             CONCAT(u.first_name, ' ', u.last_name) AS rider_name,
+             u.email,
+             u.phone
+      FROM ride_requests rr
+      JOIN rides r ON rr.ride_id = r.id
+      JOIN users u ON rr.rider_id = u.id
+      WHERE rr.id = ?
+    `,
+      [requestId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Ride request not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error("Error fetching ride request:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export {
   getAcceptedRides,
   getDriverDashboard,
@@ -438,4 +589,6 @@ export {
   updateDriverPreferences,
   updateRideRequest,
   updateVehicleInfo,
+  createRideRequest,
+  getRideRequestById,
 };
