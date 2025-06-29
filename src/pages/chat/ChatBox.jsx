@@ -20,7 +20,7 @@ const ChatBox = ({ ride }) => {
     const fetchMessages = async () => {
       try {
         const data = await getChat(ride?.ride_id, currentUser.id);
-        setMessages(data || []);
+        setMessages(data.messages);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -114,7 +114,7 @@ const ChatBox = ({ ride }) => {
         />
         <button
           onClick={sendMessage}
-          className="px-5 py-2 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="px-5 py-2 bg-night-ink text-white text-sm rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Send
         </button>

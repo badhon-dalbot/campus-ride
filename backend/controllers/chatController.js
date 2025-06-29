@@ -26,7 +26,20 @@ const getChat = async (req, res) => {
       [rideId, userId]
     );
 
-    res.json(messages); // Always return as { messages: [...] }
+    const [participants] = await db.query(
+      `SELECT DISTINCT u.id, u.first_name, u.last_name, u.email, u.role
+       FROM users u
+       WHERE u.id IN (
+         SELECT m.sender_id FROM messages m WHERE m.ride_id = ?
+         UNION
+         SELECT m.receiver_id FROM messages m WHERE m.ride_id = ?
+         UNION
+         SELECT r.creator_id FROM rides r WHERE r.id = ?
+       )`,
+      [rideId, rideId, rideId]
+    );
+
+    res.json({ messages, participants });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

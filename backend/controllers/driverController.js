@@ -444,21 +444,28 @@ const getRideRequests = async (req, res) => {
     SELECT rr.id AS request_id,
            rr.status,
            rr.requested_at,
+           rr.seats,
            r.id AS ride_id,
            r.from_location,
            r.to_location,
            r.ride_date,
            r.ride_time,
+           r.price_per_seat,
            u.id AS rider_id,
            CONCAT(u.first_name, ' ', u.last_name) AS rider_name,
            u.email,
-           u.phone
+           u.phone,
+           (
+             SELECT ROUND(AVG(rating), 2)
+             FROM ratings
+             WHERE ratee_id = u.id
+           ) AS rider_rating
     FROM ride_requests rr
     JOIN rides r ON rr.ride_id = r.id
     JOIN users u ON rr.rider_id = u.id
     WHERE r.creator_id = ? AND rr.status = 'pending'
     ORDER BY rr.requested_at DESC
-  `,
+    `,
     [driverId]
   );
 
@@ -472,21 +479,28 @@ const getAcceptedRides = async (req, res) => {
     `
     SELECT rr.id AS request_id,
            rr.requested_at,
+           rr.seats,
            r.id AS ride_id,
            r.from_location,
            r.to_location,
            r.ride_date,
            r.ride_time,
+           r.price_per_seat,
            u.id AS rider_id,
            CONCAT(u.first_name, ' ', u.last_name) AS rider_name,
            u.email,
-           u.phone
+           u.phone,
+           (
+             SELECT ROUND(AVG(rating), 2)
+             FROM ratings
+             WHERE ratee_id = u.id
+           ) AS rider_rating
     FROM ride_requests rr
     JOIN rides r ON rr.ride_id = r.id
     JOIN users u ON rr.rider_id = u.id
     WHERE r.creator_id = ? AND rr.status = 'accepted'
     ORDER BY r.ride_date ASC, r.ride_time ASC
-  `,
+    `,
     [driverId]
   );
 
@@ -508,7 +522,7 @@ const updateRideRequest = async (req, res) => {
 
 // Create a new ride request
 const createRideRequest = async (req, res) => {
-  const { ride_id, rider_id } = req.body;
+  const { ride_id, rider_id, seats = 1 } = req.body;
 
   if (!ride_id || !rider_id) {
     return res.status(400).json({ error: "Ride ID and rider ID are required" });
@@ -525,10 +539,10 @@ const createRideRequest = async (req, res) => {
       return res.status(409).json({ error: "Ride request already exists" });
     }
 
-    // Create new ride request
+    // Create new ride request with seats
     const [result] = await db.query(
-      "INSERT INTO ride_requests (ride_id, rider_id, status) VALUES (?, ?, 'pending')",
-      [ride_id, rider_id]
+      "INSERT INTO ride_requests (ride_id, rider_id, seats, status) VALUES (?, ?, ?, 'pending')",
+      [ride_id, rider_id, seats]
     );
 
     res.status(201).json({
