@@ -352,4 +352,145 @@ const getDriverRides = async (req, res) => {
   }
 };
 
-export { createRide, getAvailableRides, getDriverRides, getRideById, getRides };
+// Create ride request from rider/passenger
+const createRideRequest = async (req, res) => {
+  console.log("Creating ride request with data:", req.body);
+  
+  const { 
+    creator_id, 
+    creator_role, 
+    from_location, 
+    to_location, 
+    ride_date, 
+    ride_time, 
+    pickup_coordinate, 
+    dropoff_coordinate,
+    distance,
+    seats_needed,
+    is_shared
+  } = req.body;
+
+  // Validate required fields
+  if (!creator_id || !creator_role || !from_location || !to_location || !ride_date || !ride_time) {
+    console.log("Missing required fields:", { creator_id, creator_role, from_location, to_location, ride_date, ride_time });
+    return res.status(400).json({ 
+      error: "Missing required fields: creator_id, creator_role, from_location, to_location, ride_date, ride_time" 
+    });
+  }
+
+  // Validate that creator_role is 'rider'
+  if (creator_role !== 'rider') {
+    console.log("Invalid creator_role:", creator_role);
+    return res.status(403).json({ error: "Only riders can create ride requests" });
+  }
+
+  try {
+    // Verify the user exists and is a rider
+    const [userCheck] = await db.query(
+      "SELECT id, role FROM users WHERE id = ? AND role = 'rider'",
+      [creator_id]
+    );
+
+    if (userCheck.length === 0) {
+      console.log("User not found or not authorized as rider:", creator_id);
+      return res.status(403).json({ error: "User not found or not authorized as rider" });
+    }
+
+    console.log("User verified as rider:", userCheck[0]);
+
+    // Create the ride request
+    const [rideResult] = await db.query(
+      `INSERT INTO rides (
+        creator_id, 
+        creator_role, 
+        from_location, 
+        to_location, 
+        ride_date, 
+        ride_time, 
+        pickup_coordinate, 
+        dropoff_coordinate,
+        distance,
+        seats_needed,
+        is_shared
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        creator_id, 
+        creator_role, 
+        from_location, 
+        to_location, 
+        ride_date, 
+        ride_time, 
+        pickup_coordinate || null, 
+        dropoff_coordinate || null,
+        distance || null,
+        seats_needed || 1,
+        is_shared || "yes"
+      ]
+    );
+
+    const rideId = rideResult.insertId;
+    console.log("Ride request created with ID:", rideId);
+
+    res.status(201).json({
+      message: "Ride request created successfully",
+      rideId: rideId,
+      ride: {
+        id: rideId,
+        creator_id,
+        creator_role,
+        from_location,
+        to_location,
+        ride_date,
+        ride_time,
+        pickup_coordinate,
+        dropoff_coordinate,
+        distance,
+        seats_needed,
+        is_shared
+      }
+    });
+  } catch (error) {
+    console.error("Error creating ride request:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+};
+
+// Get ride requests by user (for passengers to see their requests)
+const getRideRequestsByUser = async (req, res) => {
+  const userId = req.params.userId;
+  
+  try {
+    const [rideRequests] = await db.query(
+      `SELECT 
+        r.id AS ride_id,
+        r.from_location,
+        r.to_location,
+        r.ride_date,
+        r.ride_time,
+        r.pickup_coordinate,
+        r.dropoff_coordinate,
+        r.distance,
+        r.seats_needed,
+        r.is_shared,
+        r.created_at,
+        u.first_name,
+        u.last_name,
+        u.phone
+      FROM rides r
+      JOIN users u ON r.creator_id = u.id
+      WHERE r.creator_id = ? AND r.creator_role = 'rider'
+      ORDER BY r.created_at DESC`,
+      [userId]
+    );
+
+    res.status(200).json({
+      message: "Ride requests fetched successfully",
+      rideRequests: rideRequests
+    });
+  } catch (error) {
+    console.error("Error fetching ride requests:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+};
+
+export { createRide, getAvailableRides, getDriverRides, getRideById, getRides, createRideRequest, getRideRequestsByUser };
