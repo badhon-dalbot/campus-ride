@@ -2,6 +2,8 @@ import db from "../config/db.js";
 
 // create ride from driver
 const createRide = async (req, res) => {
+  console.log("Creating ride with data:", req.body);
+  
   const { 
     creator_id, 
     creator_role, 
@@ -9,6 +11,10 @@ const createRide = async (req, res) => {
     to_location, 
     ride_date, 
     ride_time, 
+    seats_available,
+    price_per_seat,
+    pickup_description,
+    notes,
     pickup_coordinate, 
     dropoff_coordinate,
     distance,
@@ -16,22 +22,118 @@ const createRide = async (req, res) => {
     is_shared
   } = req.body;
 
-  if (!creator_id || !creator_role || !from_location || !to_location || !ride_date || !ride_time) {
-    return res.status(400).json({ error: "All required fields are missing" });
+  if (!creator_id || !creator_role || !from_location || !to_location || !ride_date || !ride_time || !seats_available || !price_per_seat) {
+    console.log("Missing required fields:", { creator_id, creator_role, from_location, to_location, ride_date, ride_time, seats_available, price_per_seat });
+    return res.status(400).json({ error: "Missing required fields: creator_id, creator_role, from_location, to_location, ride_date, ride_time, seats_available, price_per_seat" });
+  }
+
+  // Validate that creator_role is 'driver'
+  if (creator_role !== 'driver') {
+    console.log("Invalid creator_role:", creator_role);
+    return res.status(403).json({ error: "Only drivers can create rides" });
   }
 
   try {
-    const result = await db.query(
-      "INSERT INTO rides (creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed, is_shared) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [creator_id, creator_role, from_location, to_location, ride_date, ride_time, pickup_coordinate, dropoff_coordinate, distance, seats_needed, is_shared]
+    // Verify the user exists and is a driver
+    const [userCheck] = await db.query(
+      "SELECT id, role FROM users WHERE id = ? AND role = 'driver'",
+      [creator_id]
     );
 
+    if (userCheck.length === 0) {
+      console.log("User not found or not authorized as driver:", creator_id);
+      return res.status(403).json({ error: "User not found or not authorized as driver" });
+    }
+
+    console.log("User verified as driver:", userCheck[0]);
+
+    // First, create the ride
+    const [rideResult] = await db.query(
+      `INSERT INTO rides (
+        creator_id, 
+        creator_role, 
+        from_location, 
+        to_location, 
+        ride_date, 
+        ride_time, 
+        seats_available,
+        price_per_seat,
+        pickup_description,
+        notes,
+        pickup_coordinate, 
+        dropoff_coordinate,
+        distance,
+        seats_needed,
+        is_shared
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        creator_id, 
+        creator_role, 
+        from_location, 
+        to_location, 
+        ride_date, 
+        ride_time, 
+        seats_available,
+        price_per_seat,
+        pickup_description || null,
+        notes || null,
+        pickup_coordinate || null, 
+        dropoff_coordinate || null,
+        distance || null,
+        seats_needed || seats_available,
+        is_shared || "yes"
+      ]
+    );
+
+    const rideId = rideResult.insertId;
+    console.log("Ride created with ID:", rideId);
+
+    // Calculate fare based on distance and price per seat
+    let fareAmount = 0;
+    if (distance && price_per_seat) {
+      // Basic fare calculation: distance in km * price per seat
+      const distanceInKm = distance / 1000; // Convert meters to kilometers
+      fareAmount = distanceInKm * parseFloat(price_per_seat);
+    } else {
+      // Fallback: use price per seat as base fare
+      fareAmount = parseFloat(price_per_seat);
+    }
+
+    console.log("Calculated fare amount:", fareAmount);
+
+    // Create fare record
+    await db.query(
+      `INSERT INTO ride_fares (ride_id, fare_amount, calculated_at) VALUES (?, ?, NOW())`,
+      [rideId, fareAmount]
+    );
+
+    console.log("Fare record created for ride:", rideId);
+
     res.status(201).json({
-      message: "Ride request created successfully",
-      rideId: result[0].insertId,
+      message: "Ride created successfully",
+      rideId: rideId,
+      fareAmount: fareAmount,
+      ride: {
+        id: rideId,
+        creator_id,
+        creator_role,
+        from_location,
+        to_location,
+        ride_date,
+        ride_time,
+        seats_available,
+        price_per_seat,
+        pickup_description,
+        notes,
+        pickup_coordinate,
+        dropoff_coordinate,
+        distance,
+        seats_needed,
+        is_shared
+      }
     });
   } catch (error) {
-    console.error("Error creating ride request:", error);
+    console.error("Error creating ride:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 };

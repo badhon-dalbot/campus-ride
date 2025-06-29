@@ -344,7 +344,7 @@ export default function DriverProfilePage() {
                           style={{ backgroundColor: "#17252A" }}
                         >
                           <span className="text-xs">
-                            {profileData.status === "verified" ? "✓" : "X"}
+                            {profileData.account_status === "verified" ? "✓" : "X"}
                           </span>
                         </div>
                       </div>
@@ -356,7 +356,7 @@ export default function DriverProfilePage() {
                       <div className="inline-flex items-center gap-1 text-white px-3 py-1 rounded-full text-xs font-medium mb-2 bg-night-ink">
                         <Award className="w-3 h-3" />
                         {/* Verified Driver */}
-                        {profileData.status}
+                        {profileData.account_status}
                       </div>
 
                       {/* Driver Rating */}
