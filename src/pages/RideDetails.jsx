@@ -51,8 +51,6 @@ const RideDetails = () => {
     // }
   }, []);
 
-  
-
   const handleBookRide = () => {
     navigate(`/bookride/${rideId}`);
   };
@@ -250,7 +248,7 @@ const RideDetails = () => {
                 <span className="flex items-center gap-1">
                   <DollarSign size={14} /> Service fee
                 </span>
-                <span>${parseFloat(ride?.fare * 0.1)}</span>
+                <span>৳ {parseFloat(ride?.fare * 0.1)}</span>
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold text-sm">
                 <span className="flex items-center gap-1">

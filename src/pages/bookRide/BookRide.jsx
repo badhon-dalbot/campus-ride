@@ -74,12 +74,16 @@ export default function RideBookingApp() {
               {/* <MessageBox /> */}
               <ChatBox ride={ride?.ride} />
               {/* Payment Method */}
-              <PaymentMethod />
+              <PaymentMethod fare={ride?.fare} />
             </div>
 
             {/* Right Column - Price Details */}
             <div className="w-64">
-              <PaymentDetails fare={ride?.fare} />
+              <PaymentDetails
+                fare={ride?.fare}
+                ride_id={rideId}
+                seats_booked={1}
+              />
             </div>
           </div>
         </div>

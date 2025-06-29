@@ -1,9 +1,24 @@
 import { useNavigate } from "react-router-dom";
-export default function PaymentDetails({ fare }) {
+import { confirmBooking } from "../../services/driverAPI/confirmBooking.js";
+export default function PaymentDetails({ fare, ride_id, seats_booked = 1 }) {
   const navigate = useNavigate();
-  const handleConfirmPay = () => {
-    navigate("/conf-book");
+  console.log(ride_id);
+
+  const handleConfirmPay = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user")).user;
+      console.log(user.id);
+      await confirmBooking({
+        ride_id: Number(ride_id), // Ensure it's a number if required
+        rider_id: Number(user.id), // Ensure it's a number if required
+        seats_booked: Number(seats_booked) || 1, // Default to 1 if not provided
+      });
+      navigate("/conf-book");
+    } catch (err) {
+      alert("Booking failed. Please try again.");
+    }
   };
+
   return (
     <div className="bg-[#D4E4E4] rounded-lg p-5 border border-black shadow-lg">
       <h3 className="text-base font-semibold mb-4 text-gray-800">

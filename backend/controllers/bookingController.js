@@ -41,17 +41,18 @@ const booking = async (req, res) => {
 
 const createBooking = async (req, res) => {
   try {
-    const { userId, bookingDetails } = req.body;
+    const { ride_id, rider_id, seats_booked = 1 } = req.body;
 
-    if (!userId || !bookingDetails) {
+    if (!ride_id || !rider_id) {
       return res
         .status(400)
-        .json({ message: "User ID and booking details are required." });
+        .json({ message: "ride_id and rider_id are required." });
     }
 
     const [result] = await db.query(
-      "INSERT INTO bookings (user_id, details) VALUES (?, ?)",
-      [userId, bookingDetails]
+      `INSERT INTO bookings (ride_id, rider_id, seats_booked, status)
+       VALUES (?, ?, ?, ?)`,
+      [ride_id, rider_id, seats_booked, "accepted"]
     );
 
     res.status(201).json({
