@@ -15,6 +15,7 @@ export default function DriverDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, isLoggedIn, loading: authLoading } = useAuth(); // Get user and loading from AuthContext
+  const [activeMessageRideId, setActiveMessageRideId] = useState(null);
 
   const fetchDriverData = async () => {
     // Check if user is available from AuthContext
@@ -56,7 +57,10 @@ export default function DriverDashboard() {
   console.log("Is Logged In:", isLoggedIn);
   console.log("Auth Loading:", authLoading);
   console.log("Driver Data:", driverData);
-  console.log("Complete Backend Response:", JSON.stringify(driverData, null, 2));
+  console.log(
+    "Complete Backend Response:",
+    JSON.stringify(driverData, null, 2)
+  );
 
   // Show loading state while AuthContext is loading or driver data is being fetched
   if (authLoading || loading) {
@@ -68,7 +72,9 @@ export default function DriverDashboard() {
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-night-ink mx-auto mb-4"></div>
               <h1 className="text-xl">
-                {authLoading ? "Checking authentication..." : "Loading driver dashboard..."}
+                {authLoading
+                  ? "Checking authentication..."
+                  : "Loading driver dashboard..."}
               </h1>
             </div>
           </div>
@@ -86,8 +92,8 @@ export default function DriverDashboard() {
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <h1 className="text-xl text-red-600 mb-4">{error}</h1>
-              <button 
-                onClick={() => window.location.href = '/login'} 
+              <button
+                onClick={() => (window.location.href = "/login")}
                 className="bg-night-ink text-white px-4 py-2 rounded hover:bg-opacity-90"
               >
                 Go to Login
@@ -126,7 +132,8 @@ export default function DriverDashboard() {
       >
         <header className="flex justify-between items-center mb-12 w-container mx-auto">
           <h1 className="text-2xl font-bold">
-            Welcome back, {driverData?.summary?.driver_name || user?.user?.name || "Driver"}!
+            Welcome back,{" "}
+            {driverData?.summary?.driver_name || user?.user?.name || "Driver"}!
           </h1>
           <div className="space-x-2">
             <button
@@ -141,13 +148,19 @@ export default function DriverDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 w-container mx-auto">
           <StatCard
             label="Today's Earnings"
-            value={`$${parseFloat(driverData?.summary?.total_earnings || 0).toFixed(2)}`}
+            value={`$${parseFloat(
+              driverData?.summary?.total_earnings || 0
+            ).toFixed(2)}`}
             icon={<DollarSign />}
-            subtext={`${driverData?.summary?.total_bookings || 0} rides completed`}
+            subtext={`${
+              driverData?.summary?.total_bookings || 0
+            } rides completed`}
           />
           <StatCard
             label="Driver Rating"
-            value={parseFloat(driverData?.summary?.average_rating || 0).toFixed(2)}
+            value={parseFloat(driverData?.summary?.average_rating || 0).toFixed(
+              2
+            )}
             icon={<Star />}
             subtext={`${driverData?.summary?.total_trips || 0} total trips`}
           />
@@ -172,9 +185,15 @@ export default function DriverDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-container mx-auto">
           <div className="lg:col-span-2 space-y-6">
             <SectionCard title="Upcoming Rides">
-              {driverData.upcomingRides && driverData.upcomingRides.length > 0 ? (
+              {driverData.upcomingRides &&
+              driverData.upcomingRides.length > 0 ? (
                 driverData.upcomingRides.map((ride) => (
-                  <Rides key={ride.ride_id} ride={ride} />
+                  <Rides
+                    key={ride.ride_id}
+                    ride={ride}
+                    setActiveMessageRideId={setActiveMessageRideId}
+                    activeMessageRideId={activeMessageRideId}
+                  />
                 ))
               ) : (
                 <div className="text-center py-8 text-gray-500">
@@ -184,7 +203,8 @@ export default function DriverDashboard() {
             </SectionCard>
 
             <SectionCard title="Recent Earnings">
-              {driverData.recentEarnings && driverData.recentEarnings.length > 0 ? (
+              {driverData.recentEarnings &&
+              driverData.recentEarnings.length > 0 ? (
                 driverData.recentEarnings.map((earning, i) => (
                   <div
                     key={i}
@@ -192,14 +212,23 @@ export default function DriverDashboard() {
                   >
                     <div>
                       <p>{new Date(earning.date).toLocaleDateString()}</p>
-                      <p className="text-sm text-gray-500">{earning.rides} rides</p>
+                      <p className="text-sm text-gray-500">
+                        {earning.rides} rides
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${parseFloat(earning.amount || 0).toFixed(2)}</p>
+                      <p className="font-semibold">
+                        ${parseFloat(earning.amount || 0).toFixed(2)}
+                      </p>
                       <div className="w-24 bg-gray-200 h-2 rounded-full mt-1">
                         <div
                           className="bg-green-600 h-2 rounded-full"
-                          style={{ width: `${Math.min((earning.amount / 50) * 100, 100)}%` }}
+                          style={{
+                            width: `${Math.min(
+                              (earning.amount / 50) * 100,
+                              100
+                            )}%`,
+                          }}
                         ></div>
                       </div>
                     </div>
@@ -232,7 +261,8 @@ export default function DriverDashboard() {
                       {driverData.vehicle.make} {driverData.vehicle.model}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {driverData.vehicle.fuel_type} • {driverData.vehicle.color}
+                      {driverData.vehicle.fuel_type} •{" "}
+                      {driverData.vehicle.color}
                     </p>
                   </div>
                   <div className="text-sm text-gray-500">
@@ -251,21 +281,32 @@ export default function DriverDashboard() {
 
             <SectionCard title="This Week">
               <p className="text-xl font-bold text-green-600 text-center">
-                ${parseFloat(driverData?.summary?.total_earnings || 0).toFixed(2)}
+                $
+                {parseFloat(driverData?.summary?.total_earnings || 0).toFixed(
+                  2
+                )}
               </p>
               <div className="grid grid-cols-2 text-center text-sm mt-2">
                 <div>
-                  <p className="font-semibold">{driverData?.summary?.total_trips || 0}</p>
+                  <p className="font-semibold">
+                    {driverData?.summary?.total_trips || 0}
+                  </p>
                   <p className="text-gray-500">Rides</p>
                 </div>
                 <div>
-                  <p className="font-semibold">{driverData?.summary?.total_bookings || 0}</p>
+                  <p className="font-semibold">
+                    {driverData?.summary?.total_bookings || 0}
+                  </p>
                   <p className="text-gray-500">Bookings</p>
                 </div>
               </div>
               <div className="flex justify-center items-center gap-1 mt-2 text-sm">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                <span>{parseFloat(driverData?.summary?.average_rating || 0).toFixed(2)}</span>
+                <span>
+                  {parseFloat(driverData?.summary?.average_rating || 0).toFixed(
+                    2
+                  )}
+                </span>
                 <span className="text-gray-500">avg rating</span>
               </div>
             </SectionCard>

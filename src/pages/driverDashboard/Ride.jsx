@@ -3,8 +3,11 @@ import { useState } from "react";
 
 import MessageBox from "./MessageBox";
 
-export default function Rides({ ride }) {
-  const [activeMessageRideId, setActiveMessageRideId] = useState(null);
+export default function Rides({
+  ride,
+  activeMessageRideId,
+  setActiveMessageRideId,
+}) {
   return (
     <div
       key={ride.ride_id}
@@ -34,7 +37,7 @@ export default function Rides({ ride }) {
           <button
             onClick={() =>
               setActiveMessageRideId(
-                activeMessageRideId === ride.id ? null : ride.id
+                activeMessageRideId === ride.ride_id ? null : ride.ride_id
               )
             }
           >
@@ -44,6 +47,29 @@ export default function Rides({ ride }) {
       </div>
 
       {activeMessageRideId === ride.ride_id && <MessageBox ride={ride} />}
+    </div>
+  );
+}
+
+export function UpcomingRides({ driverData }) {
+  const [activeMessageRideId, setActiveMessageRideId] = useState(null);
+
+  return (
+    <div>
+      {driverData.upcomingRides && driverData.upcomingRides.length > 0 ? (
+        driverData.upcomingRides.map((ride) => (
+          <Rides
+            key={ride.ride_id}
+            ride={ride}
+            activeMessageRideId={activeMessageRideId}
+            setActiveMessageRideId={setActiveMessageRideId}
+          />
+        ))
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          <p>No upcoming rides scheduled</p>
+        </div>
+      )}
     </div>
   );
 }
