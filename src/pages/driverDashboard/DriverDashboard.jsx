@@ -50,7 +50,6 @@ export default function DriverDashboard() {
     }
   }, [user, isLoggedIn, authLoading]);
 
-<<<<<<< HEAD
   console.log("AuthContext User:", user);
   console.log("Is Logged In:", isLoggedIn);
   console.log("Auth Loading:", authLoading);
@@ -60,8 +59,6 @@ export default function DriverDashboard() {
     JSON.stringify(driverData, null, 2)
   );
 
-=======
->>>>>>> c994a616b077e0f1cbda8f92fa08f1e01f621afd
   // Show loading state while AuthContext is loading or driver data is being fetched
   if (authLoading || loading) {
     return (
